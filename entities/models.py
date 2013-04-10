@@ -21,27 +21,46 @@ Created on Apr 8, 2013
 '''
 from decimal import Decimal
 from django.db import models
+from django.utils import timezone
 from services.models import Account, Quota
+from uuid import uuid1
 import logging
 
 logger = logging.getLogger(__name__)
+
     
 class Entity(models.Model):
-    TYPES = (
-             ('apart', 'apartment'),
-             ('stair', 'staircase'),
-             ('block', 'block')
-    )
+    account = models.ForeignKey(Account)
     name = models.CharField(max_length=100)
-    type = models.CharField(max_length=5, choices=TYPES)
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('account', Account.objects.create())
+        super(Entity, self).__init__(*args, **kwargs)
+
+    def balance(self):
+        return self.account.balance()
     
     class Meta:
         abstract = True 
    
     
 class ApartmentGroup(Entity):
+    TYPES = (
+             ('stair', 'staircase'),
+             ('block', 'block')
+    )
+
     parent = models.ForeignKey('self', null=True, blank=True)
+    type = models.CharField(max_length=5, choices=TYPES)
+   
     
+    def balance(self):
+        mine = self.account.balance()
+        ags = self.apartmentgroup_set.all()
+        if ags == None:
+            return mine
+        return reduce(lambda s, ag: s + ag.balance(), ags, mine) 
+                      
     def apartments(self):
         result = []
         for ap in self.apartment_set.all():
@@ -49,7 +68,20 @@ class ApartmentGroup(Entity):
         for ag in self.apartmentgroup_set.all():
             result[len(result):] = ag.apartments()
         return result
+   
     
+    def add_service(self, name, quota_type=None):
+        try:
+            Service.objects.get(name=name, billed=self)
+            raise NameError('Service ' + name + ' already exists')
+        except Service.DoesNotExist:
+            pass
+        
+        service = Service.objects.create(name=name, billed=self,
+                                         quota_type=quota_type)
+        service.set_quota(quota_type)
+        service.save()
+
 
 class Person(models.Model):
     name = models.CharField(max_length=200)
@@ -57,7 +89,6 @@ class Person(models.Model):
 
 
 class Apartment(Entity):
-    account = models.ForeignKey(Account, null=True, blank=True)
     owner = models.ForeignKey(Person, related_name='owner', null=True,
                               blank=True)
     parent = models.ForeignKey(ApartmentGroup, null=True, blank=True)
@@ -68,29 +99,32 @@ class Apartment(Entity):
     rooms = models.SmallIntegerField() 
     floor = models.SmallIntegerField()
 
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault('type', 'apart')
-        super(Apartment, self).__init__(*args, **kwargs)
 
-    def balance(self):
-        return self.account.balance()
-    
     def weight(self, quota_type=None):
         if quota_type == None:
             return 1
         return getattr(self, quota_type)
 
- 
-class Service(models.Model):
-    name = models.CharField(max_length=100)
-    account = models.ForeignKey(Account)
-    billed = models.ForeignKey(ApartmentGroup)
+
+    def new_payment(self, amount, date=timezone.now()):
+        no = uuid1()
+        self.account.new_transfer(amount, date, no, self.parent.account)
     
-    def new_invoice(self, new_amount, new_date, new_no):
+ 
+class Service(Entity):
+    billed = models.ForeignKey(ApartmentGroup)
+   
+    
+    def new_invoice(self, amount, no, date=timezone.now()):
         accounts = [] 
         for ap in self.billed.apartments():
             accounts.append(ap.account)
-        self.account.new_invoice(new_amount, new_date, new_no, accounts)
+        self.account.new_invoice(amount, date, no, accounts)
+
+    
+    def new_payment(self, amount, no, date=timezone.now()):
+        self.billed.account.new_payment(amount, date, no, self.account)
+        
 
     def set_quota(self, quota_type=None):
         logger.info('Setting quota ', quota_type, ' on ', self)
@@ -99,5 +133,3 @@ class Service(models.Model):
         for a in apartments:
             Quota.set_quota(self.account, a.account,
                             Decimal(a.weight(quota_type)) / Decimal(total))
-        
-        

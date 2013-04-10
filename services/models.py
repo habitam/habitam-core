@@ -54,23 +54,34 @@ class Operation(models.Model):
 
 class Account(models.Model):
     
-    def new_invoice(self, new_amount, new_date, new_no, dest_accounts):
-        exists = None
+    def __assert_doc_not_exists(self, no):
         try:
-            exists = OperationDoc.objects.get(no=new_no, src=self)
+            OperationDoc.objects.get(no=no, src=self)
+            raise NameError('Document already exists')
         except OperationDoc.DoesNotExist:
             pass
-        if exists != None:
-            raise NameError('Invoice already exists')
         
-        new_invoice = OperationDoc.objects.create(date=new_date, no=new_no,
+    def new_transfer(self, amount, date, no, dest_account):
+        self.__assert_doc_not_exists(no)
+        
+        doc = OperationDoc.objects.create(date=date, no=no, src=self,
+                                          type='transfer')
+        Operation.objects.create(amount=amount, doc=doc, src=self, 
+                                 dest=dest_account)
+        self.save()
+        
+        
+    def new_invoice(self, amount, date, no, dest_accounts):
+        self.__assert_doc_not_exists(no)
+        
+        new_invoice = OperationDoc.objects.create(date=date, no=no,
                                                   src=self, type='invoice')
         for account in dest_accounts:
             try:
                 q = Quota.objects.get(src=self, dest=account) 
             except Quota.DoesNotExist: 
                 continue
-            ap_amount = q.ratio * new_amount
+            ap_amount = q.ratio * amount
             
             Operation.objects.create(amount=ap_amount, doc=new_invoice,
                                      src=self, dest=account)

@@ -21,7 +21,7 @@ Created on Apr 9, 2013
 '''
 from decimal import Decimal
 from django.utils import unittest, timezone
-from entities.models import Apartment, ApartmentGroup, Account, Service
+from entities.models import Apartment, ApartmentGroup, Service
 from services.models import Quota
 import logging
 
@@ -29,6 +29,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 QUOTA_TYPES = {'inhabitance':1., 'surface':10., 'rooms':2., 'floor':None}
+
+
 
 class EntitiesTestBase(unittest.TestCase):
     @classmethod
@@ -42,17 +44,15 @@ class EntitiesTestBase(unittest.TestCase):
         
         root = ApartmentGroup.objects.create(name='myblock')
         root.save()
-        left = ApartmentGroup.objects.create(parent=root)
+        left = ApartmentGroup.objects.create(name='left', parent=root)
         left.save()
-        right = ApartmentGroup.objects.create(parent=root)
+        right = ApartmentGroup.objects.create(name='right', parent=root)
         right.save()
        
         def create_apartment(i, parent):
             logger.info('creating apartment', i)
-            account = Account.objects.create()
             ap = Apartment.objects.create(name=str(i), parent=parent,
-                            account=account, inhabitance=i, surface=i * 10,
-                            rooms=i * 2, floor=i)
+                            inhabitance=i, surface=i * 10, rooms=i * 2, floor=i)
             ap.save()
             
         for i in range(0, 5):
@@ -65,10 +65,6 @@ class EntitiesTestBase(unittest.TestCase):
         
         
 class EntitiesTests(EntitiesTestBase):
-    def test_new_apartment(self):
-        ap = Apartment.objects.get(name='1')
-        self.assertEqual(ap.type, 'apart')
-        
         
     def test_get_all_apartments(self):
         block = ApartmentGroup.objects.get(name='myblock')
@@ -84,9 +80,8 @@ class QuotaTests(EntitiesTestBase):
     @classmethod
     def __setup_quota(cls, quota_type):
         block = ApartmentGroup.objects.get(name='myblock')
-        account = Account.objects.create()
         service = Service.objects.create(name='service' + quota_type,
-                                    billed=block, account=account)
+                                    billed=block)
         service.set_quota(quota_type)
         service.save()
         
@@ -119,16 +114,19 @@ class ServiceTests(EntitiesTestBase):
     @classmethod
     def __setup_invoice(cls, no, value):
         service = Service.objects.get(name='service1')
-        service.new_invoice(value, timezone.now(), no)
+        service.new_invoice(value, no, timezone.now())
+    
+    @classmethod
+    def __apartment_payment(cls, name, value):
+        ap = Apartment.objects.get(name=name)
+        ap.new_payment(value)
     
     @classmethod 
     def setUpClass(cls):
         EntitiesTestBase.setUpClass()
         block = ApartmentGroup.objects.get(name='myblock')
-        account = Account.objects.create()
         
-        service = Service.objects.create(name='service1', billed=block,
-                                         account=account)
+        service = Service.objects.create(name='service1', billed=block)
         
         apartments = block.apartments()
         for ap in apartments:
@@ -137,12 +135,33 @@ class ServiceTests(EntitiesTestBase):
         service.save()
 
         ServiceTests.__setup_invoice('invoice1', 100) 
-        ServiceTests.__setup_invoice('invoice2', 10)  
+        ServiceTests.__setup_invoice('invoice2', 10)
+        ServiceTests.__apartment_payment('2', 5)
+        
+    def __assert_ap_balance(self, name, value):
+        ap = Apartment.objects.get(name=name)
+        self.assertEquals(value, ap.balance())
+
+    def __assert_apgroup_balance(self, name, value):
+        apg = ApartmentGroup.objects.get(name=name)
+        self.assertEquals(value, apg.balance())
+   
     
-    def test_apartment_balance(self):
-        ap = Apartment.objects.get(name='1')
-        self.assertEquals(11, ap.balance())
-            
+    def test_apartment1_balance(self):
+        self.__assert_ap_balance('1', 11)
+        
+    def test_apartment2_balance(self):
+        self.__assert_ap_balance('2', 6)
+        
+    def test_leftgroup_Balance(self):
+        self.__assert_apgroup_balance('left', 5)
+    
+    def test_rightgroup_Balance(self):
+        self.__assert_apgroup_balance('right', 0)
+
+    def test_myblock_Balance(self):
+        self.__assert_apgroup_balance('myblock', 5)
+        
     def test_duplicate_invoice(self):
         with self.assertRaises(NameError):
             self.__setup_invoice('invoice1', 100)
