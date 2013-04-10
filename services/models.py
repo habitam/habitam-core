@@ -27,6 +27,15 @@ class Quota(models.Model):
     src = models.ForeignKey('Account', related_name='quota_src')
     dest = models.ForeignKey('Account', related_name='quota_dest')
     ratio = models.DecimalField(decimal_places=5, max_digits=6)
+   
+    @staticmethod
+    def set_quota(src, dest, ratio):
+        try:
+            q = Quota.objects.get(src=src, dest=dest)
+            q.ratio = ratio 
+        except Quota.DoesNotExist:
+            q = Quota.objects.create(src=src, dest=dest, ratio=ratio)
+        q.save()
     
     
 class OperationDoc(models.Model):
