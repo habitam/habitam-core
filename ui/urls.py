@@ -15,21 +15,14 @@ You should have received a copy of the GNU Affero General Public
 License along with Habitam. If not, see 
 <http://www.gnu.org/licenses/>.
     
-Created on Apr 8, 2013
+Created on Apr 12, 2013
 
 @author: Stefan Guna
 '''
+from django.conf.urls import patterns, url
+from ui import views
 
-from django.conf.urls import patterns, include, url
-
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'habitam.views.home', name='home'),
-    # url(r'^habitam/', include('habitam.foo.urls')),
-    url(r'^ui/', include('ui.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^new_block$', views.new_block, name='index'),
 )

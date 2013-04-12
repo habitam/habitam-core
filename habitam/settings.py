@@ -1,10 +1,12 @@
 # Django settings for habitam project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+BASE_DIR = '/Users/stefan/repositories/habitam'
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Stefan Guna', 'svguna@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -12,7 +14,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/Users/stefan/repositories/habitam/habitam/sqlite.db',  # Or path to database file if using sqlite3.
+        'NAME': os.path.join(BASE_DIR, 'habitam/sqlite.db'),  # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
@@ -29,7 +31,7 @@ ALLOWED_HOSTS = []
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/Bucharest'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -123,7 +125,8 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     'entities',
-    'services'
+    'services',
+    'ui'
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
