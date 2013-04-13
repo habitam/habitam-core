@@ -28,7 +28,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-QUOTA_TYPES = {'inhabitance':1., 'surface':10., 'rooms':2., 'floor':None}
+QUOTA_TYPES = {'inhabitance':1., 'area':10., 'rooms':2., 'floor':None}
 
 
 
@@ -52,7 +52,7 @@ class EntitiesTestBase(unittest.TestCase):
         def create_apartment(i, parent):
             logger.info('creating apartment', i)
             ap = Apartment.objects.create(name=str(i), parent=parent,
-                            inhabitance=i, surface=i * 10, rooms=i * 2, floor=i)
+                            inhabitance=i, area=i * 10, rooms=i * 2, floor=i)
             ap.save()
             
         for i in range(0, 5):

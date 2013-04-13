@@ -1,2 +1,4 @@
 eclipse.preferences.version=1
+encoding//ui/templates/apartment_list.html=UTF-8
+encoding//ui/templates/new_block.html=UTF-8
 encoding//ui/views.py=utf-8

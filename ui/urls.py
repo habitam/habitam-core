@@ -25,4 +25,5 @@ from ui import views
 
 urlpatterns = patterns('',
     url(r'^new_block$', views.new_block, name='new_block'),
+    url(r'^block/(?P<block_id>\d)$', views.apartment_list, name='apartment_list'),
 )

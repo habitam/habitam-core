@@ -21,7 +21,7 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django import forms
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 from entities.models import ApartmentGroup
 
@@ -31,18 +31,22 @@ class BlockEditForm(forms.Form):
     staircases = forms.IntegerField(label='Număr scări', min_value=1, max_value=100)
     apartments = forms.IntegerField(label='Număr apartamente', min_value=1, max_value=1000)
     apartment_offset = forms.IntegerField(label='Primul apartament', min_value=1, max_value=1000)
-    
-
-def __add_new_block(form):
-    print form.cleaned_data
-    ApartmentGroup.bootstrap_block(**form.cleaned_data)
 
 def new_block(request):
     if request.method == 'POST':
         form = BlockEditForm(request.POST)
         if form.is_valid():
-            __add_new_block(form)
+            ApartmentGroup.bootstrap_block(**form.cleaned_data)
             return HttpResponse("will add a new block")
     else:
         form = BlockEditForm() 
-    return render(request, 'newblock.html', {'form': form})
+    return render(request, 'new_block.html', {'form': form})
+
+def apartment_list(request, block_id):
+    try:
+        block = ApartmentGroup.objects.get(pk=block_id)
+    except ApartmentGroup.DoesNotExist:
+        return HttpResponseNotFound('Nu am găsit blocul')
+    if block.type != 'block':
+        return HttpResponseNotFound('Nu am găsit blocul')
+    return render(request, 'apartment_list.html', {'apblock': block})

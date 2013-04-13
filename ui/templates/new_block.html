@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+	<div id="newBlockContainer">
+		<form id="newBlockForm" class="form-horizontal" method="post"
+			action="{% url 'new_block' %}">
+			{% csrf_token %} 
+			{% for field in form %}
+				<div class="control-group {% if field.errors %}error{% endif %}">
+					<label class="control-label" for="id_{{ field.html_name }}">{{ field.label_tag }}</label>
+					<div class="controls">
+						{{ field }}
+						{% for error in field.errors %}
+							<span class="help-inline">{{ error }}</span>
+						{% endfor %}
+					</div>
+				</div>
+			{% endfor %}
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" class="btn">Adaugă</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		$("#id_staircases").spinner();
+		$("#id_apartments").spinner();
+		$("#id_apartment_offset").spinner();
+		$(document).ready(function() {
+			$('#newBlockForm').ajaxForm({
+				target : '#newBlockContainer',
+				success : function() {
+					$('#newBlockContainer').fadeIn('slow');
+				}
+			});
+		});
+	</script>
+</div>
+{% endblock %}
