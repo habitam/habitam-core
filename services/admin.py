@@ -15,14 +15,15 @@ You should have received a copy of the GNU Affero General Public
 License along with Habitam. If not, see 
 <http://www.gnu.org/licenses/>.
     
-Created on Apr 12, 2013
+Created on Apr 13, 2013
 
 @author: Stefan Guna
 '''
-from django.conf.urls import patterns, url
-from ui import views
 
+from django.contrib import admin
+from services.models import Quota, OperationDoc, Operation, Account
 
-urlpatterns = patterns('',
-    url(r'^new_block$', views.new_block, name='new_block'),
-)
+admin.site.register(Quota)
+admin.site.register(OperationDoc)
+admin.site.register(Operation)
+admin.site.register(Account)

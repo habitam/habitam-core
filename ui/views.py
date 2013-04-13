@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 This file is part of Habitam.
 
@@ -19,7 +20,29 @@ Created on Apr 12, 2013
 
 @author: Stefan Guna
 '''
+from django import forms
+from django.http.response import HttpResponse
 from django.shortcuts import render
+from entities.models import ApartmentGroup
+
+
+class BlockEditForm(forms.Form):
+    name = forms.CharField(label='Nume', max_length=100)
+    staircases = forms.IntegerField(label='Număr scări', min_value=1, max_value=100)
+    apartments = forms.IntegerField(label='Număr apartamente', min_value=1, max_value=1000)
+    apartment_offset = forms.IntegerField(label='Primul apartament', min_value=1, max_value=1000)
+    
+
+def __add_new_block(form):
+    print form.cleaned_data
+    ApartmentGroup.bootstrap_block(**form.cleaned_data)
 
 def new_block(request):
-    return render(request, 'newblock.html')
+    if request.method == 'POST':
+        form = BlockEditForm(request.POST)
+        if form.is_valid():
+            __add_new_block(form)
+            return HttpResponse("will add a new block")
+    else:
+        form = BlockEditForm() 
+    return render(request, 'newblock.html', {'form': form})

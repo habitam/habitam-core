@@ -52,7 +52,27 @@ class ApartmentGroup(Entity):
 
     parent = models.ForeignKey('self', null=True, blank=True)
     type = models.CharField(max_length=5, choices=TYPES)
-   
+  
+    @classmethod
+    def bootstrap_block(cls, name, staircases, apartments, apartment_offset):
+        per_staircase = apartments / staircases
+        remainder = apartments % staircases
+        
+        block = ApartmentGroup.objects.create(name=name, type='block')
+        ap_idx = apartment_offset
+        for i in range(staircases):
+            staircase = ApartmentGroup.objects.create(parent=block,
+                    name=str(i + 1), type='stair')
+            for j in range(per_staircase):
+                Apartment.objects.create(name=str(ap_idx), parent=staircase)
+                ap_idx = ap_idx + 1
+            if i + 1 < staircases:
+                continue
+            for j in range(remainder):
+                Apartment.objects.create(name=str(ap_idx), parent=staircase)
+                ap_idx = ap_idx + 1
+        block.save()
+         
     
     def balance(self):
         mine = self.account.balance()
@@ -94,10 +114,10 @@ class Apartment(Entity):
     parent = models.ForeignKey(ApartmentGroup, null=True, blank=True)
     rented_to = models.ForeignKey(Person, related_name='rented_to',
                                   null=True, blank=True)
-    inhabitance = models.SmallIntegerField()
-    surface = models.DecimalField(decimal_places=4, max_digits=6)
-    rooms = models.SmallIntegerField() 
-    floor = models.SmallIntegerField()
+    inhabitance = models.SmallIntegerField(default=0)
+    surface = models.DecimalField(default=1, decimal_places=4, max_digits=6)
+    rooms = models.SmallIntegerField(default=1) 
+    floor = models.SmallIntegerField(null=True, blank=True)
 
 
     def weight(self, quota_type=None):
