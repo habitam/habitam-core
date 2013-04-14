@@ -75,6 +75,13 @@ class EntitiesTests(EntitiesTestBase):
         for i in range(10):
             self.assertIn(str(i), names)
 
+    def test_get_all_groups(self):
+        building = ApartmentGroup.objects.get(name='mybuilding')
+        left = ApartmentGroup.objects.get(name='left')
+        right = ApartmentGroup.objects.get(name='right')
+        groups = building.apartment_groups()
+        self.assertListEqual([building, left, right], groups) 
+
 
 class QuotaTests(EntitiesTestBase):
     @classmethod
@@ -165,3 +172,13 @@ class ServiceTests(EntitiesTestBase):
     def test_duplicate_invoice(self):
         with self.assertRaises(NameError):
             self.__setup_invoice('invoice1', 100)
+            
+    def test_get_all_services(self):
+        building = ApartmentGroup.objects.get(name='mybuilding')
+        services = []
+        for qt, v in QUOTA_TYPES.iteritems():
+            if v == None:
+                continue
+            services.append(Service.objects.get(name=('service' + qt)))
+        services.append(Service.objects.get(name='service1'))
+        self.assertListEqual(services, building.services())

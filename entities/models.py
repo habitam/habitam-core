@@ -36,6 +36,9 @@ class Entity(models.Model):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('account', Account.objects.create())
         super(Entity, self).__init__(*args, **kwargs)
+        
+    def __unicode__(self):
+        return self.name
 
     def balance(self):
         return self.account.balance()
@@ -94,14 +97,21 @@ class ApartmentGroup(Entity):
         if self.type == 'building':
             return self
         return self.parent.building()
-                      
+    
+    
+    def apartment_groups(self):
+        result = [self]
+        for ag in self.apartmentgroup_set.all():
+            result.extend(ag.apartment_groups())
+        return result                  
+        
                       
     def apartments(self):
         result = []
         for ap in self.apartment_set.all():
             result.append(ap)
         for ag in self.apartmentgroup_set.all():
-            result[len(result):] = ag.apartments()
+            result.extend(ag.apartments())
         return result
    
     
@@ -116,6 +126,14 @@ class ApartmentGroup(Entity):
                                          quota_type=quota_type)
         service.set_quota(quota_type)
         service.save()
+        
+    
+    def services(self):
+        result = []
+        result.extend(self.service_set.all())
+        for ag in self.apartmentgroup_set.all():
+            result.extend(ag.services())
+        return result
 
 
 class Person(models.Model):
