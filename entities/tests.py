@@ -42,7 +42,7 @@ class EntitiesTestBase(unittest.TestCase):
             pass
         EntitiesTestBase.already_setup = True
         
-        root = ApartmentGroup.objects.create(name='myblock')
+        root = ApartmentGroup.objects.create(name='mybuilding')
         root.save()
         left = ApartmentGroup.objects.create(name='left', parent=root)
         left.save()
@@ -67,8 +67,8 @@ class EntitiesTestBase(unittest.TestCase):
 class EntitiesTests(EntitiesTestBase):
         
     def test_get_all_apartments(self):
-        block = ApartmentGroup.objects.get(name='myblock')
-        aps = block.apartments()
+        building = ApartmentGroup.objects.get(name='mybuilding')
+        aps = building.apartments()
         names = []
         for ap in aps:
             names.append(ap.name)
@@ -79,9 +79,9 @@ class EntitiesTests(EntitiesTestBase):
 class QuotaTests(EntitiesTestBase):
     @classmethod
     def __setup_quota(cls, quota_type):
-        block = ApartmentGroup.objects.get(name='myblock')
+        building = ApartmentGroup.objects.get(name='mybuilding')
         service = Service.objects.create(name='service' + quota_type,
-                                    billed=block)
+                                    billed=building)
         service.set_quota(quota_type)
         service.save()
         
@@ -124,11 +124,11 @@ class ServiceTests(EntitiesTestBase):
     @classmethod 
     def setUpClass(cls):
         EntitiesTestBase.setUpClass()
-        block = ApartmentGroup.objects.get(name='myblock')
+        building = ApartmentGroup.objects.get(name='mybuilding')
         
-        service = Service.objects.create(name='service1', billed=block)
+        service = Service.objects.create(name='service1', billed=building)
         
-        apartments = block.apartments()
+        apartments = building.apartments()
         for ap in apartments:
             Quota.objects.create(src=service.account, dest=ap.account,
                                  ratio=1. / len(apartments))
@@ -159,8 +159,8 @@ class ServiceTests(EntitiesTestBase):
     def test_rightgroup_Balance(self):
         self.__assert_apgroup_balance('right', 0)
 
-    def test_myblock_Balance(self):
-        self.__assert_apgroup_balance('myblock', 5)
+    def test_mybuilding_Balance(self):
+        self.__assert_apgroup_balance('mybuilding', 5)
         
     def test_duplicate_invoice(self):
         with self.assertRaises(NameError):

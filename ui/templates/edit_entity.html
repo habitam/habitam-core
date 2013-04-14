@@ -2,10 +2,13 @@
 
 {% block body %}
 <div class="container">
-	<div id="newBlockContainer">
-		<form id="newBlockForm" class="form-horizontal" method="post"
-			action="{% url 'new_block' %}">
+	<div id="newFormContainer">
+		<form id="newForm" class="form-horizontal" method="post"
+			action="{% if entity_id %}{% url target entity_id %}{% else %}{% url target %}{% endif %}">
 			{% csrf_token %} 
+			{% for hidden in form.hidden_fields %}
+		    {{ hidden }}
+		    {% endfor %}
 			{% for field in form %}
 				<div class="control-group {% if field.errors %}error{% endif %}">
 					<label class="control-label" for="id_{{ field.html_name }}">{{ field.label_tag }}</label>
@@ -19,20 +22,20 @@
 			{% endfor %}
 			<div class="control-group">
 				<div class="controls">
-					<button type="submit" class="btn">Adaugă</button>
+					<button type="submit" class="btn">Salvează</button>
 				</div>
 			</div>
 		</form>
 	</div>
 	<script>
-		$("#id_staircases").spinner();
-		$("#id_apartments").spinner();
-		$("#id_apartment_offset").spinner();
+		{% for s in spinners %}
+			$("#id_{{s}}").spinner();
+		{% endfor %}
 		$(document).ready(function() {
-			$('#newBlockForm').ajaxForm({
-				target : '#newBlockContainer',
+			$('#newForm').ajaxForm({
+				target : '#newFormContainer',
 				success : function() {
-					$('#newBlockContainer').fadeIn('slow');
+					$('#newFormContainer').fadeIn('slow');
 				}
 			});
 		});

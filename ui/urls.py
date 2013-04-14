@@ -24,6 +24,8 @@ from ui import views
 
 
 urlpatterns = patterns('',
-    url(r'^new_block$', views.new_block, name='new_block'),
-    url(r'^block/(?P<block_id>\d)$', views.apartment_list, name='apartment_list'),
+    url(r'^new_building$', views.new_building, name='new_building'),
+    url(r'^building/(?P<building_id>\d+)/apartment_list$', views.apartment_list, name='apartment_list'),
+
+    url(r'^apartment/(?P<apartment_id>\d+)/edit$', views.edit_apartment, name='edit_apartment'),
 )

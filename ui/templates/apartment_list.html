@@ -12,10 +12,11 @@
 				<th>Nr. camere</th>
 				<th>Nr. persoane</th>
 				<th>Suprafață</th>
+				<th>&nbsp;</th>
 			</tr>
 		</thead>
 		<tbody>
-			{% for sc in apblock.apartmentgroup_set.all %}
+			{% for sc in building.apartmentgroup_set.all %}
 				{% for ap in sc.apartment_set.all %}
 				<tr>
 					<td>{{ sc.name }}</td>
@@ -25,6 +26,11 @@
 					<td>{{ ap.rooms }}</td>
 					<td>{{ ap.inhabitance }}</td>
 					<td>{{ ap.area }}</td>
+					<td>
+						<button class="btn btn-mini" type="button">Încasează</button>
+						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_apartment' ap.id %}'">Modifică</button>
+						<button class="btn btn-mini" type="button">Operațiuni</button>
+					</td>
 				</tr>
 				{% endfor %} 
 			{% endfor %}

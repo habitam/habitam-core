@@ -47,21 +47,21 @@ class Entity(models.Model):
 class ApartmentGroup(Entity):
     TYPES = (
              ('stair', 'staircase'),
-             ('block', 'block')
+             ('building', 'building')
     )
 
     parent = models.ForeignKey('self', null=True, blank=True)
     type = models.CharField(max_length=5, choices=TYPES)
   
     @classmethod
-    def bootstrap_block(cls, name, staircases, apartments, apartment_offset):
+    def bootstrap_building(cls, name, staircases, apartments, apartment_offset):
         per_staircase = apartments / staircases
         remainder = apartments % staircases
         
-        block = ApartmentGroup.objects.create(name=name, type='block')
+        building = ApartmentGroup.objects.create(name=name, type='building')
         ap_idx = apartment_offset
         for i in range(staircases):
-            staircase = ApartmentGroup.objects.create(parent=block,
+            staircase = ApartmentGroup.objects.create(parent=building,
                     name=str(i + 1), type='stair')
             for j in range(per_staircase):
                 Apartment.objects.create(name=str(ap_idx), parent=staircase)
@@ -71,7 +71,7 @@ class ApartmentGroup(Entity):
             for j in range(remainder):
                 Apartment.objects.create(name=str(ap_idx), parent=staircase)
                 ap_idx = ap_idx + 1
-        block.save()
+        building.save()
          
     
     def balance(self):
@@ -79,7 +79,14 @@ class ApartmentGroup(Entity):
         ags = self.apartmentgroup_set.all()
         if ags == None:
             return mine
-        return reduce(lambda s, ag: s + ag.balance(), ags, mine) 
+        return reduce(lambda s, ag: s + ag.balance(), ags, mine)
+    
+    
+    def building(self):
+        if self.type == 'building':
+            return self
+        return self.parent.building()
+                      
                       
     def apartments(self):
         result = []
@@ -118,6 +125,10 @@ class Apartment(Entity):
     area = models.DecimalField(default=1, decimal_places=4, max_digits=6)
     rooms = models.SmallIntegerField(default=1) 
     floor = models.SmallIntegerField(null=True, blank=True)
+
+    
+    def building(self):
+        return self.parent.building()
 
 
     def weight(self, quota_type=None):
