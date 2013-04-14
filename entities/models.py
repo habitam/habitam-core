@@ -73,6 +73,14 @@ class ApartmentGroup(Entity):
                 ap_idx = ap_idx + 1
         building.save()
          
+         
+    def __unicode__(self):
+        if self.type == 'building':
+            return 'Block ' + self.name
+        if self.type == 'stair':
+            return 'Scara ' + self.name
+        return self.name
+    
     
     def balance(self):
         mine = self.account.balance()

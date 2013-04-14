@@ -42,15 +42,23 @@ class ApartmentEditForm(forms.ModelForm):
     floor = forms.IntegerField(label='Etaj', required=False, min_value=1, max_value=50)
     inhabitance = forms.IntegerField(label='Locatari', min_value=0, max_value=50)
     area = forms.IntegerField(label='Suprafață', min_value=1, max_value=1000)
+    parent = forms.ModelChoiceField(queryset=ApartmentGroup.objects.all())
     rooms = forms.IntegerField(label='Camere', min_value=1, max_value=20)
-   
+    
     @classmethod
     def spinners(cls):
         return ['floor', 'inhabitance', 'area', 'rooms']
      
     class Meta:
         model = Apartment
-        fields = ('name', 'floor', 'inhabitance', 'area', 'rooms')
+        fields = ('name', 'parent', 'floor', 'inhabitance', 'area', 'rooms')
+    
+    def __init__(self, *args, **kwargs):
+        building = kwargs['building']
+        del kwargs['building']
+        super(ApartmentEditForm, self).__init__(*args, **kwargs)
+        staircases = ApartmentGroup.objects.filter(parent=building)
+        self.fields['parent'].queryset = staircases 
         
         
 def new_building(request):
@@ -66,18 +74,21 @@ def new_building(request):
     return render(request, 'edit_entity.html', data)
 
 
-def edit_apartment(request, apartment_id=None):
+def edit_apartment(request, building_id, apartment_id=None):
+    building = ApartmentGroup.objects.get(pk=building_id)
     apartment = Apartment.objects.get(pk=apartment_id)
+    
     if request.method == 'POST':
-        form = ApartmentEditForm(request.POST, instance=apartment)
+        form = ApartmentEditForm(request.POST, building=building,
+                                 instance=apartment)
         if form.is_valid():
             form.save()
-            return render(request, 'apartment_list.html', 
+            return render(request, 'apartment_list.html',
                           {'building': apartment.building}) 
     else:
-        form = ApartmentEditForm(instance=apartment)
+        form = ApartmentEditForm(building=building, instance=apartment)
     data = {'form': form, 'target': 'edit_apartment',
-            'entity_id': apartment_id,
+            'building_id': building_id, 'apartment_id': apartment_id,
             'spinners': ApartmentEditForm.spinners()}
     return render(request, 'edit_entity.html', data)
             

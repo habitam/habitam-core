@@ -4,7 +4,7 @@
 <div class="container">
 	<div id="newFormContainer">
 		<form id="newForm" class="form-horizontal" method="post"
-			action="{% if entity_id %}{% url target entity_id %}{% else %}{% url target %}{% endif %}">
+			action="{% if apartment_id %}{% url target building_id apartment_id %}{% else %}{% url target %}{% endif %}">
 			{% csrf_token %} 
 			{% for hidden in form.hidden_fields %}
 		    {{ hidden }}
