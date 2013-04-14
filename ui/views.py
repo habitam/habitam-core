@@ -22,11 +22,11 @@ Created on Apr 12, 2013
 '''
 from django import forms
 from django.http.response import HttpResponse, HttpResponseNotFound
-from django.shortcuts import render
-from entities.models import ApartmentGroup, Apartment
+from django.shortcuts import render, redirect
+from entities.models import ApartmentGroup, Apartment, Service
 
 
-class BlockEditForm(forms.Form):
+class NewBuildingForm(forms.Form):
     name = forms.CharField(label='Nume', max_length=100)
     staircases = forms.IntegerField(label='Număr scări', min_value=1, max_value=100)
     apartments = forms.IntegerField(label='Număr apartamente', min_value=1, max_value=1000)
@@ -37,7 +37,22 @@ class BlockEditForm(forms.Form):
         return ['staircases', 'apartments', 'apartment_offset']
 
 
-class ApartmentEditForm(forms.ModelForm):
+class NewServiceForm(forms.ModelForm):
+    QUOTA_TYPES = (
+        (None, 'în mod egal'),
+        ('inhabitance', 'după număr persoane'),
+        ('area', 'după suprafață'),
+        ('rooms', 'după număr camere')
+    )
+    name = forms.CharField(label='Nume', max_length=100)
+    quota_type = forms.ChoiceField(label='Distribuie cota', choices=QUOTA_TYPES)
+
+    class Meta:
+        model = Service
+        fields = ('name', 'quota_type')
+        
+
+class EditApartmentForm(forms.ModelForm):
     name = forms.CharField(label='Nume')
     floor = forms.IntegerField(label='Etaj', required=False, min_value=1, max_value=50)
     inhabitance = forms.IntegerField(label='Locatari', min_value=0, max_value=50)
@@ -56,20 +71,20 @@ class ApartmentEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
         del kwargs['building']
-        super(ApartmentEditForm, self).__init__(*args, **kwargs)
+        super(EditApartmentForm, self).__init__(*args, **kwargs)
         staircases = ApartmentGroup.objects.filter(parent=building)
         self.fields['parent'].queryset = staircases 
         
         
 def new_building(request):
     if request.method == 'POST':
-        form = BlockEditForm(request.POST)
+        form = NewBuildingForm(request.POST)
         if form.is_valid():
             ApartmentGroup.bootstrap_building(**form.cleaned_data)
             return HttpResponse("will add a new building")
     else:
-        form = BlockEditForm() 
-    data = {'form': form, 'spinners': BlockEditForm.spinners(),
+        form = NewBuildingForm() 
+    data = {'form': form, 'spinners': NewBuildingForm.spinners(),
             'target': 'new_building'}
     return render(request, 'edit_entity.html', data)
 
@@ -79,19 +94,41 @@ def edit_apartment(request, building_id, apartment_id=None):
     apartment = Apartment.objects.get(pk=apartment_id)
     
     if request.method == 'POST':
-        form = ApartmentEditForm(request.POST, building=building,
+        form = EditApartmentForm(request.POST, building=building,
                                  instance=apartment)
         if form.is_valid():
             form.save()
-            return render(request, 'apartment_list.html',
-                          {'building': apartment.building}) 
+            return redirect('apartment_list',
+                    building_id=apartment.building().id)
     else:
-        form = ApartmentEditForm(building=building, instance=apartment)
+        form = EditApartmentForm(building=building, instance=apartment)
     data = {'form': form, 'target': 'edit_apartment',
-            'building_id': building_id, 'apartment_id': apartment_id,
-            'spinners': ApartmentEditForm.spinners()}
+            'parent_id': building_id, 'entity_id': apartment_id,
+            'spinners': EditApartmentForm.spinners()}
     return render(request, 'edit_entity.html', data)
             
+
+def new_service(request, billed_id):
+    if request.method == 'POST':
+        billed = ApartmentGroup.objects.get(pk=billed_id)
+        form = NewServiceForm(request.POST)
+        if form.is_valid():
+            service = form.save(commit=False)
+            service.billed = billed
+            service.save()
+            quota_type = form.cleaned_data['quota_type']
+            if quota_type == 'None':
+                service.set_quota()
+            else:
+                service.set_quota(quota_type)
+            return redirect('apartment_list',
+                    building_id=billed.building().id)
+    else:
+        form = NewServiceForm()
+    data = {'form': form, 'target': 'new_service',
+            'parent_id': billed_id}
+    return render(request, 'edit_entity.html', data)
+
 
 def apartment_list(request, building_id):
     try:
