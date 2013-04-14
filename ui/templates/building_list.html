@@ -1,0 +1,12 @@
+{% extends 'base.html' %} 
+
+{% block body %}
+<div class="container">
+	<ul>
+		{% for building in buildings %}
+		<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
+		{% endfor %}
+	</ul>
+	<button class="btn" type="button" onclick="window.location='{% url 'new_building' %}'">Adaugă bloc</button>
+</div>
+{% endblock %}

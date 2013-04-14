@@ -81,12 +81,17 @@ def new_building(request):
         form = NewBuildingForm(request.POST)
         if form.is_valid():
             ApartmentGroup.bootstrap_building(**form.cleaned_data)
-            return HttpResponse("will add a new building")
+            return redirect('building_list')
     else:
         form = NewBuildingForm() 
     data = {'form': form, 'spinners': NewBuildingForm.spinners(),
             'target': 'new_building'}
     return render(request, 'edit_entity.html', data)
+
+
+def building_list(request):
+    buildings = ApartmentGroup.objects.filter(type='building')
+    return render(request, 'building_list.html', {'buildings': buildings})
 
 
 def edit_apartment(request, building_id, apartment_id=None):

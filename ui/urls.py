@@ -27,6 +27,8 @@ urlpatterns = patterns('',
     url(r'^new_building$', views.new_building, name='new_building'),
     
     url(r'^services/(?P<billed_id>\d+)/new_service$', views.new_service, name='new_service'),
+    
+    url(r'^buildings$', views.building_list, name='building_list'),
     url(r'^buildings/(?P<building_id>\d+)/apartment_list$', views.apartment_list, name='apartment_list'),
 
     url(r'^apartments/(?P<building_id>\d+)/(?P<apartment_id>\d+)/edit$', views.edit_apartment, name='edit_apartment'),
