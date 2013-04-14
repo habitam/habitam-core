@@ -22,7 +22,7 @@
 				<td colspan="1">
 					<button class="btn btn-mini" type="button">Operațiuni</button>
 					<button class="btn btn-mini" type="button">Modifică</button>
-					<button class="btn btn-mini" type="button" style="width: 64px">Servicii</button>
+					<button class="btn btn-mini" type="button" style="width: 64px" onclick="window.location='{% url 'service_list' billed_id=building.id %}'">Servicii</button>
 				</td>	
 			</tr>
 			{% for sc in building.apartmentgroup_set.all %}
@@ -32,7 +32,7 @@
 					<th>
 						<button class="btn btn-mini" type="button">Operațiuni</button>
 						<button class="btn btn-mini" type="button">Modifică</button>
-						<button class="btn btn-mini" type="button" style="width: 64px">Servicii</button>
+						<button class="btn btn-mini" type="button" style="width: 64px" onclick="window.location='{% url 'service_list' billed_id=sc.id %}'">Servicii</button>
 					</th>
 				</tr>
 				{% for ap in sc.apartment_set.all %}

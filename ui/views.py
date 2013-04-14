@@ -21,7 +21,7 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django import forms
-from django.http.response import HttpResponse, HttpResponseNotFound
+from django.http.response import HttpResponseNotFound
 from django.shortcuts import render, redirect
 from entities.models import ApartmentGroup, Apartment, Service
 
@@ -110,8 +110,18 @@ def edit_apartment(request, building_id, apartment_id=None):
     data = {'form': form, 'target': 'edit_apartment',
             'parent_id': building_id, 'entity_id': apartment_id,
             'spinners': EditApartmentForm.spinners()}
-    return render(request, 'edit_entity.html', data)
-            
+    return render(request, 'edit_entity.html', data)          
+          
+
+def apartment_list(request, building_id):
+    try:
+        building = ApartmentGroup.objects.get(pk=building_id)
+    except ApartmentGroup.DoesNotExist:
+        return HttpResponseNotFound('Nu am găsit blocul')
+    if building.type != 'building':
+        return HttpResponseNotFound('Nu am găsit blocul')
+    return render(request, 'apartment_list.html', {'building': building})  
+
 
 def new_service(request, billed_id):
     if request.method == 'POST':
@@ -135,11 +145,9 @@ def new_service(request, billed_id):
     return render(request, 'edit_entity.html', data)
 
 
-def apartment_list(request, building_id):
-    try:
-        building = ApartmentGroup.objects.get(pk=building_id)
-    except ApartmentGroup.DoesNotExist:
-        return HttpResponseNotFound('Nu am găsit blocul')
-    if building.type != 'building':
-        return HttpResponseNotFound('Nu am găsit blocul')
-    return render(request, 'apartment_list.html', {'building': building})
+def service_list(request, billed_id):
+    billed = ApartmentGroup.objects.get(pk=billed_id)
+    services = Service.objects.filter(billed=billed)
+    print billed, services
+    data = {'billed': billed, 'services': services}
+    return render(request, 'service_list.html', data)
