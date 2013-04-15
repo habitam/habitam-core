@@ -30,6 +30,6 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'habitam.views.home', name='home'),
     # url(r'^habitam/', include('habitam.foo.urls')),
-    url(r'^ui/', include('ui.urls')),
+    url(r'^ui/', include('habitam.ui.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )

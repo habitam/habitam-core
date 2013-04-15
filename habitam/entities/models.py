@@ -23,7 +23,7 @@ Created on Apr 8, 2013
 from decimal import Decimal
 from django.db import models
 from django.utils import timezone
-from services.models import Account, Quota
+from habitam.services.models import Account, Quota
 from uuid import uuid1
 import logging
 

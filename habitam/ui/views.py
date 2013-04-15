@@ -23,7 +23,7 @@ Created on Apr 12, 2013
 from django import forms
 from django.db.models.query_utils import Q
 from django.shortcuts import render, redirect
-from entities.models import ApartmentGroup, Apartment, Service
+from habitam.entities.models import ApartmentGroup, Apartment, Service
 import logging
 
 

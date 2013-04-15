@@ -124,9 +124,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    'entities',
-    'services',
-    'ui'
+    'habitam.entities',
+    'habitam.services',
+    'habitam.ui'
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -161,21 +161,9 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'entities': {
+        'habitam': {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
-        'ui': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-        'services': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        }
     }
 }
-
-if DEBUG:
-    for logger in LOGGING['loggers']:
-        LOGGING['loggers'][logger]['handlers'] = ['console']

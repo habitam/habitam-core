@@ -21,9 +21,9 @@ Created on Apr 13, 2013
 '''
 
 from django.contrib import admin
-from services.models import Quota, OperationDoc, Operation, Account
+from habitam.entities.models import ApartmentGroup, Apartment, Person, Service
 
-admin.site.register(Quota)
-admin.site.register(OperationDoc)
-admin.site.register(Operation)
-admin.site.register(Account)
+admin.site.register(ApartmentGroup)
+admin.site.register(Apartment)
+admin.site.register(Person)
+admin.site.register(Service)

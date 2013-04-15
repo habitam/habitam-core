@@ -20,7 +20,7 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django.conf.urls import patterns, url
-from ui import views
+from habitam.ui import views
 
 
 urlpatterns = patterns('',
