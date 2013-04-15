@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 This file is part of Habitam.
 
@@ -157,8 +158,8 @@ class Apartment(Entity):
         return self.parent.building()
 
 
-    def weight(self, quota_type=None):
-        if quota_type == None:
+    def weight(self, quota_type='equally'):
+        if quota_type == 'equally':
             return 1
         return getattr(self, quota_type)
 
@@ -169,7 +170,14 @@ class Apartment(Entity):
     
  
 class Service(Entity):
+    QUOTA_TYPES = (
+        ('equally', 'în mod egal'),
+        ('inhabitance', 'după număr persoane'),
+        ('area', 'după suprafață'),
+        ('rooms', 'după număr camere')
+    )
     billed = models.ForeignKey(ApartmentGroup)
+    quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
    
     
     def new_invoice(self, amount, no, date=timezone.now()):
@@ -183,8 +191,16 @@ class Service(Entity):
         self.billed.account.new_payment(amount, date, no, self.account)
         
 
-    def set_quota(self, quota_type=None):
+    def set_quota(self, quota_type='equally'):
         logger.info('Setting quota ', quota_type, ' on ', self)
+        found = False
+        for qt in Service.QUOTA_TYPES:
+            if qt[0] == quota_type:
+                found = True
+        if not found:
+            logger.error('Quota type ', quota_type, ' is invalid')
+            raise NameError('Invalid quota type')
+        
         apartments = self.billed.apartments()
         total = reduce(lambda t, a: t + a.weight(quota_type), apartments, 0)
         for a in apartments:

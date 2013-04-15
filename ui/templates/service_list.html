@@ -1,12 +1,13 @@
 {% extends 'base.html' %} 
 
 {% block body %}
-<h1>Servicii pentru {{ billed.name }}</h1>
+<h1>Servicii pentru {{ building.name }}</h1>
 <div class="container">
 	<table class="table table-hover table-condensed">
 		<thead>
 			<tr>
 				<th>Nume</th>
+				<th>Clienți</th>
 				<th>&nbsp;</th>
 			</tr>
 		</thead>
@@ -14,8 +15,10 @@
 			{% for service in services %}
 				<tr>
 					<td>{{ service.name }}</td>
+					<td>{{ service.billed.name }}</td>
 					<td>
 						<button class="btn btn-mini" type="button">Operațiuni</button>
+						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_service' building_id=building.id service_id=service.id %}'">Modifică</button>
 						<button class="btn btn-mini btn-inverse" type="button">Factură nouă</button>
 					</td>
 				</tr>

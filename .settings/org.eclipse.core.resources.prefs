@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
+encoding//entities/models.py=utf-8
+encoding//services/models.py=UTF-8
 encoding//ui/templates/apartment_list.html=UTF-8
 encoding//ui/templates/building_list.html=UTF-8
 encoding//ui/templates/edit_entity.html=UTF-8
