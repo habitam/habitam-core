@@ -149,6 +149,10 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
         }
     },
     'loggers': {
@@ -157,5 +161,21 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'entities': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'ui': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'services': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        }
     }
 }
+
+if DEBUG:
+    for logger in LOGGING['loggers']:
+        LOGGING['loggers'][logger]['handlers'] = ['console']

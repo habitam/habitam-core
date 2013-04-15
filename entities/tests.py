@@ -88,8 +88,8 @@ class QuotaTests(EntitiesTestBase):
     def __setup_quota(cls, quota_type):
         building = ApartmentGroup.objects.get(name='mybuilding')
         service = Service.objects.create(name='service' + quota_type,
-                                    billed=building)
-        service.set_quota(quota_type)
+                                    billed=building, quota_type=quota_type)
+        service.set_quota()
         service.save()
         
     @classmethod

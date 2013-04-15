@@ -135,6 +135,11 @@ class ApartmentGroup(Entity):
         for ag in self.apartmentgroup_set.all():
             result.extend(ag.services())
         return result
+    
+    
+    def update_quotas(self):
+        for svc in self.services_set.all():
+            svc.set_quota()
 
 
 class Person(models.Model):
@@ -190,19 +195,27 @@ class Service(Entity):
     def new_payment(self, amount, no, date=timezone.now()):
         self.billed.account.new_payment(amount, date, no, self.account)
         
-
-    def set_quota(self, quota_type='equally'):
-        logger.info('Setting quota ', quota_type, ' on ', self)
+        
+    def drop_quota(self):
+        logger.info('Pruning all quotas on %s', self)
+        Quota.del_quota(self.account)
+    
+    
+    def set_quota(self):
+        self.drop_quota()
+        
+        logger.info('Setting quota %s on %s', self.quota_type, self)
         found = False
         for qt in Service.QUOTA_TYPES:
-            if qt[0] == quota_type:
+            if qt[0] == self.quota_type:
                 found = True
         if not found:
-            logger.error('Quota type ', quota_type, ' is invalid')
+            logger.error('Quota type %s is invalid', self.quota_type)
             raise NameError('Invalid quota type')
         
         apartments = self.billed.apartments()
-        total = reduce(lambda t, a: t + a.weight(quota_type), apartments, 0)
+        total = reduce(lambda t, a: t + a.weight(self.quota_type), apartments,
+                       0)
         for a in apartments:
             Quota.set_quota(self.account, a.account,
-                            Decimal(a.weight(quota_type)) / Decimal(total))
+                        Decimal(a.weight(self.quota_type)) / Decimal(total))

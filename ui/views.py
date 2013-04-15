@@ -22,9 +22,12 @@ Created on Apr 12, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
-from django.http.response import HttpResponseNotFound
 from django.shortcuts import render, redirect
 from entities.models import ApartmentGroup, Apartment, Service
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class NewBuildingForm(forms.Form):
@@ -108,12 +111,18 @@ def building_list(request):
 def edit_apartment(request, building_id, apartment_id=None):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     apartment = Apartment.objects.get(pk=apartment_id)
+    orig_parent = apartment.parent
     
     if request.method == 'POST':
         form = EditApartmentForm(request.POST, building=building,
                                  instance=apartment)
         if form.is_valid():
             form.save()
+            
+            if form.cleaned_data['parent'] != orig_parent:
+                orig_parent.update_quotas()
+                form.cleaned_data['parent'].update_quotas()
+                
             return redirect('apartment_list',
                     building_id=apartment.building().id)
     else:
@@ -129,16 +138,28 @@ def apartment_list(request, building_id):
     return render(request, 'apartment_list.html', {'building': building})  
 
 
-def edit_service(request, building_id=None, service_id=None):
-    print building_id, service_id
-    building = None
-    if building_id != None:
-        building = ApartmentGroup.objects.get(pk=building_id).building()
-    service = None
-    if service_id != None:
-        service = Service.objects.get(pk=service_id)
-        if building == None:
-            building = service.billed.building()
+def new_service(request, building_id):
+    building = ApartmentGroup.objects.get(pk=building_id).building()
+    
+    if request.method == 'POST':
+        form = EditServiceForm(request.POST, building=building)
+        if form.is_valid():
+            service = form.save(commit=False)
+            service.save()
+            service.set_quota()
+            return redirect('service_list', building_id=building_id)
+    else:
+        form = EditServiceForm(building=building)
+    
+    data = {'form': form, 'parent_id': building_id, 'target': 'new_service'}
+    return render(request, 'edit_entity.html', data)
+    
+
+def edit_service(request, service_id=None):
+    service = Service.objects.get(pk=service_id)
+    orig_billed = service.billed
+    orig_qt = service.quota_type
+    building = service.billed.building()
     
     if request.method == 'POST':
         form = EditServiceForm(request.POST, building=building,
@@ -146,26 +167,19 @@ def edit_service(request, building_id=None, service_id=None):
         if form.is_valid():
             service = form.save(commit=False)
             service.save()
-            quota_type = form.cleaned_data['quota_type']
-            if quota_type == 'None':
+            
+            logger.debug('edit service %s, %s -> %s %s', orig_billed, orig_qt,
+                         service.billed, service.quota_type)
+            if orig_billed != service.billed:
+                service.drop_quota()
+            if orig_billed != service.billed or orig_qt != service.quota_type:
                 service.set_quota()
-            else:
-                service.set_quota(quota_type)
-            return redirect('service_list',
-                    building_id=building_id)
+                
+            return redirect('service_list', building_id=building.id)
     else:
-        if service != None:
-            form = EditServiceForm(building=building, instance=service)
-        else:
-            form = EditServiceForm(building=building)
+        form = EditServiceForm(building=building, instance=service)
     
-    data = {'form': form}
-    if building_id != None:
-        data['parent_id'] = building_id
-        data['target'] = 'new_service'
-    else:
-        data['entity_id'] = service_id
-        data['target'] = 'edit_service'
+    data = {'form': form, 'entity_id': service_id, 'target': 'edit_service'}
     
     return render(request, 'edit_entity.html', data)
 

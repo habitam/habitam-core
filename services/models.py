@@ -27,7 +27,11 @@ class Quota(models.Model):
     src = models.ForeignKey('Account', related_name='quota_src')
     dest = models.ForeignKey('Account', related_name='quota_dest')
     ratio = models.DecimalField(decimal_places=5, max_digits=6)
-   
+
+    @staticmethod
+    def del_quota(src):
+        Quota.objects.filter(src=src).delete() 
+        
     @staticmethod
     def set_quota(src, dest, ratio):
         try:
@@ -66,7 +70,7 @@ class Account(models.Model):
         
         doc = OperationDoc.objects.create(date=date, no=no, src=self,
                                           type='transfer')
-        Operation.objects.create(amount=amount, doc=doc, src=self, 
+        Operation.objects.create(amount=amount, doc=doc, src=self,
                                  dest=dest_account)
         self.save()
         
