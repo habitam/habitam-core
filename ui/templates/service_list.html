@@ -17,9 +17,9 @@
 					<td>{{ service.name }}</td>
 					<td>{{ service.billed.name }}</td>
 					<td>
-						<button class="btn btn-mini" type="button">Operațiuni</button>
-						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_service' building_id=building.id service_id=service.id %}'">Modifică</button>
-						<button class="btn btn-mini btn-inverse" type="button">Factură nouă</button>
+						<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
+						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_service' service_id=service.id %}'">Modifică</button>
+						<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_invoice' service_id=service.id %}'">Factură nouă</button>
 					</td>
 				</tr>
 			{% endfor %}

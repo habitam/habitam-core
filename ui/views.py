@@ -76,6 +76,15 @@ class EditApartmentForm(forms.ModelForm):
         super(EditApartmentForm, self).__init__(*args, **kwargs)
         staircases = ApartmentGroup.objects.filter(parent=building)
         self.fields['parent'].queryset = staircases 
+
+        
+class NewInvoiceForm(forms.Form):
+    no = forms.CharField(label='Nume')
+    amount = forms.DecimalField(label='Suma')
+    
+    @classmethod
+    def spinners(cls):
+        return ['amount']
         
         
 def new_building(request):
@@ -120,11 +129,16 @@ def apartment_list(request, building_id):
     return render(request, 'apartment_list.html', {'building': building})  
 
 
-def edit_service(request, building_id, service_id=None):
-    building = ApartmentGroup.objects.get(pk=building_id).building()
+def edit_service(request, building_id=None, service_id=None):
+    print building_id, service_id
+    building = None
+    if building_id != None:
+        building = ApartmentGroup.objects.get(pk=building_id).building()
     service = None
     if service_id != None:
         service = Service.objects.get(pk=service_id)
+        if building == None:
+            building = service.billed.building()
     
     if request.method == 'POST':
         form = EditServiceForm(request.POST, building=building,
@@ -145,13 +159,13 @@ def edit_service(request, building_id, service_id=None):
         else:
             form = EditServiceForm(building=building)
     
-    data = {'form': form, 'parent_id': building_id}
-    
-    if service != None:
+    data = {'form': form}
+    if building_id != None:
+        data['parent_id'] = building_id
+        data['target'] = 'new_service'
+    else:
         data['entity_id'] = service_id
         data['target'] = 'edit_service'
-    else:
-        data['target'] = 'new_service'
     
     return render(request, 'edit_entity.html', data)
 
@@ -161,3 +175,22 @@ def service_list(request, building_id):
     services = building.services() 
     data = {'building': building, 'services': services}
     return render(request, 'service_list.html', data)
+
+
+def new_invoice(request, service_id):
+    if request.method == 'POST':
+        form = NewInvoiceForm(request.POST)
+        if form.is_valid():
+            service = Service.objects.get(pk=service_id)
+            service.new_invoice(**form.cleaned_data)
+            return redirect('service_list',
+                            building_id=service.billed.building().id)
+    else:
+        form = NewInvoiceForm()
+        
+    data = {'form': form, 'target': 'new_invoice', 'parent_id': service_id,
+            'spinners': NewInvoiceForm.spinners()}
+    return render(request, 'edit_entity.html', data)
+    
+    
+    

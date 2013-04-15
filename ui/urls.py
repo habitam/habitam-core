@@ -26,11 +26,13 @@ from ui import views
 urlpatterns = patterns('',
     
     url(r'^buildings$', views.building_list, name='building_list'),
+    
     url(r'^buildings/new$', views.new_building, name='new_building'),
     url(r'^buildings/(?P<building_id>\d+)/apartments$', views.apartment_list, name='apartment_list'),
     url(r'^buildings/(?P<building_id>\d+)/apartments/(?P<apartment_id>\d+)/edit$', views.edit_apartment, name='edit_apartment'),
-    
     url(r'^buildings/(?P<building_id>\d+)/services$', views.service_list, name='service_list'),
-    url(r'^buildings/(?P<building_id>\d+)/services/(?P<service_id>\d+)/edit$', views.edit_service, name='edit_service'),
     url(r'^buildings/(?P<building_id>\d+)/services/new$', views.edit_service, name='new_service'),
+    
+    url(r'^services/(?P<service_id>\d+)/edit$', views.edit_service, name='edit_service'),
+    url(r'^services/(?P<service_id>\d+)/invoices/new$', views.new_invoice, name='new_invoice'),
 )

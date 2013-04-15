@@ -20,8 +20,8 @@
 			<tr>
 				<th colspan="8"><em>Bloc {{ building.name }}</em></th>
 				<td colspan="1">
-					<button class="btn btn-mini" type="button">Operațiuni</button>
-					<button class="btn btn-mini" type="button">Modifică</button>
+					<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
+					<button class="btn btn-mini" type="button" disabled>Modifică</button>
 				</td>	
 			</tr>
 			{% for sc in building.apartmentgroup_set.all %}
@@ -29,8 +29,8 @@
 					<td>&nbsp;</td>
 					<th colspan="7">Scara {{ sc.name }}</td>
 					<th>
-						<button class="btn btn-mini" type="button">Operațiuni</button>
-						<button class="btn btn-mini" type="button">Modifică</button>
+						<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
+						<button class="btn btn-mini" type="button" disabled>Modifică</button>
 					</th>
 				</tr>
 				{% for ap in sc.apartment_set.all %}
@@ -44,9 +44,9 @@
 					<td>{{ ap.inhabitance }}</td>
 					<td>{{ ap.area }}</td>
 					<td>
-						<button class="btn btn-mini" type="button">Operațiuni</button>
+						<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
 						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_apartment' building_id=building.id apartment_id=ap.id %}'">Modifică</button>
-						<button class="btn btn-mini btn-inverse" type="button">Încasează</button>
+						<button class="btn btn-mini btn-inverse" type="button" disabled>Încasează</button>
 					</td>
 				</tr>
 				{% endfor %} 
