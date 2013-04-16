@@ -14,12 +14,13 @@
 				<th>Nr. camere</th>
 				<th>Nr. persoane</th>
 				<th>Suprafață</th>
+				<th>Balanță</th>
 				<th>&nbsp;</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<th colspan="8"><em>Bloc {{ building.name }}</em></th>
+				<th colspan="9"><em>Bloc {{ building.name }}</em></th>
 				<td colspan="1">
 					<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
 					<button class="btn btn-mini" type="button" disabled>Modifică</button>
@@ -28,7 +29,7 @@
 			{% for sc in building.apartmentgroup_set.all %}
 				<tr>
 					<td>&nbsp;</td>
-					<th colspan="7">Scara {{ sc.name }}</td>
+					<th colspan="8">Scara {{ sc.name }}</td>
 					<th>
 						<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
 						<button class="btn btn-mini" type="button" disabled>Modifică</button>
@@ -44,6 +45,7 @@
 					<td>{{ ap.rooms }}</td>
 					<td>{{ ap.inhabitance }}</td>
 					<td>{{ ap.area }}</td>
+					<td>{{ ap.balance }}</td>
 					<td>
 						<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
 						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_apartment' building_id=building.id apartment_id=ap.id %}'">Modifică</button>

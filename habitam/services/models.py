@@ -72,18 +72,13 @@ class Account(models.Model):
         except OperationDoc.DoesNotExist:
             pass
     
-
     def balance(self):
-        outOps = Operation.objects.filter(dest=self)
-        total = 0
-        for op in outOps:
-            total = total + op.amount
-        inOps = Operation.objects.filter(src=self)
-        for op in inOps:
-            total = total - op.amount
-        return total
-    
-            
+        ops = self.operation_list()
+        bsign = lambda y: -1 if y.src == self else 1
+        amount = lambda y: y.total_amount if y.total_amount != None else 0
+        bsum = lambda x, y: x + bsign(y) * amount(y)
+        return reduce(bsum, ops, 0)
+                   
     def new_transfer(self, amount, date, no, dest_account):
         self.__assert_doc_not_exists(no)
         
@@ -92,7 +87,6 @@ class Account(models.Model):
         Operation.objects.create(amount=amount, doc=doc, src=self,
                                  dest=dest_account)
         self.save()
-        
         
     def new_invoice(self, amount, date, no, billed, dest_accounts):
         self.__assert_doc_not_exists(no)
@@ -120,7 +114,6 @@ class Account(models.Model):
         
         self.save()
         
-    
     def operation_list(self):
         docs_src = self.doc_src_set.annotate(
                     total_amount=Sum('operation__amount')).order_by('-date')
