@@ -35,7 +35,8 @@ class Entity(models.Model):
     name = models.CharField(max_length=100)
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('account', Account.objects.create())
+        if 'name' in kwargs.keys():
+            kwargs.setdefault('account', Account.objects.create(holder=kwargs['name']))
         super(Entity, self).__init__(*args, **kwargs)
         
     def __unicode__(self):
@@ -189,7 +190,8 @@ class Service(Entity):
         accounts = [] 
         for ap in self.billed.apartments():
             accounts.append(ap.account)
-        self.account.new_invoice(amount, date, no, accounts)
+        self.account.new_invoice(amount, date, no, self.billed.account,
+                                 accounts)
 
     
     def new_payment(self, amount, no, date=timezone.now()):

@@ -21,9 +21,11 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django import forms
+from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
 from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service
+from habitam.services.models import Account, OperationDoc
 import logging
 
 
@@ -145,7 +147,8 @@ def new_service(request, building_id):
         form = EditServiceForm(request.POST, building=building)
         if form.is_valid():
             service = form.save(commit=False)
-            service.save()
+            service.account = Account.objects.create(holder=service.name)
+            service.save() 
             service.set_quota()
             return redirect('service_list', building_id=building_id)
     else:
@@ -166,6 +169,7 @@ def edit_service(request, service_id=None):
                               instance=service)
         if form.is_valid():
             service = form.save(commit=False)
+            service.account.holder = service.name
             service.save()
             
             logger.debug('edit service %s, %s -> %s %s', orig_billed, orig_qt,
@@ -207,4 +211,8 @@ def new_invoice(request, service_id):
     return render(request, 'edit_entity.html', data)
     
     
+def operation_list(request, account_id):
+    account = Account.objects.get(pk=account_id)
     
+    data = {'account': account, 'docs': account.operation_list()}
+    return render(request, 'operation_list.html', data)

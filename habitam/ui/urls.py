@@ -35,4 +35,6 @@ urlpatterns = patterns('',
     
     url(r'^services/(?P<service_id>\d+)/edit$', views.edit_service, name='edit_service'),
     url(r'^services/(?P<service_id>\d+)/invoices/new$', views.new_invoice, name='new_invoice'),
+    
+    url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list')
 )

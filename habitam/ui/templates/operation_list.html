@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+
+{% block body %}
+<div class="container">
+	<h1>Operații pentru {{ account.holder }}</h1>
+	<table class="table table-hover table-condensed">
+		<thead>
+			<th>Data</th>
+			<th>Ordinator</th>
+			<th>Document</th>
+			<th>Credit</th>			
+			<th>Debit</th>			
+		</thead>
+		<tbody>
+		{% for doc in docs %}
+			{% if doc.src == account %}
+			{% include 'operation_row.html' with doc=doc other=doc.billed credit=doc.total_amount %}
+			{% else %}
+			{% include 'operation_row.html' with doc=doc other=doc.src.holder debit=doc.total_amount %}
+			{% endif %}
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}
