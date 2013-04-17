@@ -31,24 +31,30 @@ logger = logging.getLogger(__name__)
 
     
 class Entity(models.Model):
-    account = models.ForeignKey(Account)
     name = models.CharField(max_length=100)
 
-    def __init__(self, *args, **kwargs):
-        if 'name' in kwargs.keys():
-            kwargs.setdefault('account', Account.objects.create(holder=kwargs['name']))
-        super(Entity, self).__init__(*args, **kwargs)
-        
     def __unicode__(self):
         return self.name
 
-    def balance(self):
-        return self.account.balance()
-    
     class Meta:
         abstract = True 
-   
+
+
+class SingleAccountEntity(Entity):   
+    account = models.ForeignKey(Account)
     
+    def __init__(self, *args, **kwargs):
+        if 'name' in kwargs.keys():
+            kwargs.setdefault('account', Account.objects.create(holder=kwargs['name']))
+        super(SingleAccountEntity, self).__init__(*args, **kwargs)
+
+    def balance(self):
+        return self.account.balance()
+
+    class Meta:
+        abstract = True 
+
+
 class ApartmentGroup(Entity):
     TYPES = (
              ('stair', 'staircase'),
@@ -57,17 +63,17 @@ class ApartmentGroup(Entity):
 
     parent = models.ForeignKey('self', null=True, blank=True)
     type = models.CharField(max_length=5, choices=TYPES)
+    default_account = models.ForeignKey(Account)
   
     @classmethod
     def bootstrap_building(cls, name, staircases, apartments, apartment_offset):
         per_staircase = apartments / staircases
         remainder = apartments % staircases
         
-        building = ApartmentGroup.objects.create(name=name, type='building')
+        building = ApartmentGroup.bootstrap(None, name, 'building') 
         ap_idx = apartment_offset
         for i in range(staircases):
-            staircase = ApartmentGroup.objects.create(parent=building,
-                    name=str(i + 1), type='stair')
+            staircase = ApartmentGroup.bootstrap(building, str(i + 1), 'stair')
             for j in range(per_staircase):
                 Apartment.objects.create(name=str(ap_idx), parent=staircase)
                 ap_idx = ap_idx + 1
@@ -77,8 +83,18 @@ class ApartmentGroup(Entity):
                 Apartment.objects.create(name=str(ap_idx), parent=staircase)
                 ap_idx = ap_idx + 1
         building.save()
-         
-         
+    
+    
+    
+    @classmethod
+    def bootstrap(cls, parent, name, group_type):
+        account = Account.objects.create()
+        apGroup = ApartmentGroup.objects.create(parent=parent, name=name,
+                                type=group_type, default_account=account)
+        AccountLink.objects.create(holder=apGroup, account=account)
+        return apGroup
+    
+    
     def __unicode__(self):
         if self.type == 'building':
             return 'Block ' + self.name
@@ -88,7 +104,8 @@ class ApartmentGroup(Entity):
     
     
     def balance(self):
-        mine = self.account.balance()
+        links = self.accountlink_set.all()
+        mine = reduce(lambda s, l: s + l.account.balance(), links, 0)
         ags = self.apartmentgroup_set.all()
         if ags == None:
             return mine
@@ -143,12 +160,17 @@ class ApartmentGroup(Entity):
             svc.set_quota()
 
 
+class AccountLink(models.Model):
+    holder = models.ForeignKey(ApartmentGroup)
+    account = models.ForeignKey(Account) 
+   
+    
 class Person(models.Model):
     name = models.CharField(max_length=200)
     email = models.EmailField()
 
 
-class Apartment(Entity):
+class Apartment(SingleAccountEntity):
     owner = models.ForeignKey(Person, related_name='owner', null=True,
                               blank=True)
     parent = models.ForeignKey(ApartmentGroup, null=True, blank=True)
@@ -175,7 +197,7 @@ class Apartment(Entity):
         self.account.new_transfer(amount, date, no, self.parent.account)
     
  
-class Service(Entity):
+class Service(SingleAccountEntity):
     QUOTA_TYPES = (
         ('equally', 'în mod egal'),
         ('inhabitance', 'după număr persoane'),
@@ -190,7 +212,7 @@ class Service(Entity):
         accounts = [] 
         for ap in self.billed.apartments():
             accounts.append(ap.account)
-        self.account.new_invoice(amount, date, no, self.billed.account,
+        self.account.new_invoice(amount, date, no, self.billed.default_account,
                                  accounts)
 
     
