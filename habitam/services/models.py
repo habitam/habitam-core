@@ -98,6 +98,7 @@ class Account(models.Model):
         eps = Decimal('0.01')
         sum_fun = lambda x, q: x + Decimal(q.ratio * amount).quantize(eps)
         qsum = reduce(sum_fun, quotas, 0)
+        remainder_quota = None
         if qsum != amount:
             remainder = qsum - amount
             remainder_quota = choice(quotas)
