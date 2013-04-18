@@ -7,6 +7,7 @@
 		<li>{{building.name}} 
 			<ul>
 				<li><a href="{% url 'apartment_list' building.id %}">Apartamente</a></li>
+				<li><a href="{% url 'fund_list' building.id %}">Fonduri</a></li>
 				<li>
 				<a href="{% url 'service_list' building.id %}">Servicii</a>
 				<button class="btn btn-mini" type="button" onclick="window.location='{% url 'new_service' building.id %}'">Serviciu nou</button>

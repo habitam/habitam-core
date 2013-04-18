@@ -90,6 +90,14 @@ class NewInvoiceForm(forms.Form):
     @classmethod
     def spinners(cls):
         return ['amount']
+
+
+class NewPaymentForm(forms.Form):
+    amount = forms.DecimalField(label='Suma')
+    
+    @classmethod
+    def spinners(cls):
+        return ['amount']        
         
         
 def new_building(request):
@@ -138,6 +146,11 @@ def edit_apartment(request, building_id, apartment_id=None):
 def apartment_list(request, building_id):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     return render(request, 'apartment_list.html', {'building': building})  
+
+
+def fund_list(request, building_id):
+    building = ApartmentGroup.objects.get(pk=building_id).building()
+    return render(request, 'fund_list.html', {'building': building})
 
 
 def new_service(request, building_id):
@@ -216,3 +229,19 @@ def operation_list(request, account_id):
     
     data = {'account': account, 'docs': account.operation_list()}
     return render(request, 'operation_list.html', data)
+
+
+def new_payment(request, apartment_id):
+    if request.method == 'POST':
+        form = NewPaymentForm(request.POST)
+        if form.is_valid():
+            apartment = Apartment.objects.get(pk=apartment_id)
+            apartment.new_payment(**form.cleaned_data)
+            return redirect('apartment_list',
+                            building_id=apartment.building().id)
+    else:
+        form = NewPaymentForm()
+    
+    data = {'form': form, 'target': 'new_payment', 'parent_id': apartment_id,
+            'spinners': NewPaymentForm.spinners()}
+    return render(request, 'edit_entity.html', data)

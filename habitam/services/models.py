@@ -74,7 +74,7 @@ class Account(models.Model):
     
     def balance(self):
         ops = self.operation_list()
-        bsign = lambda y: -1 if y.src == self else 1
+        bsign = lambda y:-1 if y.src == self else 1
         amount = lambda y: y.total_amount if y.total_amount != None else 0
         bsum = lambda x, y: x + bsign(y) * amount(y)
         return reduce(bsum, ops, 0)
@@ -83,9 +83,8 @@ class Account(models.Model):
         self.__assert_doc_not_exists(no)
         
         doc = OperationDoc.objects.create(date=date, no=no, src=self,
-                                          type='transfer')
-        Operation.objects.create(amount=amount, doc=doc, src=self,
-                                 dest=dest_account)
+                                          type='transfer', billed=dest_account)
+        Operation.objects.create(amount=amount, doc=doc, dest=dest_account)
         self.save()
         
     def new_invoice(self, amount, date, no, billed, dest_accounts):

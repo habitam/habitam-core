@@ -32,9 +32,12 @@ urlpatterns = patterns('',
     url(r'^buildings/(?P<building_id>\d+)/apartments/(?P<apartment_id>\d+)/edit$', views.edit_apartment, name='edit_apartment'),
     url(r'^buildings/(?P<building_id>\d+)/services$', views.service_list, name='service_list'),
     url(r'^buildings/(?P<building_id>\d+)/services/new$', views.new_service, name='new_service'),
+    url(r'^buildings/(?P<building_id>\d+)/funds$', views.fund_list, name='fund_list'),
     
     url(r'^services/(?P<service_id>\d+)/edit$', views.edit_service, name='edit_service'),
     url(r'^services/(?P<service_id>\d+)/invoices/new$', views.new_invoice, name='new_invoice'),
+    
+    url(r'^apartments/(?P<apartment_id>\d+)/payments/new$', views.new_payment, name='new_payment'),
     
     url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list')
 )

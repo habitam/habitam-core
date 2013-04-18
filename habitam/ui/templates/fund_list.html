@@ -1,0 +1,28 @@
+{% extends 'base.html' %} 
+
+{% block body %}
+<div class="container">
+	<h1>Fonduri pentru {{ building.name }}</h1>
+	<table class="table table-hover table-condensed">
+		<thead>
+			<tr>
+				<th>Nume</th>
+				<th>Balanță</th>
+				<th>&nbsp;</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for account in building.funds %}
+				<tr>
+					<td>{{ account.holder }}</td>
+					<td>{{ account.balance }}</td>
+					<td>
+						<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
+						<button class="btn btn-mini btn-inverse" type="button" disabled>Transfer</button>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>	
+</div>
+{% endblock %}

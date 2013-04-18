@@ -42,11 +42,13 @@ class EntitiesTestBase(unittest.TestCase):
             pass
         EntitiesTestBase.already_setup = True
         
-        root = ApartmentGroup.objects.create(name='mybuilding')
+        root = ApartmentGroup.create(name='mybuilding', group_type='building')
         root.save()
-        left = ApartmentGroup.objects.create(name='left', parent=root)
+        left = ApartmentGroup.create(name='left', group_type='stair',
+                                     parent=root)
         left.save()
-        right = ApartmentGroup.objects.create(name='right', parent=root)
+        right = ApartmentGroup.create(name='right', group_type='stair',
+                                      parent=root)
         right.save()
        
         def create_apartment(i, parent):
@@ -161,7 +163,7 @@ class ServiceTests(EntitiesTestBase):
         self.__assert_ap_balance('2', 6)
         
     def test_leftgroup_Balance(self):
-        self.__assert_apgroup_balance('left', 5)
+        self.__assert_apgroup_balance('left', 0)
     
     def test_rightgroup_Balance(self):
         self.__assert_apgroup_balance('right', 0)

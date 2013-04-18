@@ -49,7 +49,7 @@
 					<td>
 						<button class="btn btn-mini" type="button"  onclick="window.location='{% url 'operation_list' account_id=ap.account.id %}'">Operațiuni</button>
 						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_apartment' building_id=building.id apartment_id=ap.id %}'">Modifică</button>
-						<button class="btn btn-mini btn-inverse" type="button" disabled>Încasează</button>
+						<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_payment' apartment_id=ap.id %}'">Încasează</button>
 					</td>
 				</tr>
 				{% endfor %} 

@@ -70,10 +70,12 @@ class ApartmentGroup(Entity):
         per_staircase = apartments / staircases
         remainder = apartments % staircases
         
-        building = ApartmentGroup.bootstrap(None, name, 'building') 
+        building = ApartmentGroup.create(parent=None, name=name,
+                                         group_type='building') 
         ap_idx = apartment_offset
         for i in range(staircases):
-            staircase = ApartmentGroup.bootstrap(building, str(i + 1), 'stair')
+            staircase = ApartmentGroup.create(parent=building, name=str(i + 1),
+                                              group_type='stair')
             for j in range(per_staircase):
                 Apartment.objects.create(name=str(ap_idx), parent=staircase)
                 ap_idx = ap_idx + 1
@@ -87,11 +89,12 @@ class ApartmentGroup(Entity):
     
     
     @classmethod
-    def bootstrap(cls, parent, name, group_type):
+    def create(cls, name, group_type, parent=None):
         account = Account.objects.create()
         apGroup = ApartmentGroup.objects.create(parent=parent, name=name,
                                 type=group_type, default_account=account)
         AccountLink.objects.create(holder=apGroup, account=account)
+        account.holder = apGroup.__unicode__()
         return apGroup
     
     
@@ -147,6 +150,16 @@ class ApartmentGroup(Entity):
         service.save()
         
     
+    def funds(self):
+        apartment_groups = self.apartment_groups()
+        result = []
+        for a in apartment_groups:
+            links = AccountLink.objects.filter(holder=a)
+            for link in links:
+                result.append(link.account)
+        return result 
+        
+    
     def services(self):
         result = []
         result.extend(self.service_set.all())
@@ -194,7 +207,10 @@ class Apartment(SingleAccountEntity):
 
     def new_payment(self, amount, date=timezone.now()):
         no = uuid1()
-        self.account.new_transfer(amount, date, no, self.parent.account)
+        building = self.building()
+        logger.info('New payment %s from %s to %s worth %f', no, self, building,
+                    amount)
+        self.account.new_transfer(amount, date, no, building.default_account)
     
  
 class Service(SingleAccountEntity):
