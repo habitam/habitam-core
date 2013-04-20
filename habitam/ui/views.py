@@ -21,11 +21,11 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django import forms
-from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
 from django.shortcuts import render, redirect
-from habitam.entities.models import ApartmentGroup, Apartment, Service
-from habitam.services.models import Account, OperationDoc
+from habitam.entities.models import ApartmentGroup, Apartment, Service, \
+    AccountLink
+from habitam.services.models import Account
 import logging
 
 
@@ -98,8 +98,26 @@ class NewPaymentForm(forms.Form):
     @classmethod
     def spinners(cls):
         return ['amount']        
+
+
+class NewServicePayment(forms.Form):
+    no = forms.CharField(label='Nume')
+    amount = forms.DecimalField(label='Suma')
+    service = forms.ModelChoiceField(label='Serviciu', queryset=Account.objects.all())
+    
+    @classmethod
+    def spinners(cls):
+        return ['amount']
+
+    def __init__(self, *args, **kwargs):
+        building = kwargs['building']
+        del kwargs['building']
+        super(NewServicePayment, self).__init__(*args, **kwargs)
+        services = Service.objects.filter(
+                            Q(billed=building) | Q(billed__parent=building))
+        self.fields['service'].queryset = services
         
-        
+         
 def new_building(request):
     if request.method == 'POST':
         form = NewBuildingForm(request.POST)
@@ -151,6 +169,25 @@ def apartment_list(request, building_id):
 def fund_list(request, building_id):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     return render(request, 'fund_list.html', {'building': building})
+
+
+def new_service_payment(request, account_id):
+    account_link = AccountLink.objects.get(account__pk=account_id)
+    building = account_link.holder.building()
+    
+    if request.method == 'POST':
+        form = NewServicePayment(request.POST, building=building)
+        if form.is_valid():
+            service = form.cleaned_data['service']
+            service.new_payment(account=account_link.account,
+                                **form.cleaned_data)
+            return redirect('fund_list', building_id=building.id)
+    else:
+        form = NewServicePayment(building=building)
+    
+    data = {'form' : form, 'target': 'new_service_payment',
+            'entity_id': account_id}
+    return render(request, 'edit_entity.html', data)
 
 
 def new_service(request, building_id):
@@ -245,3 +282,5 @@ def new_payment(request, apartment_id):
     data = {'form': form, 'target': 'new_payment', 'parent_id': apartment_id,
             'spinners': NewPaymentForm.spinners()}
     return render(request, 'edit_entity.html', data)
+
+    

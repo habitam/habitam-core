@@ -39,5 +39,6 @@ urlpatterns = patterns('',
     
     url(r'^apartments/(?P<apartment_id>\d+)/payments/new$', views.new_payment, name='new_payment'),
     
-    url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list')
+    url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list'),
+    url(r'^accounts/(?P<account_id>\d+)/operations/new_service_payment$', views.new_service_payment, name='new_service_payment'),
 )

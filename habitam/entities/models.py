@@ -168,7 +168,7 @@ class ApartmentGroup(Entity):
             result.extend(ag.services())
         return result
     
-    
+       
     def update_quotas(self):
         for svc in self.services_set.all():
             svc.set_quota()
@@ -223,6 +223,11 @@ class Service(SingleAccountEntity):
     )
     billed = models.ForeignKey(ApartmentGroup)
     quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
+
+   
+    @classmethod
+    def new_payment(cls, service, account, amount, no, date=timezone.now()):
+        account.new_transfer(amount, date, no, service.account)
    
     
     def new_invoice(self, amount, no, date=timezone.now()):
@@ -232,11 +237,6 @@ class Service(SingleAccountEntity):
         self.account.new_invoice(amount, date, no, self.billed.default_account,
                                  accounts)
 
-    
-    def new_payment(self, amount, no, date=timezone.now()):
-        self.billed.account.new_payment(amount, date, no, self.account)
-        
-        
     def drop_quota(self):
         logger.info('Pruning all quotas on %s', self)
         Quota.del_quota(self.account)

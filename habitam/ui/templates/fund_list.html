@@ -18,7 +18,8 @@
 					<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ account.balance }}</td>
 					<td>
 						<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
-						<button class="btn btn-mini btn-inverse" type="button" disabled>Transfer</button>
+						<button class="btn btn-mini" type="button" disabled>Transfer</button>
+						<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_service_payment' account_id=account.id %}'">Plată serviciu</button>
 					</td>
 				</tr>
 			{% endfor %}
