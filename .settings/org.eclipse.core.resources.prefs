@@ -5,6 +5,7 @@ encoding//habitam/ui/templates/apartment_list.html=UTF-8
 encoding//habitam/ui/templates/building_list.html=UTF-8
 encoding//habitam/ui/templates/edit_entity.html=UTF-8
 encoding//habitam/ui/templates/fund_list.html=UTF-8
+encoding//habitam/ui/templates/main_edit.html=UTF-8
 encoding//habitam/ui/templates/operation_list.html=UTF-8
 encoding//habitam/ui/templates/service_list.html=UTF-8
 encoding//habitam/ui/views.py=utf-8

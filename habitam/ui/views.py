@@ -97,10 +97,7 @@ class NewDocPaymentForm(NewPaymentForm):
 class NewServicePayment(NewDocPaymentForm):
     service = forms.ModelChoiceField(label='Serviciu', queryset=Service.objects.all())
     
-    @classmethod
-    def spinners(cls):
-        return ['amount']
-
+    
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
         del kwargs['building']
@@ -114,10 +111,6 @@ class NewFundTransfer(NewDocPaymentForm):
     dest_link = forms.ModelChoiceField(label='Fond',
                             queryset=AccountLink.objects.all())
     
-    @classmethod
-    def spinners(cls):
-        returnn ['amount']
-
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
         account = kwargs['account']
@@ -128,6 +121,25 @@ class NewFundTransfer(NewDocPaymentForm):
                             Q(holder=building) | Q(holder__parent=building)))
         self.fields['dest_link'].queryset = queryset
         
+
+def __find_building(account): 
+    try:
+        service = Service.objects.get(account=account)
+        return service.billed.building()
+    except Service.DoesNotExist:
+        pass
+    try:
+        apartment = Apartment.objects.get(account=account)
+        return apartment.building()
+    except Apartment.DoesNotExist:
+        pass
+    try:
+        account_link = AccountLink.objects.get(account=account)
+        return account_link.holder.building()
+    except AccountLink.DoesNotExist:
+        pass
+    return None
+    
          
 def new_building(request):
     if request.method == 'POST':
@@ -168,13 +180,14 @@ def edit_apartment(request, building_id, apartment_id=None):
         form = EditApartmentForm(building=building, instance=apartment)
     data = {'form': form, 'target': 'edit_apartment',
             'parent_id': building_id, 'entity_id': apartment_id,
-            'spinners': EditApartmentForm.spinners()}
-    return render(request, 'edit_entity.html', data)          
+            'spinners': EditApartmentForm.spinners(),
+            'building': building}
+    return render(request, 'edit_in_building.html', data)          
           
 
 def building_tab(request, building_id, tab):
     building = ApartmentGroup.objects.get(pk=building_id).building()
-    return render(request, tab + '.html', 
+    return render(request, tab + '.html',
                   {'building': building, 'active_tab': tab})  
 
 
@@ -196,8 +209,9 @@ def new_fund_transfer(request, account_id):
         form = NewFundTransfer(account=src_account, building=building)
     
     data = {'form' : form, 'target': 'new_fund_transfer',
-            'entity_id': account_id}
-    return render(request, 'edit_entity.html', data)
+            'entity_id': account_id,
+            'building': building}
+    return render(request, 'edit_in_building.html', data)
 
 
 def new_service_payment(request, account_id):
@@ -215,8 +229,8 @@ def new_service_payment(request, account_id):
         form = NewServicePayment(building=building)
     
     data = {'form' : form, 'target': 'new_service_payment',
-            'entity_id': account_id}
-    return render(request, 'edit_entity.html', data)
+            'entity_id': account_id, 'building': building}
+    return render(request, 'edit_in_building.html', data)
 
 
 def new_service(request, building_id):
@@ -233,8 +247,9 @@ def new_service(request, building_id):
     else:
         form = EditServiceForm(building=building)
     
-    data = {'form': form, 'parent_id': building_id, 'target': 'new_service'}
-    return render(request, 'edit_entity.html', data)
+    data = {'form': form, 'parent_id': building_id, 'target': 'new_service',
+            'building': building}
+    return render(request, 'edit_in_building.html', data)
     
 
 def edit_service(request, service_id=None):
@@ -262,45 +277,54 @@ def edit_service(request, service_id=None):
     else:
         form = EditServiceForm(building=building, instance=service)
     
-    data = {'form': form, 'entity_id': service_id, 'target': 'edit_service'}
+    data = {'form': form, 'entity_id': service_id, 'target': 'edit_service',
+            'building': building}
     
-    return render(request, 'edit_entity.html', data)
+    return render(request, 'edit_in_building.html', data)
 
 
 def new_invoice(request, service_id):
+    service = Service.objects.get(pk=service_id)
+    building = service.billed.building()
+    
     if request.method == 'POST':
         form = NewDocPaymentForm(request.POST)
         if form.is_valid():
-            service = Service.objects.get(pk=service_id)
             service.new_invoice(**form.cleaned_data)
             return redirect('service_list',
                             building_id=service.billed.building().id)
     else:
         form = NewDocPaymentForm()
         
-    data = {'form': form, 'target': 'new_invoice', 'parent_id': service_id}
-    return render(request, 'edit_entity.html', data)
-    
-    
+    data = {'form': form, 'target': 'new_invoice', 'parent_id': service_id,
+            'building': building}
+    return render(request, 'edit_in_building.html', data)
+   
+   
+   
 def operation_list(request, account_id):
     account = Account.objects.get(pk=account_id)
     
-    data = {'account': account, 'docs': account.operation_list()}
+    data = {'account': account, 'docs': account.operation_list(),
+            'building': __find_building(account)}
     return render(request, 'operation_list.html', data)
 
 
 def new_payment(request, apartment_id):
+    apartment = Apartment.objects.get(pk=apartment_id)
+    building = apartment.building()
+    
     if request.method == 'POST':
         form = NewPaymentForm(request.POST)
         if form.is_valid():
-            apartment = Apartment.objects.get(pk=apartment_id)
             apartment.new_payment(**form.cleaned_data)
             return redirect('apartment_list',
                             building_id=apartment.building().id)
     else:
         form = NewPaymentForm()
     
-    data = {'form': form, 'target': 'new_payment', 'parent_id': apartment_id}
-    return render(request, 'edit_entity.html', data)
+    data = {'form': form, 'target': 'new_payment', 'parent_id': apartment_id,
+            'building': building}
+    return render(request, 'edit_in_building.html', data)
 
     
