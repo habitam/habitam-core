@@ -22,6 +22,7 @@ Created on Apr 8, 2013
 from decimal import Decimal
 from django.db import models
 from django.db.models.aggregates import Sum
+from django.utils import timezone
 from random import choice
 import logging
 
@@ -79,7 +80,7 @@ class Account(models.Model):
         bsum = lambda x, y: x + bsign(y) * amount(y)
         return reduce(bsum, ops, 0)
                    
-    def new_transfer(self, amount, date, no, dest_account):
+    def new_transfer(self, amount, no, dest_account, date=timezone.now()):
         self.__assert_doc_not_exists(no)
         
         doc = OperationDoc.objects.create(date=date, no=no, src=self,

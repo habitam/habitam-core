@@ -176,7 +176,11 @@ class ApartmentGroup(Entity):
 
 class AccountLink(models.Model):
     holder = models.ForeignKey(ApartmentGroup)
-    account = models.ForeignKey(Account) 
+    account = models.ForeignKey(Account)
+    
+    
+    def __unicode__(self):
+        return self.account.holder
    
     
 class Person(models.Model):

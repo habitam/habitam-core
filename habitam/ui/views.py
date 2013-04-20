@@ -83,27 +83,19 @@ class EditApartmentForm(forms.ModelForm):
         self.fields['parent'].queryset = staircases 
 
         
-class NewInvoiceForm(forms.Form):
-    no = forms.CharField(label='Nume')
-    amount = forms.DecimalField(label='Suma')
-    
-    @classmethod
-    def spinners(cls):
-        return ['amount']
-
-
 class NewPaymentForm(forms.Form):
     amount = forms.DecimalField(label='Suma')
     
-    @classmethod
-    def spinners(cls):
+    def spinners(self):
         return ['amount']        
 
 
-class NewServicePayment(forms.Form):
+class NewDocPaymentForm(NewPaymentForm):
     no = forms.CharField(label='Nume')
-    amount = forms.DecimalField(label='Suma')
-    service = forms.ModelChoiceField(label='Serviciu', queryset=Account.objects.all())
+
+
+class NewServicePayment(NewDocPaymentForm):
+    service = forms.ModelChoiceField(label='Serviciu', queryset=Service.objects.all())
     
     @classmethod
     def spinners(cls):
@@ -113,9 +105,28 @@ class NewServicePayment(forms.Form):
         building = kwargs['building']
         del kwargs['building']
         super(NewServicePayment, self).__init__(*args, **kwargs)
-        services = Service.objects.filter(
+        queryset = Service.objects.filter(
                             Q(billed=building) | Q(billed__parent=building))
-        self.fields['service'].queryset = services
+        self.fields['service'].queryset = queryset
+        
+         
+class NewFundTransfer(NewDocPaymentForm):
+    dest_link = forms.ModelChoiceField(label='Fond',
+                            queryset=AccountLink.objects.all())
+    
+    @classmethod
+    def spinners(cls):
+        return ['amount']
+
+    def __init__(self, *args, **kwargs):
+        building = kwargs['building']
+        account = kwargs['account']
+        del kwargs['building']
+        del kwargs['account']
+        super(NewFundTransfer, self).__init__(*args, **kwargs)
+        queryset = AccountLink.objects.filter(~Q(account=account) & Q(
+                            Q(holder=building) | Q(holder__parent=building)))
+        self.fields['dest_link'].queryset = queryset
         
          
 def new_building(request):
@@ -169,6 +180,28 @@ def apartment_list(request, building_id):
 def fund_list(request, building_id):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     return render(request, 'fund_list.html', {'building': building})
+
+
+def new_fund_transfer(request, account_id):
+    src_account = Account.objects.get(pk=account_id)
+    account_link = AccountLink.objects.get(account=src_account)
+    building = account_link.holder.building()
+    
+    if request.method == 'POST':
+        form = NewFundTransfer(request.POST, account=src_account,
+                               building=building)
+        if form.is_valid():
+            dest_account = form.cleaned_data['dest_link'].account
+            del form.cleaned_data['dest_link']
+            src_account.new_transfer(dest_account=dest_account,
+                                **form.cleaned_data)
+            return redirect('fund_list', building_id=building.id)
+    else:
+        form = NewFundTransfer(account=src_account, building=building)
+    
+    data = {'form' : form, 'target': 'new_fund_transfer',
+            'entity_id': account_id}
+    return render(request, 'edit_entity.html', data)
 
 
 def new_service_payment(request, account_id):
@@ -247,17 +280,16 @@ def service_list(request, building_id):
 
 def new_invoice(request, service_id):
     if request.method == 'POST':
-        form = NewInvoiceForm(request.POST)
+        form = NewDocPaymentForm(request.POST)
         if form.is_valid():
             service = Service.objects.get(pk=service_id)
             service.new_invoice(**form.cleaned_data)
             return redirect('service_list',
                             building_id=service.billed.building().id)
     else:
-        form = NewInvoiceForm()
+        form = NewDocPaymentForm()
         
-    data = {'form': form, 'target': 'new_invoice', 'parent_id': service_id,
-            'spinners': NewInvoiceForm.spinners()}
+    data = {'form': form, 'target': 'new_invoice', 'parent_id': service_id}
     return render(request, 'edit_entity.html', data)
     
     
@@ -279,8 +311,7 @@ def new_payment(request, apartment_id):
     else:
         form = NewPaymentForm()
     
-    data = {'form': form, 'target': 'new_payment', 'parent_id': apartment_id,
-            'spinners': NewPaymentForm.spinners()}
+    data = {'form': form, 'target': 'new_payment', 'parent_id': apartment_id}
     return render(request, 'edit_entity.html', data)
 
     

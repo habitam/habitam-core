@@ -28,7 +28,7 @@
 		</form>
 	</div>
 	<script>
-		{% for s in spinners %}
+		{% for s in form.spinners %}
 			$("#id_{{s}}").spinner();
 		{% endfor %}
 		$(document).ready(function() {
