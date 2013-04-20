@@ -1,60 +1,46 @@
-{% extends 'base.html' %} 
+{% extends 'building.html' %} 
 
-{% block body %}
-<div class="container">
-	<h1>Apartamente din {{ building.name }}</h1>
-	<table class="table table-hover table-condensed">
-		<thead>
+{% block building_body %}
+<table class="table table-hover table-condensed">
+	<thead>
+		<tr>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>Apartament</th>
+			<th>Etaj</th>
+			<th>Proprietar</th>
+			<th>Nr. camere</th>
+			<th>Nr. persoane</th>
+			<th>Suprafață</th>
+			<th>Balanță</th>
+			<th>&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for sc in building.apartmentgroup_set.all %}
 			<tr>
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
-				<th>Apartament</th>
-				<th>Etaj</th>
-				<th>Proprietar</th>
-				<th>Nr. camere</th>
-				<th>Nr. persoane</th>
-				<th>Suprafață</th>
-				<th>Balanță</th>
-				<th>&nbsp;</th>
+				<td>&nbsp;</td>
+				<th colspan="9">Scara {{ sc.name }}</td>
 			</tr>
-		</thead>
-		<tbody>
+			{% for ap in sc.apartment_set.all %}
 			<tr>
-				<th colspan="9"><em>Bloc {{ building.name }}</em></th>
-				<td colspan="1">
-					<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
-					<button class="btn btn-mini" type="button" disabled>Modifică</button>
-				</td>	
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>{{ ap.name }}</td>
+				<td>{{ ap.floor }}</td>
+				<td>{{ ap.owner }}</td>
+				<td>{{ ap.rooms }}</td>
+				<td>{{ ap.inhabitance }}</td>
+				<td>{{ ap.area }}</td>
+				<td class="{% if ap.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ ap.balance }}</td>
+				<td>
+					<button class="btn btn-mini" type="button"  onclick="window.location='{% url 'operation_list' account_id=ap.account.id %}'">Operațiuni</button>
+					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_apartment' building_id=building.id apartment_id=ap.id %}'">Modifică</button>
+					<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_payment' apartment_id=ap.id %}'">Încasează</button>
+				</td>
 			</tr>
-			{% for sc in building.apartmentgroup_set.all %}
-				<tr>
-					<td>&nbsp;</td>
-					<th colspan="8">Scara {{ sc.name }}</td>
-					<th>
-						<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
-						<button class="btn btn-mini" type="button" disabled>Modifică</button>
-					</th>
-				</tr>
-				{% for ap in sc.apartment_set.all %}
-				<tr>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>{{ ap.name }}</td>
-					<td>{{ ap.floor }}</td>
-					<td>{{ ap.owner }}</td>
-					<td>{{ ap.rooms }}</td>
-					<td>{{ ap.inhabitance }}</td>
-					<td>{{ ap.area }}</td>
-					<td class="{% if ap.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ ap.balance }}</td>
-					<td>
-						<button class="btn btn-mini" type="button"  onclick="window.location='{% url 'operation_list' account_id=ap.account.id %}'">Operațiuni</button>
-						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_apartment' building_id=building.id apartment_id=ap.id %}'">Modifică</button>
-						<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_payment' apartment_id=ap.id %}'">Încasează</button>
-					</td>
-				</tr>
-				{% endfor %} 
-			{% endfor %}
-		</tbody>
-	</table>
-</div>
+			{% endfor %} 
+		{% endfor %}
+	</tbody>
+</table>
 {% endblock %}

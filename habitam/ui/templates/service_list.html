@@ -1,31 +1,33 @@
-{% extends 'base.html' %} 
+{% extends 'building.html' %} 
 
-{% block body %}
-<div class="container">
-	<h1>Servicii pentru {{ building.name }}</h1>
-	<table class="table table-hover table-condensed">
-		<thead>
+{% block building_body %}
+<table class="table table-hover table-condensed">
+	<thead>
+		<tr>
+			<th>Nume</th>
+			<th>Clienți</th>
+			<th>Balanță</th>
+			<th>&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for service in building.services %}
 			<tr>
-				<th>Nume</th>
-				<th>Clienți</th>
-				<th>Balanță</th>
-				<th>&nbsp;</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for service in services %}
-				<tr>
-					<td>{{ service.name }}</td>
-					<td>{{ service.billed.name }}</td>
-					<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance }}</td>
-					<td>
-						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' account_id=service.account.id %}'">Operațiuni</button>
-						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_service' service_id=service.id %}'">Modifică</button>
-						<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_invoice' service_id=service.id %}'">Factură nouă</button>
+				<td>{{ service.name }}</td>
+				<td>{{ service.billed.name }}</td>
+				<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance }}</td>
+				<td>
+					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' account_id=service.account.id %}'">Operațiuni</button>
+					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_service' service_id=service.id %}'">Modifică</button>
+					<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_invoice' service_id=service.id %}'">Factură nouă</button>
 					</td>
 				</tr>
 			{% endfor %}
 		</tbody>
-	</table>	
+</table>
+<div class="container">
+	<div class="pull-right">
+		<button class="btn btn-info" type="button" onclick="window.location='{% url 'new_service' building.id %}'">Serviciu nou</button>
+	</div>
 </div>
 {% endblock %}

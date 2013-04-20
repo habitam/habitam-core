@@ -1,29 +1,26 @@
-{% extends 'base.html' %} 
+{% extends 'building.html' %} 
 
-{% block body %}
-<div class="container">
-	<h1>Fonduri pentru {{ building.name }}</h1>
-	<table class="table table-hover table-condensed">
-		<thead>
+{% block building_body %}
+<table class="table table-hover table-condensed">
+	<thead>
+		<tr>
+			<th>Nume</th>
+			<th>Balanță</th>
+			<th>&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for account in building.funds %}
 			<tr>
-				<th>Nume</th>
-				<th>Balanță</th>
-				<th>&nbsp;</th>
+				<td>{{ account.holder }}</td>
+				<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ account.balance }}</td>
+				<td>
+					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' account_id=account.id %}'">Operațiuni</button>
+					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'new_fund_transfer' account_id=account.id %}'">Transfer</button>
+					<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_service_payment' account_id=account.id %}'">Plată serviciu</button>
+				</td>
 			</tr>
-		</thead>
-		<tbody>
-			{% for account in building.funds %}
-				<tr>
-					<td>{{ account.holder }}</td>
-					<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ account.balance }}</td>
-					<td>
-						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' account_id=account.id %}'">Operațiuni</button>
-						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'new_fund_transfer' account_id=account.id %}'">Transfer</button>
-						<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_service_payment' account_id=account.id %}'">Plată serviciu</button>
-					</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>	
-</div>
+		{% endfor %}
+	</tbody>
+</table>	
 {% endblock %}

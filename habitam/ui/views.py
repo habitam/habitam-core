@@ -116,7 +116,7 @@ class NewFundTransfer(NewDocPaymentForm):
     
     @classmethod
     def spinners(cls):
-        return ['amount']
+        returnn ['amount']
 
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
@@ -172,14 +172,10 @@ def edit_apartment(request, building_id, apartment_id=None):
     return render(request, 'edit_entity.html', data)          
           
 
-def apartment_list(request, building_id):
+def building_tab(request, building_id, tab):
     building = ApartmentGroup.objects.get(pk=building_id).building()
-    return render(request, 'apartment_list.html', {'building': building})  
-
-
-def fund_list(request, building_id):
-    building = ApartmentGroup.objects.get(pk=building_id).building()
-    return render(request, 'fund_list.html', {'building': building})
+    return render(request, tab + '.html', 
+                  {'building': building, 'active_tab': tab})  
 
 
 def new_fund_transfer(request, account_id):
@@ -269,13 +265,6 @@ def edit_service(request, service_id=None):
     data = {'form': form, 'entity_id': service_id, 'target': 'edit_service'}
     
     return render(request, 'edit_entity.html', data)
-
-
-def service_list(request, building_id):
-    building = ApartmentGroup.objects.get(pk=building_id)
-    services = building.services() 
-    data = {'building': building, 'services': services}
-    return render(request, 'service_list.html', data)
 
 
 def new_invoice(request, service_id):

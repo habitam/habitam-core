@@ -1,0 +1,15 @@
+{% extends 'base.html' %} 
+
+{% block body %}
+<div class="container">
+	<ul class="nav nav-tabs">
+		<li {% if active_tab = 'apartment_list' %}class="active"{% endif %}><a href="{% url 'apartment_list' building.id %}">Apartamente</a></li>
+		<li {% if active_tab = 'fund_list' %}class="active"{% endif %}><a href="{% url 'fund_list' building.id %}">Fonduri</a></li>
+		<li {% if active_tab = 'service_list' %}class="active"{% endif %}><a href="{% url 'service_list' building.id %}">Servicii</a></li>
+	</ul>
+	<div class="tab-content">
+		{% block building_body %}
+		{% endblock %}
+	</div>
+</div>
+{% endblock %}
