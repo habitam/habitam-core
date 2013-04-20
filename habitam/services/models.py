@@ -55,6 +55,11 @@ class OperationDoc(models.Model):
     src = models.ForeignKey('Account', related_name='doc_src_set')
     billed = models.ForeignKey('Account', related_name='doc_billed_set')
     type = models.CharField(max_length=10)
+    
+    @classmethod
+    def delete_doc(cls, op_id):
+        OperationDoc.objects.get(pk=op_id).delete()
+        
   
    
 class Operation(models.Model):

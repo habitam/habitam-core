@@ -1,6 +1,8 @@
+{% load ui_extras %}
 <tr>
 	<td>{{ doc.date }}</td>
 	<td>{{ other }}</td>
 	<td>{{ doc.no }}</td>
-	<td class="{% if negative %}negative_balance{% else %}positive_balance{% endif %}">{% if negative %}-{% endif %}{{ amount }}</td>
+	<td class="{% if negative and amount > 0 or not negative and amount < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ amount | operation_sign:negative }}</td>
+	<td><a class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'operation_doc' account.id doc.id %}');"><i class="icon-trash"></i></a></td>
 </tr>

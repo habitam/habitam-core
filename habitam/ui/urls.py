@@ -40,6 +40,7 @@ urlpatterns = patterns('',
     url(r'^apartments/(?P<apartment_id>\d+)/payments/new$', views.new_payment, name='new_payment'),
     
     url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list'),
+    url(r'^accounts/(?P<account_id>\d+)/operations/(?P<operationdoc_id>\d+)$', views.operation_doc, name='operation_doc'),
     url(r'^accounts/(?P<account_id>\d+)/operations/new_service_payment$', views.new_service_payment, name='new_service_payment'),
     url(r'^accounts/(?P<account_id>\d+)/operations/new_transfer$', views.new_fund_transfer, name='new_fund_transfer'),
 )

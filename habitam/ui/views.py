@@ -25,7 +25,7 @@ from django.db.models.query_utils import Q
 from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink
-from habitam.services.models import Account
+from habitam.services.models import Account, OperationDoc
 import logging
 
 
@@ -120,7 +120,7 @@ class NewFundTransfer(NewDocPaymentForm):
         queryset = AccountLink.objects.filter(~Q(account=account) & Q(
                             Q(holder=building) | Q(holder__parent=building)))
         self.fields['dest_link'].queryset = queryset
-        
+
 
 def __find_building(account): 
     try:
@@ -308,6 +308,11 @@ def operation_list(request, account_id):
     data = {'account': account, 'docs': account.operation_list(),
             'building': __find_building(account)}
     return render(request, 'operation_list.html', data)
+
+
+def operation_doc(request, account_id, operationdoc_id):
+    OperationDoc.delete_doc(operationdoc_id)
+    return redirect('operation_list', account_id=account_id)
 
 
 def new_payment(request, apartment_id):
