@@ -15,7 +15,7 @@
 			{% for account in building.funds %}
 				<tr>
 					<td>{{ account.holder }}</td>
-					<td>{{ account.balance }}</td>
+					<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ account.balance }}</td>
 					<td>
 						<button class="btn btn-mini" type="button" disabled>Operațiuni</button>
 						<button class="btn btn-mini btn-inverse" type="button" disabled>Transfer</button>

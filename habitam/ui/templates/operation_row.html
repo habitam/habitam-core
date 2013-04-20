@@ -2,6 +2,5 @@
 	<td>{{ doc.date }}</td>
 	<td>{{ other }}</td>
 	<td>{{ doc.no }}</td>
-	<td>{{ credit }}</td>
-	<td>{{ debit }}</td>
+	<td class="{% if negative %}negative_balance{% else %}positive_balance{% endif %}">{% if negative %}-{% endif %}{{ amount }}</td>
 </tr>

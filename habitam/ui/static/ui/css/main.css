@@ -1,0 +1,7 @@
+.negative_balance {
+	color: rgb(200, 0, 0);
+}
+
+.positive_balance {
+	color: rgb(0, 0, 200);
+}

@@ -95,6 +95,7 @@ class ApartmentGroup(Entity):
                                 type=group_type, default_account=account)
         AccountLink.objects.create(holder=apGroup, account=account)
         account.holder = apGroup.__unicode__()
+        account.save()
         return apGroup
     
     
