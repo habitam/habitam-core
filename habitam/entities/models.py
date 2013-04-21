@@ -183,10 +183,11 @@ class ApartmentGroup(Entity):
     
     def save(self, **kwargs):
         try:
-            self.default_account
+            self.default_account.holder = self.__unicode__()
+            self.default_account.save()
             account_created = False
         except Account.DoesNotExist:
-            account = Account.objects.create(holder=self.name)
+            account = Account.objects.create(holder=self.__unicode__())
             self.default_account = account
             account_created = True 
         
