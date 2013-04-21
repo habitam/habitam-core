@@ -23,7 +23,7 @@ Created on Apr 8, 2013
 from decimal import Decimal
 from django.db import models
 from django.utils import timezone
-from habitam.services.models import Account, Quota
+from habitam.services.models import Account, Quota, OperationDoc
 from uuid import uuid1
 import logging
 
@@ -232,7 +232,12 @@ class Service(SingleAccountEntity):
     @classmethod
     def new_payment(cls, service, account, amount, no, date=timezone.now()):
         account.new_transfer(amount, no, service.account, date)
-   
+
+    
+    def can_delete(self):
+        src_count = OperationDoc.objects.filter(src=self.account).count()
+        billed_count = OperationDoc.objects.filter(billed=self.account).count()
+        return src_count + billed_count == 0
     
     def new_invoice(self, amount, no, date=timezone.now()):
         accounts = [] 

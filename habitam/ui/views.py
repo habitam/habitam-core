@@ -22,6 +22,7 @@ Created on Apr 12, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
+from django.http.response import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink
@@ -253,11 +254,18 @@ def new_service(request, building_id):
     return render(request, 'edit_dialog.html', data)
     
 
-def edit_service(request, service_id=None):
+def edit_service(request, service_id):
     service = Service.objects.get(pk=service_id)
     orig_billed = service.billed
     orig_qt = service.quota_type
     building = service.billed.building()
+   
+    if request.method == 'DELETE':
+        logger.debug('delete service %d', service_id)
+        if service.can_delete():
+            service.delete() 
+        else:
+            return HttpResponseBadRequest()
     
     if request.method == 'POST':
         form = EditServiceForm(request.POST, building=building,

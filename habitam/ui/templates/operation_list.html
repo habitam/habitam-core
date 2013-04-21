@@ -20,31 +20,4 @@
 	{% endfor %}
 	</tbody>
 </table>
-
-<div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteLabel" aria-hidden="true">
-	<div class="modal-body">
-		<p>Sunteți sigur că vreți să ștergeți această operațiune?</p>
-	</div>
-	<div class="modal-footer">
-		<button id="deleteButton" class="btn btn-danger">Da</button>
-		<button class="btn" data-dismiss="modal" aria-hidden="true">Nu</button>
-	</div>	
-</div>
-
-<script>
-function delete_click(path) {
-	var csrftoken = $.cookie('csrftoken');
-	$('#deleteButton').click(function() {
-		$.ajax({
-			type: "DELETE",
-			url: path,
-			beforeSend: function(xhr, settings) {
-	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-		    } 
-		}).done(function() {
-			location.reload();		
-		});
-	});
-}
-</script>
 {% endblock %}
