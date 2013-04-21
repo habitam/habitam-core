@@ -22,9 +22,8 @@ Created on Apr 21, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
-from django.shortcuts import render
-from habitam.entities.models import AccountLink, ApartmentGroup, Service
-from habitam.ui.views import NewDocPaymentForm
+from habitam.entities.models import ApartmentGroup, Service
+from habitam.ui.forms import NewDocPaymentForm
 import logging
 
 
@@ -54,28 +53,8 @@ class NewServicePayment(NewDocPaymentForm):
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
         del kwargs['building']
+        del kwargs['account']
         super(NewServicePayment, self).__init__(*args, **kwargs)
         queryset = Service.objects.filter(
                             Q(billed=building) | Q(billed__parent=building))
         self.fields['service'].queryset = queryset
-
-
-def new_service_payment(request, account_id):
-    account_link = AccountLink.objects.get(account__pk=account_id)
-    building = account_link.holder.building()
-    
-    if request.method == 'POST':
-        form = NewServicePayment(request.POST, building=building)
-        if form.is_valid():
-            service = form.cleaned_data['service']
-            service.new_payment(account=account_link.account,
-                                **form.cleaned_data)
-            return render(request, 'edit_ok.html')
-    else:
-        form = NewServicePayment(building=building)
-    
-    data = {'form' : form, 'target': 'new_service_payment',
-            'entity_id': account_id, 'building': building,
-            'title': 'Plata serviciu de la ' + account_link.account.holder }
-    return render(request, 'edit_dialog.html', data)
-

@@ -289,10 +289,6 @@ class Service(SingleAccountEntity):
     quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
 
    
-    @classmethod
-    def new_payment(cls, service, account, amount, no, date=timezone.now()):
-        account.new_transfer(amount, no, service.account, date)
-    
     def __init__(self, *args, **kwargs): 
         super(Service, self).__init__(*args, **kwargs) 
         try:

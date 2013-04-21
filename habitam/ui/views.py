@@ -20,38 +20,17 @@ Created on Apr 12, 2013
 
 @author: Stefan Guna
 '''
-from django import forms
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink
 from habitam.services.models import Account, OperationDoc
+from habitam.ui.forms import NewBuildingForm
 import logging
 
 
 logger = logging.getLogger(__name__)
-
-
-class NewBuildingForm(forms.Form):
-    name = forms.CharField(label='Nume', max_length=100)
-    staircases = forms.IntegerField(label='Număr scări', min_value=1, max_value=100)
-    apartments = forms.IntegerField(label='Număr apartamente', min_value=1, max_value=1000)
-    apartment_offset = forms.IntegerField(label='Primul apartament', min_value=1, max_value=1000)
-
-    def spinners(self):
-        return ['staircases', 'apartments', 'apartment_offset']
-
-   
-class NewPaymentForm(forms.Form):
-    amount = forms.DecimalField(label='Suma')
-    
-    def spinners(self):
-        return ['amount']        
-
-
-class NewDocPaymentForm(NewPaymentForm):
-    no = forms.CharField(label='Nume')
 
          
 def __find_building(account): 
@@ -170,3 +149,26 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
     data = {'form': form, 'target': target, 'parent_id': entity_id,
             'building': building, 'title': title + ' ' + entity.name}
     return render(request, 'edit_dialog.html', data)  
+
+
+def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
+    src_account = Account.objects.get(pk=account_id)
+    account_link = AccountLink.objects.get(account=src_account)
+    building = account_link.holder.building()
+    
+    if request.method == 'POST':
+        form = form_cls(request.POST, account=src_account,
+                               building=building)
+        if form.is_valid():
+            dest_account = form.cleaned_data[form_dest_key].account
+            del form.cleaned_data[form_dest_key]
+            src_account.new_transfer(dest_account=dest_account,
+                                **form.cleaned_data)
+            return render(request, 'edit_ok.html')
+    else:
+        form = form_cls(account=src_account, building=building)
+    
+    data = {'form' : form, 'target': target, 'entity_id': account_id,
+            'building': building,
+            'title': title + ' ' + src_account.holder}
+    return render(request, 'edit_dialog.html', data)

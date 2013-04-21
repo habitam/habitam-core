@@ -22,10 +22,8 @@ Created on Apr 21, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
-from django.shortcuts import render
 from habitam.entities.models import AccountLink
-from habitam.services.models import Account
-from habitam.ui.views import NewDocPaymentForm
+from habitam.ui.forms import NewDocPaymentForm
 
 
 class NewFundTransfer(NewDocPaymentForm):
@@ -41,26 +39,3 @@ class NewFundTransfer(NewDocPaymentForm):
         queryset = AccountLink.objects.filter(~Q(account=account) & Q(
                             Q(holder=building) | Q(holder__parent=building)))
         self.fields['dest_link'].queryset = queryset
-
-
-def new_fund_transfer(request, account_id):
-    src_account = Account.objects.get(pk=account_id)
-    account_link = AccountLink.objects.get(account=src_account)
-    building = account_link.holder.building()
-    
-    if request.method == 'POST':
-        form = NewFundTransfer(request.POST, account=src_account,
-                               building=building)
-        if form.is_valid():
-            dest_account = form.cleaned_data['dest_link'].account
-            del form.cleaned_data['dest_link']
-            src_account.new_transfer(dest_account=dest_account,
-                                **form.cleaned_data)
-            return render(request, 'edit_ok.html')
-    else:
-        form = NewFundTransfer(account=src_account, building=building)
-    
-    data = {'form' : form, 'target': 'new_fund_transfer',
-            'entity_id': account_id, 'building': building,
-            'title': 'Transfer fonduri de la ' + src_account.holder}
-    return render(request, 'edit_dialog.html', data)

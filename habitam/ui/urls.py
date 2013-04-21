@@ -21,11 +21,12 @@ Created on Apr 12, 2013
 '''
 from django.conf.urls import patterns, url
 from habitam.entities.models import Apartment, ApartmentGroup, Service
-from habitam.ui import views, service_views, fund_views
-from habitam.ui.apartment_views import EditApartmentForm
-from habitam.ui.building_views import EditStaircaseForm
-from habitam.ui.service_views import EditServiceForm
-from habitam.ui.views import NewPaymentForm, NewDocPaymentForm
+from habitam.ui import views
+from habitam.ui.apartment_forms import EditApartmentForm
+from habitam.ui.building_forms import EditStaircaseForm
+from habitam.ui.forms import NewDocPaymentForm, NewPaymentForm
+from habitam.ui.fund_forms import NewFundTransfer
+from habitam.ui.service_forms import EditServiceForm, NewServicePayment
 
 
 urlpatterns = patterns('',
@@ -85,6 +86,16 @@ urlpatterns = patterns('',
     
     url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list'),
     url(r'^accounts/(?P<account_id>\d+)/operations/(?P<operationdoc_id>\d+)$', views.operation_doc, name='operation_doc'),
-    url(r'^accounts/(?P<account_id>\d+)/operations/new_service_payment$', service_views.new_service_payment, name='new_service_payment'),
-    url(r'^accounts/(?P<account_id>\d+)/operations/new_transfer$', fund_views.new_fund_transfer, name='new_fund_transfer'),
+    
+    url(r'^accounts/(?P<account_id>\d+)/operations/pay_service$',
+        views.new_transfer,
+        {'form_cls': NewServicePayment, 'form_dest_key': 'service',
+         'target': 'new_service_payment', 'title': 'Plateste de la'},
+        name='new_service_payment'),
+    
+    url(r'^accounts/(?P<account_id>\d+)/operations/transfer$',
+        views.new_transfer,
+        {'form_cls': NewFundTransfer, 'form_dest_key': 'dest_link',
+         'target': 'new_fund_transfer', 'title': 'Transfer de la'},
+        name='new_fund_transfer'),
 )
