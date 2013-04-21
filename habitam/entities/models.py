@@ -259,6 +259,13 @@ class Service(SingleAccountEntity):
         self.account.new_invoice(amount, date, no, self.billed.default_account,
                                  accounts)
 
+    def delete(self):
+        if not self.can_delete():
+            raise ValueError('Cannot delete this service')
+        Quota.del_quota(self.account)
+        self.account.delete()
+        super(Service, self).delete()
+
     def drop_quota(self):
         logger.info('Pruning all quotas on %s', self)
         Quota.del_quota(self.account)
