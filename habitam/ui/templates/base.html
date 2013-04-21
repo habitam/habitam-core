@@ -1,4 +1,6 @@
 {% load staticfiles %}
+{% load ui_extras %}
+{% available_buildings as buildings %}
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -30,6 +32,78 @@
 	<!--[if lt IE 7]>
 <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
 <![endif]-->
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container">
+	        <a class="brand" href="{% url 'home' %}">Habitam</a>
+	        <div class="nav-collapse collapse">
+	            <ul class="nav">
+		            <li class="dropdown">
+			            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clădiri<b class="caret"></b></a>
+			            <ul class="dropdown-menu">
+				            <li><a href="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a> 
+				            <li class="divider"></li>
+							{% for building in buildings %}
+								<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
+							{% endfor %}
+			            </ul>
+		            </li>
+	            </ul>
+	        </div><!--/.nav-collapse -->
+        </div>
+    </div>
+</div>
+
+<div class="container">
 {% block body %}{% endblock %}
+</div>
+
+
+<div id="editModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editLabel" aria-hidden="true">
+	<div class="modal-header">
+		<h3><span id="editTitle"></span></h3>
+	</div>
+  
+	<div id="modalBody" class="modal-body">
+	</div>
+
+	<div class="modal-footer">
+		<button id="submitButton" class="btn">Salvează</button>
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Anulează</button>
+	</div>	
+</div>
+
+<div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteLabel" aria-hidden="true">
+	<div class="modal-body">
+		<p>Sunteți sigur că vreți să ștergeți?</p>
+	</div>
+	<div class="modal-footer">
+		<button id="deleteButton" class="btn btn-danger">Da</button>
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Nu</button>
+	</div>	
+</div>
+
+<script>
+function delete_click(path) {
+	var csrftoken = $.cookie('csrftoken');
+	$('#deleteButton').click(function() {
+		$.ajax({
+			type: "DELETE",
+			url: path,
+			beforeSend: function(xhr, settings) {
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		    } 
+		}).done(function() {
+			location.reload();		
+		});
+	});
+}
+
+function editDialog(path) {
+	$('#modalBody').load(path);
+	$('#editModal').modal();
+}
+</script>
 </body>
 </html>

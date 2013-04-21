@@ -25,8 +25,7 @@ from habitam.ui import views, service_views, apartment_views, fund_views, \
 
 
 urlpatterns = patterns('',
-    
-    url(r'^buildings$', views.building_list, name='building_list'),
+    url(r'^$', views.home, name='home'),
     
     url(r'^buildings/new$', views.new_building, name='new_building'),
     url(r'^buildings/(?P<building_id>\d+)/apartments$', views.building_tab, {'tab': 'apartment_list'}, name='apartment_list'),

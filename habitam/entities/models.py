@@ -85,6 +85,7 @@ class ApartmentGroup(Entity):
                 Apartment.objects.create(name=str(ap_idx), parent=staircase)
                 ap_idx = ap_idx + 1
         building.save()
+        return building.id
     
     
     @classmethod

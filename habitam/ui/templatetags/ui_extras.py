@@ -20,6 +20,7 @@ Created on Apr 20, 2013
 @author: Stefan Guna
 '''
 from django import template
+from habitam.entities.models import ApartmentGroup
 
 register = template.Library()
 
@@ -30,3 +31,8 @@ def operation_sign(val, negate):
     if negate:
         return val * -1
     return val
+
+
+@register.assignment_tag
+def available_buildings():
+    return ApartmentGroup.objects.filter(type='building')

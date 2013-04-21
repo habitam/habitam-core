@@ -21,6 +21,7 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django import forms
+from django.core.urlresolvers import reverse
 from django.db.models.query_utils import Q
 from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
@@ -70,23 +71,23 @@ def __find_building(account):
     except AccountLink.DoesNotExist:
         pass
     return None
-    
+
+
+def home(request):
+    return render(request, 'home.html')
          
 def new_building(request):
     if request.method == 'POST':
         form = NewBuildingForm(request.POST)
         if form.is_valid():
-            ApartmentGroup.bootstrap_building(**form.cleaned_data)
-            return redirect('building_list')
+            building_id = ApartmentGroup.bootstrap_building(**form.cleaned_data)
+            url = reverse('apartment_list', args=[building_id])
+            data = {'location': url}
+            return render(request, 'edit_redirect.html', data)
     else:
         form = NewBuildingForm() 
-    data = {'form': form, 'target': 'new_building'}
-    return render(request, 'edit_entity.html', data)
-
-
-def building_list(request):
-    buildings = ApartmentGroup.objects.filter(type='building')
-    return render(request, 'building_list.html', {'buildings': buildings})
+    data = {'form': form, 'target': 'new_building', 'title': 'Cladire noua'}
+    return render(request, 'edit_dialog.html', data)
 
 
 def building_tab(request, building_id, tab):

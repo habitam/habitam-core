@@ -2,6 +2,9 @@
 
 {% block body %}
 <div class="container">
+	<h1>{{ building.name }}</h1>
+</div>
+<div class="container">
 	<ul class="nav nav-tabs">
 		<li {% if active_tab = 'apartment_list' %}class="active"{% endif %}><a href="{% url 'apartment_list' building.id %}">Apartamente</a></li>
 		<li {% if active_tab = 'fund_list' %}class="active"{% endif %}><a href="{% url 'fund_list' building.id %}">Fonduri</a></li>
@@ -12,50 +15,4 @@
 		{% endblock %}
 	</div>
 </div>
-
-<div id="editModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editLabel" aria-hidden="true">
-	<div class="modal-header">
-		<h3><span id="editTitle"></span></h3>
-	</div>
-  
-	<div id="modalBody" class="modal-body">
-	</div>
-
-	<div class="modal-footer">
-		<button id="submitButton" class="btn">Salvează</button>
-		<button class="btn" data-dismiss="modal" aria-hidden="true">Anulează</button>
-	</div>	
-</div>
-
-<div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteLabel" aria-hidden="true">
-	<div class="modal-body">
-		<p>Sunteți sigur că vreți să ștergeți?</p>
-	</div>
-	<div class="modal-footer">
-		<button id="deleteButton" class="btn btn-danger">Da</button>
-		<button class="btn" data-dismiss="modal" aria-hidden="true">Nu</button>
-	</div>	
-</div>
-
-<script>
-function delete_click(path) {
-	var csrftoken = $.cookie('csrftoken');
-	$('#deleteButton').click(function() {
-		$.ajax({
-			type: "DELETE",
-			url: path,
-			beforeSend: function(xhr, settings) {
-	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-		    } 
-		}).done(function() {
-			location.reload();		
-		});
-	});
-}
-
-function editDialog(path) {
-	$('#modalBody').load(path);
-	$('#editModal').modal();
-}
-</script>
 {% endblock %}
