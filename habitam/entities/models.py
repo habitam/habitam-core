@@ -52,7 +52,16 @@ class SingleAccountEntity(Entity):
         return self.account.balance()
 
     class Meta:
-        abstract = True 
+        abstract = True
+        
+    def save(self, **kwargs):
+        try:
+            self.account
+        except Account.DoesNotExist:
+            self.account = Account.objects.create(holder=self.name)
+        
+        self.account.holder = self.name     
+        super(SingleAccountEntity, self).save(**kwargs)
 
 
 class ApartmentGroup(Entity):
@@ -170,7 +179,28 @@ class ApartmentGroup(Entity):
             for link in links:
                 result.append(link.account)
         return result 
+    
+    
+    def save(self, **kwargs):
+        try:
+            self.default_account
+            account_created = False
+        except Account.DoesNotExist:
+            account = Account.objects.create(holder=self.name)
+            self.default_account = account
+            account_created = True 
         
+        if 'building' in kwargs.keys():
+            self.parent = kwargs['building']
+            del kwargs['building']
+        if 'type' in kwargs.keys():
+            self.type = kwargs['type']
+            del kwargs['type'] 
+        super(ApartmentGroup, self).save(**kwargs)
+        
+        if account_created:
+            default_link = AccountLink.objects.create(holder=self, account=account)
+            default_link.save()
     
     def services(self):
         result = []
@@ -210,7 +240,10 @@ class Apartment(SingleAccountEntity):
     rooms = models.SmallIntegerField(default=1) 
     floor = models.SmallIntegerField(null=True, blank=True)
 
-    
+    def __init__(self, *args, **kwargs): 
+        super(Apartment, self).__init__(*args, **kwargs) 
+        self._old_parent = self.parent
+        
     def building(self):
         return self.parent.building()
 
@@ -232,6 +265,18 @@ class Apartment(SingleAccountEntity):
                     amount)
         self.account.new_transfer(amount, no, building.default_account, date)
 
+
+    def save(self, **kwargs):
+        super(Apartment, self).save(**kwargs)
+        print self.parent
+        
+        if self._old_parent != self.parent: 
+            logger.info('Moving apartment %s from %s to %s, updating quotas',
+                        self, self._old_parent, self.parent)
+            if self._old_parent != None:
+                self._old_parent.update_quotas()
+            self.parent.update_quotas()
+            
  
 class Service(SingleAccountEntity):
     QUOTA_TYPES = (
@@ -247,7 +292,20 @@ class Service(SingleAccountEntity):
     @classmethod
     def new_payment(cls, service, account, amount, no, date=timezone.now()):
         account.new_transfer(amount, no, service.account, date)
-
+    
+    def __init__(self, *args, **kwargs): 
+        super(Service, self).__init__(*args, **kwargs) 
+        try:
+            self._old_billed = self.billed
+        except:
+            self._old_billed = None
+        try:
+            self._old_quota_type = self.quota_type
+        except:
+            self._old_quota_type = None
+        
+    def building(self):
+        return self.billed.building() 
     
     def can_delete(self):
         return self.account.can_delete()
@@ -269,7 +327,14 @@ class Service(SingleAccountEntity):
     def drop_quota(self):
         logger.info('Pruning all quotas on %s', self)
         Quota.del_quota(self.account)
-    
+
+    def save(self, **kwargs):
+        super(Service, self).save(**kwargs)
+       
+        if self._old_billed != self.billed and self._old_billed != None:
+            self.drop_quota()
+        if self._old_billed != self.billed or self._old_quota_type != self.quota_type:
+            self.set_quota()
     
     def set_quota(self):
         self.drop_quota()

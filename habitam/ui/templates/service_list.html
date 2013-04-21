@@ -18,9 +18,9 @@
 				<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance }}</td>
 				<td>
 					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' account_id=service.account.id %}'">Operațiuni</button>
-					<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_service' service_id=service.id %}')">Modifică</button>
+					<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_service' entity_id=service.id %}')">Modifică</button>
 					<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_invoice' service_id=service.id %}')">Factură nouă</button>
-				    {% if service.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_service' service_id=service.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
+				    {% if service.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_service' entity_id=service.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
 				</td>
 			</tr>
 			{% endfor %}

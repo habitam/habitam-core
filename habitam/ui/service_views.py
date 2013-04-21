@@ -82,63 +82,6 @@ def new_service_payment(request, account_id):
     return render(request, 'edit_dialog.html', data)
 
 
-def new_service(request, building_id):
-    building = ApartmentGroup.objects.get(pk=building_id).building()
-    
-    if request.method == 'POST':
-        form = EditServiceForm(request.POST, building=building)
-        if form.is_valid():
-            service = form.save(commit=False)
-            service.account = Account.objects.create(holder=service.name)
-            service.save() 
-            service.set_quota()
-            return render(request, 'edit_ok.html')
-    else:
-        form = EditServiceForm(building=building)
-    
-    data = {'form': form, 'parent_id': building_id, 'target': 'new_service',
-            'building': building, 'title': 'Serviciu nou'}
-    return render(request, 'edit_dialog.html', data)
-    
-
-def edit_service(request, service_id):
-    service = Service.objects.get(pk=service_id)
-    orig_billed = service.billed
-    orig_qt = service.quota_type
-    building = service.billed.building()
-   
-    if request.method == 'DELETE':
-        logger.debug('delete service %d', service_id)
-        if service.can_delete():
-            service.delete()
-            return HttpResponse() 
-        else:
-            return HttpResponseBadRequest()
-    
-    if request.method == 'POST':
-        form = EditServiceForm(request.POST, building=building,
-                              instance=service)
-        if form.is_valid():
-            service = form.save(commit=False)
-            service.account.holder = service.name
-            service.save()
-            
-            logger.debug('edit service %s, %s -> %s %s', orig_billed, orig_qt,
-                         service.billed, service.quota_type)
-            if orig_billed != service.billed:
-                service.drop_quota()
-            if orig_billed != service.billed or orig_qt != service.quota_type:
-                service.set_quota()
-                
-            return render(request, 'edit_ok.html')
-    else:
-        form = EditServiceForm(building=building, instance=service)
-    
-    data = {'form': form, 'entity_id': service_id, 'target': 'edit_service',
-            'building': building, 'title': 'Serviciul ' + service.name}
-    
-    return render(request, 'edit_dialog.html', data)
-
 
 def new_invoice(request, service_id):
     service = Service.objects.get(pk=service_id)

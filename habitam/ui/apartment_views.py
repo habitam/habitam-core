@@ -21,10 +21,8 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
-from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from habitam.entities.models import ApartmentGroup, Apartment
-from habitam.services.models import Account
 from habitam.ui.views import NewPaymentForm
 
 
@@ -49,59 +47,6 @@ class EditApartmentForm(forms.ModelForm):
         super(EditApartmentForm, self).__init__(*args, **kwargs)
         staircases = ApartmentGroup.objects.filter(parent=building)
         self.fields['parent'].queryset = staircases 
-
-
-def edit_apartment(request, apartment_id):
-    apartment = Apartment.objects.get(pk=apartment_id)
-    building = apartment.building() 
-    orig_parent = apartment.parent
-    
-    if request.method == 'DELETE':
-        if apartment.can_delete():
-            apartment.delete()
-            return HttpResponse()
-        else:
-            return HttpResponseBadRequest()
-    
-    if request.method == 'POST':
-        ''' uncool: there's logic in here '''
-        form = EditApartmentForm(request.POST, building=building,
-                                 instance=apartment)
-        if form.is_valid():
-            form.save()
-            
-            if form.cleaned_data['parent'] != orig_parent:
-                orig_parent.update_quotas()
-                form.cleaned_data['parent'].update_quotas()
-                
-            return render(request, 'edit_ok.html')
-    else:
-        form = EditApartmentForm(building=building, instance=apartment)
-    
-    data = {'form': form, 'target': 'edit_apartment', 'entity_id': apartment_id,
-            'building': building, 'title': 'Apartamentul ' + apartment.name}
-    return render(request, 'edit_dialog.html', data)
-
-
-def new_apartment(request, building_id):
-    building = ApartmentGroup.objects.get(pk=building_id).building()
-    
-    if request.method == 'POST':
-        ''' uncool: there's logic in here '''
-        form = EditApartmentForm(request.POST, building=building)
-        if form.is_valid():
-            ap = form.save(commit=False)
-            ap.account = Account.objects.create(holder=ap.name)
-            ap.save()
-            ap.parent.update_quotas()
-                
-            return render(request, 'edit_ok.html')
-    else:
-        form = EditApartmentForm(building=building)
-    
-    data = {'form': form, 'target': 'new_apartment', 'parent_id': building_id,
-            'building': building, 'title': 'Apartament nou'}
-    return render(request, 'edit_dialog.html', data)
 
 
 def new_payment(request, apartment_id):

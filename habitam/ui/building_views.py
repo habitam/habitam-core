@@ -21,52 +21,33 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
-from django.http.response import HttpResponseBadRequest, HttpResponse
-from django.shortcuts import render
 from habitam.entities.models import ApartmentGroup
 
 
 class EditStaircaseForm(forms.ModelForm):
     name = forms.CharField(label='Nume')
+    type = forms.CharField(label='Type',
+                        widget=forms.HiddenInput())
+    parent = forms.ModelChoiceField(label='Cladirea', 
+                        queryset=ApartmentGroup.objects.all(),
+                        widget=forms.HiddenInput())
     
     class Meta:
         model = ApartmentGroup
         fields = ('name',)
         
-
-def edit_staircase(request, apgroup_id):
-    ag = ApartmentGroup.objects.get(pk=apgroup_id)
-     
-    if request.method == 'DELETE':
-        if ag.can_delete():
-            ag.delete()
-            return HttpResponse()
+    def __init__(self, *args, **kwargs):
+        building = kwargs['building']
+        del kwargs['building']
+        
+        print kwargs
+        initial = {'parent': building.id,
+                   'type': 'stair'}
+        if kwargs.has_key('initial'):
+            kwargs['initial'].update(initial)
         else:
-            return HttpResponseBadRequest()
-    if request.method == 'POST':
-        form = EditStaircaseForm(request.POST, instance=ag)
-        if form.is_valid():
-            form.save()
-            return render(request, 'edit_ok.html')
-    else:
-        form = EditStaircaseForm(instance=ag)
-        
-    data = {'form': form, 'target': 'edit_staircase', 'entity_id': ag.id,
-            'title': 'Scara ' + ag.name}
-    return render(request, 'edit_dialog.html', data)
-
-
-def new_staircase(request, building_id):
-    if request.method == 'POST':
-        form = EditStaircaseForm(request.POST)
-        if form.is_valid():
-            building = ApartmentGroup.objects.get(pk=building_id)
-            ApartmentGroup.create(form.cleaned_data['name'], 'stair',
-                                  building)
-            return render(request, 'edit_ok.html')
-    else:
-        form = EditStaircaseForm()
-        
-    data = {'form': form, 'target': 'new_staircase', 'parent_id': building_id,
-            'title': 'Scara noua'}
-    return render(request, 'edit_dialog.html', data)
+            kwargs['initial'] = initial
+        print kwargs
+        super(EditStaircaseForm, self).__init__(*args, **kwargs)
+        print self.fields
+         
