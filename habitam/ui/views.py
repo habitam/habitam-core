@@ -204,14 +204,14 @@ def new_fund_transfer(request, account_id):
             del form.cleaned_data['dest_link']
             src_account.new_transfer(dest_account=dest_account,
                                 **form.cleaned_data)
-            return redirect('fund_list', building_id=building.id)
+            return render(request, 'edit_ok.html')
     else:
         form = NewFundTransfer(account=src_account, building=building)
     
     data = {'form' : form, 'target': 'new_fund_transfer',
-            'entity_id': account_id,
-            'building': building}
-    return render(request, 'edit_in_building.html', data)
+            'entity_id': account_id, 'building': building,
+            'title': 'Transfer fonduri de la ' + src_account.holder}
+    return render(request, 'edit_dialog.html', data)
 
 
 def new_service_payment(request, account_id):
@@ -224,13 +224,14 @@ def new_service_payment(request, account_id):
             service = form.cleaned_data['service']
             service.new_payment(account=account_link.account,
                                 **form.cleaned_data)
-            return redirect('fund_list', building_id=building.id)
+            return render(request, 'edit_ok.html')
     else:
         form = NewServicePayment(building=building)
     
     data = {'form' : form, 'target': 'new_service_payment',
-            'entity_id': account_id, 'building': building}
-    return render(request, 'edit_in_building.html', data)
+            'entity_id': account_id, 'building': building,
+            'title': 'Plata serviciu de la ' + account_link.account.holder }
+    return render(request, 'edit_dialog.html', data)
 
 
 def new_service(request, building_id):
@@ -243,13 +244,13 @@ def new_service(request, building_id):
             service.account = Account.objects.create(holder=service.name)
             service.save() 
             service.set_quota()
-            return redirect('service_list', building_id=building_id)
+            return render(request, 'edit_ok.html')
     else:
         form = EditServiceForm(building=building)
     
     data = {'form': form, 'parent_id': building_id, 'target': 'new_service',
-            'building': building}
-    return render(request, 'edit_in_building.html', data)
+            'building': building, 'title': 'Serviciu nou'}
+    return render(request, 'edit_dialog.html', data)
     
 
 def edit_service(request, service_id=None):
@@ -273,14 +274,14 @@ def edit_service(request, service_id=None):
             if orig_billed != service.billed or orig_qt != service.quota_type:
                 service.set_quota()
                 
-            return redirect('service_list', building_id=building.id)
+            return render(request, 'edit_ok.html')
     else:
         form = EditServiceForm(building=building, instance=service)
     
     data = {'form': form, 'entity_id': service_id, 'target': 'edit_service',
-            'building': building}
+            'building': building, 'title': 'Serviciul ' + service.name}
     
-    return render(request, 'edit_in_building.html', data)
+    return render(request, 'edit_dialog.html', data)
 
 
 def new_invoice(request, service_id):
@@ -291,14 +292,13 @@ def new_invoice(request, service_id):
         form = NewDocPaymentForm(request.POST)
         if form.is_valid():
             service.new_invoice(**form.cleaned_data)
-            return redirect('service_list',
-                            building_id=service.billed.building().id)
+            return render(request, 'edit_ok.html')
     else:
         form = NewDocPaymentForm()
         
     data = {'form': form, 'target': 'new_invoice', 'parent_id': service_id,
-            'building': building}
-    return render(request, 'edit_in_building.html', data)
+            'building': building, 'title': 'Factura noua'}
+    return render(request, 'edit_dialog.html', data)
    
    
    

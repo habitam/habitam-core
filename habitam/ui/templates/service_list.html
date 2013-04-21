@@ -18,8 +18,8 @@
 				<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance }}</td>
 				<td>
 					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' account_id=service.account.id %}'">Operațiuni</button>
-					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'edit_service' service_id=service.id %}'">Modifică</button>
-					<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_invoice' service_id=service.id %}'">Factură nouă</button>
+					<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_service' service_id=service.id %}')">Modifică</button>
+					<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_invoice' service_id=service.id %}')">Factură nouă</button>
 					</td>
 				</tr>
 			{% endfor %}
@@ -27,7 +27,7 @@
 </table>
 <div class="container">
 	<div class="pull-right">
-		<button class="btn btn-info" type="button" onclick="window.location='{% url 'new_service' building.id %}'">Serviciu nou</button>
+		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_service' building.id %}')">Serviciu nou</button>
 	</div>
 </div>
 {% endblock %}

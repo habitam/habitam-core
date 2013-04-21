@@ -231,7 +231,7 @@ class Service(SingleAccountEntity):
    
     @classmethod
     def new_payment(cls, service, account, amount, no, date=timezone.now()):
-        account.new_transfer(amount, date, no, service.account)
+        account.new_transfer(amount, no, service.account, date)
    
     
     def new_invoice(self, amount, no, date=timezone.now()):
