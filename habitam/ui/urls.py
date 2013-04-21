@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     
     url(r'^buildings/new$', views.new_building, name='new_building'),
     url(r'^buildings/(?P<building_id>\d+)/apartments$', views.building_tab, {'tab': 'apartment_list'}, name='apartment_list'),
-    url(r'^buildings/(?P<building_id>\d+)/apartments/(?P<apartment_id>\d+)/edit$', apartment_views.edit_apartment, name='edit_apartment'),
+    url(r'^buildings/(?P<building_id>\d+)/apartments/new$', apartment_views.new_apartment, name='new_apartment'),
     url(r'^buildings/(?P<building_id>\d+)/staircases/new$', building_views.new_staircase, name='new_staircase'),
 
     url(r'^staircases/(?P<apgroup_id>\d+)/edit$', building_views.edit_staircase, name='edit_staircase'),
@@ -43,6 +43,7 @@ urlpatterns = patterns('',
     url(r'^services/(?P<service_id>\d+)/edit$', service_views.edit_service, name='edit_service'),
     url(r'^services/(?P<service_id>\d+)/invoices/new$', service_views.new_invoice, name='new_invoice'),
     
+    url(r'^apartments/(?P<apartment_id>\d+)/edit$', apartment_views.edit_apartment, name='edit_apartment'),
     url(r'^apartments/(?P<apartment_id>\d+)/payments/new$', apartment_views.new_payment, name='new_payment'),
     
     url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list'),
