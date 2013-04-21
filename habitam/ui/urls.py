@@ -22,11 +22,11 @@ Created on Apr 12, 2013
 from django.conf.urls import patterns, url
 from habitam.entities.models import Apartment, ApartmentGroup, Service
 from habitam.ui import views
-from habitam.ui.apartment_forms import EditApartmentForm
-from habitam.ui.building_forms import EditStaircaseForm
-from habitam.ui.forms import NewDocPaymentForm, NewPaymentForm
-from habitam.ui.fund_forms import NewFundTransfer
-from habitam.ui.service_forms import EditServiceForm, NewServicePayment
+from habitam.ui.forms.apartment import EditApartmentForm
+from habitam.ui.forms.building import EditStaircaseForm
+from habitam.ui.forms.fund import NewFundTransfer
+from habitam.ui.forms.generic import NewDocPaymentForm, NewPaymentForm
+from habitam.ui.forms.service import EditServiceForm, NewServicePayment
 
 
 urlpatterns = patterns('',

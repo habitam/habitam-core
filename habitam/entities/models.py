@@ -170,7 +170,7 @@ class ApartmentGroup(Entity):
         service.set_quota(quota_type)
         service.save()
         
-    
+        
     def funds(self):
         apartment_groups = self.apartment_groups()
         result = []
@@ -300,6 +300,9 @@ class Service(SingleAccountEntity):
             self._old_quota_type = self.quota_type
         except:
             self._old_quota_type = None
+    
+    def __unicode__(self):
+        return self.name
         
     def building(self):
         return self.billed.building() 

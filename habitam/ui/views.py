@@ -26,7 +26,7 @@ from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink
 from habitam.services.models import Account, OperationDoc
-from habitam.ui.forms import NewBuildingForm
+from habitam.ui.forms.generic import NewBuildingForm
 import logging
 
 

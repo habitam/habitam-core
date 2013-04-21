@@ -23,7 +23,7 @@ Created on Apr 21, 2013
 from django import forms
 from django.db.models.query_utils import Q
 from habitam.entities.models import AccountLink
-from habitam.ui.forms import NewDocPaymentForm
+from habitam.ui.forms.generic import NewDocPaymentForm
 
 
 class NewFundTransfer(NewDocPaymentForm):
