@@ -22,10 +22,8 @@ Created on Apr 21, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
-from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from habitam.entities.models import AccountLink, ApartmentGroup, Service
-from habitam.services.models import Account
 from habitam.ui.views import NewDocPaymentForm
 import logging
 
@@ -81,20 +79,3 @@ def new_service_payment(request, account_id):
             'title': 'Plata serviciu de la ' + account_link.account.holder }
     return render(request, 'edit_dialog.html', data)
 
-
-
-def new_invoice(request, service_id):
-    service = Service.objects.get(pk=service_id)
-    building = service.billed.building()
-    
-    if request.method == 'POST':
-        form = NewDocPaymentForm(request.POST)
-        if form.is_valid():
-            service.new_invoice(**form.cleaned_data)
-            return render(request, 'edit_ok.html')
-    else:
-        form = NewDocPaymentForm()
-        
-    data = {'form': form, 'target': 'new_invoice', 'parent_id': service_id,
-            'building': building, 'title': 'Factura noua'}
-    return render(request, 'edit_dialog.html', data)

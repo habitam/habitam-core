@@ -152,3 +152,21 @@ def new_building_entity(request, building_id, form_cls, target,
     data = {'form': form, 'target': target, 'parent_id': building_id,
             'building': building, 'title': title}
     return render(request, 'edit_dialog.html', data)
+
+
+def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
+                        title):
+    entity = entity_cls.objects.get(pk=entity_id)
+    building = entity.building()
+    
+    if request.method == 'POST':
+        form = form_cls(request.POST)
+        if form.is_valid():
+            entity.new_inbound_operation(**form.cleaned_data)
+            return render(request, 'edit_ok.html')
+    else:
+        form = form_cls()
+    
+    data = {'form': form, 'target': target, 'parent_id': entity_id,
+            'building': building, 'title': title + ' ' + entity.name}
+    return render(request, 'edit_dialog.html', data)  

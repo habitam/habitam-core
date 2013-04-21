@@ -21,10 +21,11 @@ Created on Apr 12, 2013
 '''
 from django.conf.urls import patterns, url
 from habitam.entities.models import Apartment, ApartmentGroup, Service
-from habitam.ui import views, service_views, apartment_views, fund_views
+from habitam.ui import views, service_views, fund_views
 from habitam.ui.apartment_views import EditApartmentForm
 from habitam.ui.building_views import EditStaircaseForm
 from habitam.ui.service_views import EditServiceForm
+from habitam.ui.views import NewPaymentForm, NewDocPaymentForm
 
 
 urlpatterns = patterns('',
@@ -65,14 +66,22 @@ urlpatterns = patterns('',
          'target': 'edit_service', 'title': 'Serviciul'},
         name='edit_service'),
     
-    url(r'^services/(?P<service_id>\d+)/invoices/new$', service_views.new_invoice, name='new_invoice'),
+    url(r'^services/(?P<entity_id>\d+)/invoices/new$',
+        views.new_inbound_operation, 
+        {'entity_cls': Service, 'form_cls': NewDocPaymentForm,
+         'target': 'new_invoice', 'title': 'Factura pentru'},
+        name='new_invoice'),
     
     url(r'^apartments/(?P<entity_id>\d+)/edit$', views.edit_entity,
         {'entity_cls': Apartment, 'form_cls': EditApartmentForm,
-          'target': 'edit_apartment', 'title': 'Apartamentul'},
+         'target': 'edit_apartment', 'title': 'Apartamentul'},
         name='edit_apartment'),
     
-    url(r'^apartments/(?P<apartment_id>\d+)/payments/new$', apartment_views.new_payment, name='new_payment'),
+    url(r'^apartments/(?P<entity_id>\d+)/payments/new$',
+        views.new_inbound_operation,
+        {'entity_cls': Apartment, 'form_cls': NewPaymentForm,
+         'target': 'new_payment', 'title': 'Incasare de la'},
+        name='new_payment'),
     
     url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list'),
     url(r'^accounts/(?P<account_id>\d+)/operations/(?P<operationdoc_id>\d+)$', views.operation_doc, name='operation_doc'),

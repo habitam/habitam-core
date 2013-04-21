@@ -123,12 +123,12 @@ class ServiceTests(EntitiesTestBase):
     @classmethod
     def __setup_invoice(cls, no, value):
         service = Service.objects.get(name='service1')
-        service.new_invoice(value, no, timezone.now())
+        service.new_inbound_operation(value, no, timezone.now())
     
     @classmethod
     def __apartment_payment(cls, name, value):
         ap = Apartment.objects.get(name=name)
-        ap.new_payment(value)
+        ap.new_inbound_operation(value)
     
     @classmethod 
     def setUpClass(cls):

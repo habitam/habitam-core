@@ -258,7 +258,7 @@ class Apartment(SingleAccountEntity):
         return getattr(self, quota_type)
 
 
-    def new_payment(self, amount, date=timezone.now()):
+    def new_inbound_operation(self, amount, date=timezone.now()):
         no = uuid1()
         building = self.building()
         logger.info('New payment %s from %s to %s worth %f', no, self, building,
@@ -310,7 +310,7 @@ class Service(SingleAccountEntity):
     def can_delete(self):
         return self.account.can_delete()
     
-    def new_invoice(self, amount, no, date=timezone.now()):
+    def new_inbound_operation(self, amount, no, date=timezone.now()):
         accounts = [] 
         for ap in self.billed.apartments():
             accounts.append(ap.account)

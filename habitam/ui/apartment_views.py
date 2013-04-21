@@ -21,9 +21,7 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
-from django.shortcuts import render
 from habitam.entities.models import ApartmentGroup, Apartment
-from habitam.ui.views import NewPaymentForm
 
 
 class EditApartmentForm(forms.ModelForm):
@@ -48,21 +46,3 @@ class EditApartmentForm(forms.ModelForm):
         staircases = ApartmentGroup.objects.filter(parent=building)
         self.fields['parent'].queryset = staircases 
 
-
-def new_payment(request, apartment_id):
-    apartment = Apartment.objects.get(pk=apartment_id)
-    building = apartment.building()
-    
-    if request.method == 'POST':
-        form = NewPaymentForm(request.POST)
-        if form.is_valid():
-            apartment.new_payment(**form.cleaned_data)
-            return render(request, 'edit_ok.html')
-    else:
-        form = NewPaymentForm()
-    
-    data = {'form': form, 'target': 'new_payment', 'parent_id': apartment_id,
-            'building': building, 'title': 'Apartamentul ' + apartment.name}
-    return render(request, 'edit_dialog.html', data)
-
-          
