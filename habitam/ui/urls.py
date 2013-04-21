@@ -20,7 +20,7 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django.conf.urls import patterns, url
-from habitam.ui import views
+from habitam.ui import views, service_views, apartment_views, fund_views
 
 
 urlpatterns = patterns('',
@@ -29,18 +29,18 @@ urlpatterns = patterns('',
     
     url(r'^buildings/new$', views.new_building, name='new_building'),
     url(r'^buildings/(?P<building_id>\d+)/apartments$', views.building_tab, {'tab': 'apartment_list'}, name='apartment_list'),
-    url(r'^buildings/(?P<building_id>\d+)/apartments/(?P<apartment_id>\d+)/edit$', views.edit_apartment, name='edit_apartment'),
+    url(r'^buildings/(?P<building_id>\d+)/apartments/(?P<apartment_id>\d+)/edit$', apartment_views.edit_apartment, name='edit_apartment'),
     url(r'^buildings/(?P<building_id>\d+)/services$', views.building_tab, {'tab': 'service_list'}, name='service_list'),
-    url(r'^buildings/(?P<building_id>\d+)/services/new$', views.new_service, name='new_service'),
+    url(r'^buildings/(?P<building_id>\d+)/services/new$', service_views.new_service, name='new_service'),
     url(r'^buildings/(?P<building_id>\d+)/funds$', views.building_tab, {'tab': 'fund_list'}, name='fund_list'),
     
-    url(r'^services/(?P<service_id>\d+)/edit$', views.edit_service, name='edit_service'),
-    url(r'^services/(?P<service_id>\d+)/invoices/new$', views.new_invoice, name='new_invoice'),
+    url(r'^services/(?P<service_id>\d+)/edit$', service_views.edit_service, name='edit_service'),
+    url(r'^services/(?P<service_id>\d+)/invoices/new$', service_views.new_invoice, name='new_invoice'),
     
-    url(r'^apartments/(?P<apartment_id>\d+)/payments/new$', views.new_payment, name='new_payment'),
+    url(r'^apartments/(?P<apartment_id>\d+)/payments/new$', apartment_views.new_payment, name='new_payment'),
     
     url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list'),
     url(r'^accounts/(?P<account_id>\d+)/operations/(?P<operationdoc_id>\d+)$', views.operation_doc, name='operation_doc'),
-    url(r'^accounts/(?P<account_id>\d+)/operations/new_service_payment$', views.new_service_payment, name='new_service_payment'),
-    url(r'^accounts/(?P<account_id>\d+)/operations/new_transfer$', views.new_fund_transfer, name='new_fund_transfer'),
+    url(r'^accounts/(?P<account_id>\d+)/operations/new_service_payment$', service_views.new_service_payment, name='new_service_payment'),
+    url(r'^accounts/(?P<account_id>\d+)/operations/new_transfer$',fund_views.new_fund_transfer, name='new_fund_transfer'),
 )
