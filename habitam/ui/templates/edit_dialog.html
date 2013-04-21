@@ -1,0 +1,37 @@
+<div id="editFormContainer">
+	<form id="editForm" class="form-horizontal" method="post"
+		action="{% if parent_id %}{% if entity_id %}{% url target parent_id entity_id %}{% else %}{% url target parent_id %}{% endif %}{% else %}{% if entity_id %}{% url target entity_id %}{% else %}{% url target %}{% endif %}{% endif %}">
+		{% csrf_token %} 
+		{% for hidden in form.hidden_fields %}
+	    {{ hidden }}
+	    {% endfor %}
+		{% for field in form %}
+			<div class="control-group {% if field.errors %}error{% endif %}">
+				<label class="control-label" for="id_{{ field.html_name }}">{{ field.label_tag }}</label>
+				<div class="controls">
+					{{ field }}
+					{% for error in field.errors %}
+						<span class="help-inline">{{ error }}</span>
+					{% endfor %}
+				</div>
+			</div>
+		{% endfor %}
+	</form>
+</div>
+
+<script>
+$(document).ready(function() {
+	$("#editTitle").text("{{ title }}");
+	{% for s in form.spinners %}
+	$("#id_{{s}}").spinner();
+	{% endfor %}
+	
+	$('#editForm').ajaxForm({
+		target : '#editFormContainer',
+	});
+	
+	$('#submitButton').click(function() {
+		$('#editForm').submit();
+	});
+});
+</script>

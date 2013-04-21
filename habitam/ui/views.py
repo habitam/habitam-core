@@ -174,15 +174,15 @@ def edit_apartment(request, building_id, apartment_id=None):
                 orig_parent.update_quotas()
                 form.cleaned_data['parent'].update_quotas()
                 
-            return redirect('apartment_list',
-                    building_id=apartment.building().id)
+            return render(request, 'edit_ok.html')
     else:
         form = EditApartmentForm(building=building, instance=apartment)
-    data = {'form': form, 'target': 'edit_apartment',
-            'parent_id': building_id, 'entity_id': apartment_id,
-            'spinners': EditApartmentForm.spinners(),
-            'building': building}
-    return render(request, 'edit_in_building.html', data)          
+    
+    data = {'form': form, 'target': 'edit_apartment', 'parent_id': building_id,
+            'entity_id': apartment_id, 
+            'spinners': EditApartmentForm.spinners(), 'building': building, 
+            'title': 'Apartamentul ' + apartment.name}
+    return render(request, 'edit_dialog.html', data)          
           
 
 def building_tab(request, building_id, tab):
