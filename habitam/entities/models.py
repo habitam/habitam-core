@@ -56,9 +56,10 @@ class SingleAccountEntity(Entity):
         
     def save(self, **kwargs):
         try:
-            self.account
+            self.account.holder = self.__unicode__()
+            self.account.save()
         except Account.DoesNotExist:
-            self.account = Account.objects.create(holder=self.name)
+            self.account = Account.objects.create(holder=self.__unicode__())
         
         self.account.holder = self.name     
         super(SingleAccountEntity, self).save(**kwargs)
@@ -244,6 +245,11 @@ class Apartment(SingleAccountEntity):
     def __init__(self, *args, **kwargs): 
         super(Apartment, self).__init__(*args, **kwargs) 
         self._old_parent = self.parent
+        
+        
+    def __unicode__(self):
+        return 'Apartament ' + self.name
+        
         
     def building(self):
         return self.parent.building()
