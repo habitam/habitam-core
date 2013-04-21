@@ -78,8 +78,7 @@ def edit_apartment(request, building_id, apartment_id=None):
         form = EditApartmentForm(building=building, instance=apartment)
     
     data = {'form': form, 'target': 'edit_apartment', 'parent_id': building_id,
-            'entity_id': apartment_id,
-            'spinners': EditApartmentForm.spinners(), 'building': building,
+            'entity_id': apartment_id, 'building': building,
             'title': 'Apartamentul ' + apartment.name}
     return render(request, 'edit_dialog.html', data)
 

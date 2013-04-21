@@ -80,8 +80,7 @@ def new_building(request):
             return redirect('building_list')
     else:
         form = NewBuildingForm() 
-    data = {'form': form, 'spinners': NewBuildingForm.spinners(),
-            'target': 'new_building'}
+    data = {'form': form, 'target': 'new_building'}
     return render(request, 'edit_entity.html', data)
 
 
