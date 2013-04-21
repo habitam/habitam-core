@@ -22,7 +22,7 @@ Created on Apr 12, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
-from django.http.response import HttpResponseBadRequest
+from django.http.response import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink
@@ -165,7 +165,15 @@ def edit_apartment(request, building_id, apartment_id=None):
     apartment = Apartment.objects.get(pk=apartment_id)
     orig_parent = apartment.parent
     
+    if request.method == 'DELETE':
+        if apartment.can_delete():
+            apartment.delete()
+            return HttpResponse()
+        else:
+            return HttpResponseBadRequest()
+    
     if request.method == 'POST':
+        ''' uncool: there's logic in here '''
         form = EditApartmentForm(request.POST, building=building,
                                  instance=apartment)
         if form.is_valid():
@@ -263,7 +271,8 @@ def edit_service(request, service_id):
     if request.method == 'DELETE':
         logger.debug('delete service %d', service_id)
         if service.can_delete():
-            service.delete() 
+            service.delete()
+            return HttpResponse() 
         else:
             return HttpResponseBadRequest()
     

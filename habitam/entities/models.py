@@ -23,7 +23,7 @@ Created on Apr 8, 2013
 from decimal import Decimal
 from django.db import models
 from django.utils import timezone
-from habitam.services.models import Account, Quota, OperationDoc
+from habitam.services.models import Account, Quota, OperationDoc, Operation
 from uuid import uuid1
 import logging
 
@@ -204,6 +204,16 @@ class Apartment(SingleAccountEntity):
         return self.parent.building()
 
 
+    def can_delete(self):
+        if OperationDoc.objects.filter(src=self.account).count() > 0:
+            return False
+        if Operation.objects.filter(dest=self.account).count() > 0:
+            return False
+        if Quota.objects.filter(dest=self.account).count() > 0:
+            return False
+        return True
+        
+
     def weight(self, quota_type='equally'):
         if quota_type == 'equally':
             return 1
@@ -235,9 +245,11 @@ class Service(SingleAccountEntity):
 
     
     def can_delete(self):
-        src_count = OperationDoc.objects.filter(src=self.account).count()
-        billed_count = OperationDoc.objects.filter(billed=self.account).count()
-        return src_count + billed_count == 0
+        if OperationDoc.objects.filter(src=self.account).count() > 0:
+            return False
+        if OperationDoc.objects.filter(billed=self.account).count() > 0:
+            return False
+        return True
     
     def new_invoice(self, amount, no, date=timezone.now()):
         accounts = [] 
