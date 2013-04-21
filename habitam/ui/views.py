@@ -323,13 +323,12 @@ def new_payment(request, apartment_id):
         form = NewPaymentForm(request.POST)
         if form.is_valid():
             apartment.new_payment(**form.cleaned_data)
-            return redirect('apartment_list',
-                            building_id=apartment.building().id)
+            return render(request, 'edit_ok.html')
     else:
         form = NewPaymentForm()
     
     data = {'form': form, 'target': 'new_payment', 'parent_id': apartment_id,
-            'building': building}
-    return render(request, 'edit_in_building.html', data)
+            'building': building, 'title': 'Apartamentul ' + apartment.name}
+    return render(request, 'edit_dialog.html', data)
 
     

@@ -35,8 +35,8 @@
 				<td class="{% if ap.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ ap.balance }}</td>
 				<td>
 					<button class="btn btn-mini" type="button"  onclick="window.location='{% url 'operation_list' account_id=ap.account.id %}'">Operațiuni</button>
-					<button class="btn btn-mini" type="button" data-target="#editModal" data-toggle="modal" href="{% url 'edit_apartment' building_id=building.id apartment_id=ap.id %}">Modifică</button>
-					<button class="btn btn-mini btn-inverse" type="button" onclick="window.location='{% url 'new_payment' apartment_id=ap.id %}'">Încasează</button>
+					<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_apartment' building_id=building.id apartment_id=ap.id %}')">Modifică</button>
+					<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_payment' apartment_id=ap.id %}')">Încasează</button>
 				</td>
 			</tr>
 			{% endfor %} 

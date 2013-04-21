@@ -215,8 +215,8 @@ class Apartment(SingleAccountEntity):
         building = self.building()
         logger.info('New payment %s from %s to %s worth %f', no, self, building,
                     amount)
-        self.account.new_transfer(amount, date, no, building.default_account)
-    
+        self.account.new_transfer(amount, no, building.default_account, date)
+
  
 class Service(SingleAccountEntity):
     QUOTA_TYPES = (

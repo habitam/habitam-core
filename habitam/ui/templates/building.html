@@ -26,4 +26,11 @@
 		<button class="btn" data-dismiss="modal" aria-hidden="true">Anulează</button>
 	</div>	
 </div>
+
+<script>
+function editDialog(path) {
+	$('#modalBody').load(path);
+	$('#editModal').modal();
+}
+</script>
 {% endblock %}
