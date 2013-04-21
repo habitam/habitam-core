@@ -22,6 +22,7 @@
 				<td>&nbsp;</td>
 				<th colspan="8">Scara {{ sc.name }}</th>
 				<td>
+					<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_staircase' apgroup_id=sc.id %}')">Modifică</button>
 				    {% if sc.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_staircase' apgroup_id=sc.id %}');"><i class="icon-trash"></i></button>{% endif %}
 				</td>
 			</tr>
@@ -47,4 +48,9 @@
 		{% endfor %}
 	</tbody>
 </table>
+<div class="container">
+	<div class="pull-right">
+		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_staircase' building.id %}')">Scară nouă</button>
+	</div>
+</div>
 {% endblock %}

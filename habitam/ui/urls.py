@@ -31,6 +31,7 @@ urlpatterns = patterns('',
     url(r'^buildings/new$', views.new_building, name='new_building'),
     url(r'^buildings/(?P<building_id>\d+)/apartments$', views.building_tab, {'tab': 'apartment_list'}, name='apartment_list'),
     url(r'^buildings/(?P<building_id>\d+)/apartments/(?P<apartment_id>\d+)/edit$', apartment_views.edit_apartment, name='edit_apartment'),
+    url(r'^buildings/(?P<building_id>\d+)/staircases/new$', building_views.new_staircase, name='new_staircase'),
 
     url(r'^staircases/(?P<apgroup_id>\d+)/edit$', building_views.edit_staircase, name='edit_staircase'),
     
