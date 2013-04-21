@@ -23,7 +23,7 @@ Created on Apr 8, 2013
 from decimal import Decimal
 from django.db import models
 from django.utils import timezone
-from habitam.services.models import Account, Quota, OperationDoc, Operation
+from habitam.services.models import Account, Quota
 from uuid import uuid1
 import logging
 
@@ -87,7 +87,6 @@ class ApartmentGroup(Entity):
         building.save()
     
     
-    
     @classmethod
     def create(cls, name, group_type, parent=None):
         account = Account.objects.create()
@@ -120,6 +119,17 @@ class ApartmentGroup(Entity):
         if self.type == 'building':
             return self
         return self.parent.building()
+    
+    
+    def can_delete(self):
+        if len(self.apartments()) > 0 or len(self.apartment_groups()) > 1:
+            return False
+        if len(self.services()) > 0:
+            return False
+        for account in self.funds():
+            if not account.can_delete():
+                return False
+        return True
     
     
     def apartment_groups(self):
@@ -170,7 +180,7 @@ class ApartmentGroup(Entity):
     
        
     def update_quotas(self):
-        for svc in self.services_set.all():
+        for svc in self.service_set.all():
             svc.set_quota()
 
 
@@ -205,13 +215,7 @@ class Apartment(SingleAccountEntity):
 
 
     def can_delete(self):
-        if OperationDoc.objects.filter(src=self.account).count() > 0:
-            return False
-        if Operation.objects.filter(dest=self.account).count() > 0:
-            return False
-        if Quota.objects.filter(dest=self.account).count() > 0:
-            return False
-        return True
+        return self.account.can_delete() and not self.account.has_quotas()
         
 
     def weight(self, quota_type='equally'):
@@ -245,11 +249,7 @@ class Service(SingleAccountEntity):
 
     
     def can_delete(self):
-        if OperationDoc.objects.filter(src=self.account).count() > 0:
-            return False
-        if OperationDoc.objects.filter(billed=self.account).count() > 0:
-            return False
-        return True
+        return self.account.can_delete()
     
     def new_invoice(self, amount, no, date=timezone.now()):
         accounts = [] 

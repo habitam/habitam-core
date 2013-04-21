@@ -20,7 +20,8 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django.conf.urls import patterns, url
-from habitam.ui import views, service_views, apartment_views, fund_views
+from habitam.ui import views, service_views, apartment_views, fund_views, \
+    building_views
 
 
 urlpatterns = patterns('',
@@ -30,8 +31,12 @@ urlpatterns = patterns('',
     url(r'^buildings/new$', views.new_building, name='new_building'),
     url(r'^buildings/(?P<building_id>\d+)/apartments$', views.building_tab, {'tab': 'apartment_list'}, name='apartment_list'),
     url(r'^buildings/(?P<building_id>\d+)/apartments/(?P<apartment_id>\d+)/edit$', apartment_views.edit_apartment, name='edit_apartment'),
+
+    url(r'^staircases/(?P<apgroup_id>\d+)/edit$', building_views.edit_staircase, name='edit_staircase'),
+    
     url(r'^buildings/(?P<building_id>\d+)/services$', views.building_tab, {'tab': 'service_list'}, name='service_list'),
     url(r'^buildings/(?P<building_id>\d+)/services/new$', service_views.new_service, name='new_service'),
+    
     url(r'^buildings/(?P<building_id>\d+)/funds$', views.building_tab, {'tab': 'fund_list'}, name='fund_list'),
     
     url(r'^services/(?P<service_id>\d+)/edit$', service_views.edit_service, name='edit_service'),

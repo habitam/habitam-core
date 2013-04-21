@@ -20,7 +20,10 @@
 		{% for sc in building.apartmentgroup_set.all %}
 			<tr>
 				<td>&nbsp;</td>
-				<th colspan="9">Scara {{ sc.name }}</td>
+				<th colspan="8">Scara {{ sc.name }}</th>
+				<td>
+				    {% if sc.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_staircase' apgroup_id=sc.id %}');"><i class="icon-trash"></i></button>{% endif %}
+				</td>
 			</tr>
 			{% for ap in sc.apartment_set.all %}
 			<tr>

@@ -22,6 +22,7 @@ Created on Apr 8, 2013
 from decimal import Decimal
 from django.db import models
 from django.db.models.aggregates import Sum
+from django.db.models.query_utils import Q
 from django.utils import timezone
 from random import choice
 import logging
@@ -84,7 +85,17 @@ class Account(models.Model):
         amount = lambda y: y.total_amount if y.total_amount != None else 0
         bsum = lambda x, y: x + bsign(y) * amount(y)
         return reduce(bsum, ops, 0)
-                   
+    
+    def can_delete(self):
+        if OperationDoc.objects.filter(Q(src=self) | Q(billed=self)).count() > 0:
+            return False
+        if Operation.objects.filter(dest=self).count() > 0:
+            return False
+        return True
+    
+    def has_quotas(self):
+        return Quota.objects.filter(Q(dest=self) | Q(src=self)).count() > 0
+    
     def new_transfer(self, amount, no, dest_account, date=timezone.now()):
         self.__assert_doc_not_exists(no)
         
