@@ -30,6 +30,9 @@ from habitam.ui.forms.service import EditServiceForm, NewServicePayment
 
 
 urlpatterns = patterns('',
+    url(r'^users/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}, 'login'),
+    url(r'^users/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'logout.html'}, 'logout'),
+    
     url(r'^$', views.home, name='home'),
     
     url(r'^buildings/new$', views.new_building, name='new_building'),

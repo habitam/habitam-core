@@ -14,3 +14,9 @@ body {
 .jumbotron {
 	text-align: center;
 }
+
+.center {
+     float: none !important;
+     margin-left: auto !important;
+     margin-right: auto !important;
+}

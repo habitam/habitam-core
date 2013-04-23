@@ -37,20 +37,31 @@
 	<div class="navbar-inner">
 		<div class="container">
 	        <a class="brand" href="{% url 'home' %}">Habitam</a>
-	        <div class="nav-collapse collapse">
-	            <ul class="nav">
-		            <li class="dropdown">
-			            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clădiri<b class="caret"></b></a>
-			            <ul class="dropdown-menu">
-				            <li><a href="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a> 
-				            <li class="divider"></li>
-							{% for building in buildings %}
-								<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
-							{% endfor %}
-			            </ul>
-		            </li>
-	            </ul>
-	        </div><!--/.nav-collapse -->
+	        {% if user.is_authenticated %}
+		        <div class="nav-collapse collapse">
+		        	<ul class="nav pull-right">
+			        	<li class="dropdown">
+				            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i> {{ user }} <b class="caret"></b></a>
+				            <ul class="dropdown-menu">
+					            <li class="divider"></li>
+								<li><a href="{% url 'logout' %}">Ieșire</a></li>
+				            </ul>
+				        </li>
+		        	</ul>
+		            <ul class="nav">
+			            <li class="dropdown">
+				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clădiri <b class="caret"></b></a>
+				            <ul class="dropdown-menu">
+					            <li><a href="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a> 
+					            <li class="divider"></li>
+								{% for building in buildings %}
+									<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
+								{% endfor %}
+				            </ul>
+			            </li>
+		            </ul>
+		        </div>
+	        {% endif %}
         </div>
     </div>
 </div>
