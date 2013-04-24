@@ -20,9 +20,9 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django.conf.urls import patterns, url
-from habitam.entities.models import Apartment, ApartmentGroup, Service
+from habitam.entities.models import Apartment, ApartmentGroup, Service, Person
 from habitam.ui import views
-from habitam.ui.forms.apartment import EditApartmentForm
+from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm
 from habitam.ui.forms.building import EditStaircaseForm
 from habitam.ui.forms.fund import NewFundTransfer
 from habitam.ui.forms.generic import NewDocPaymentForm, NewPaymentForm
@@ -101,4 +101,9 @@ urlpatterns = patterns('',
         {'form_cls': NewFundTransfer, 'form_dest_key': 'dest_link',
          'target': 'new_fund_transfer', 'title': 'Transfer de la'},
         name='new_fund_transfer'),
+                       
+    url(r'^owners/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
+        {'entity_cls': Person, 'form_cls': EditPersonForm,
+         'target': 'edit_owner', 'title': ''},
+        name='edit_owner'),
 )

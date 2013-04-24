@@ -21,7 +21,7 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
-from habitam.entities.models import ApartmentGroup, Apartment
+from habitam.entities.models import ApartmentGroup, Apartment, Person
 
 
 class EditApartmentForm(forms.ModelForm):
@@ -46,3 +46,7 @@ class EditApartmentForm(forms.ModelForm):
         staircases = ApartmentGroup.objects.filter(parent=building)
         self.fields['parent'].queryset = staircases 
 
+
+class EditPersonForm(forms.ModelForm):
+    class Meta:
+        model = Person 

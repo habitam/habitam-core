@@ -10,7 +10,7 @@
 		<li {% if active_tab = 'fund_list' %}class="active"{% endif %}><a href="{% url 'fund_list' building.id %}">Fonduri</a></li>
 		<li {% if active_tab = 'service_list' %}class="active"{% endif %}><a href="{% url 'service_list' building.id %}">Servicii</a></li>
 	</ul>
-	<div class="tab-content">
+	<div class="tab-content tab-content-building">
 		{% block building_body %}
 		{% endblock %}
 	</div>

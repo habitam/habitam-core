@@ -21,7 +21,7 @@ Created on Apr 9, 2013
 '''
 from decimal import Decimal
 from django.utils import unittest, timezone
-from habitam.entities.models import Apartment, ApartmentGroup, Service
+from habitam.entities.models import Apartment, ApartmentGroup, Service, Person
 from habitam.services.models import Quota
 import logging
 
@@ -53,8 +53,10 @@ class EntitiesTestBase(unittest.TestCase):
        
         def create_apartment(i, parent):
             logger.info('creating apartment %d', i)
-            ap = Apartment.objects.create(name=str(i), parent=parent,
-                            inhabitance=i, area=i * 10, rooms=i * 2, floor=i)
+            owner = Person.objects.create(name=str(i))
+            ap = Apartment.objects.create(name=str(i), parent=parent, 
+                            inhabitance=i, area=i * 10, rooms=i * 2, floor=i,
+                            owner=owner)
             ap.save()
             
         for i in range(0, 5):

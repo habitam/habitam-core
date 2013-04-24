@@ -121,6 +121,30 @@ def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'
 
 
 @login_required
+def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'):
+    entity = entity_cls.objects.get(pk=entity_id)
+    
+    if request.method == 'DELETE':
+        if entity.can_delete():
+            entity.delete()
+            return HttpResponse()
+        else:
+            return HttpResponseBadRequest()
+    
+    if request.method == 'POST':
+        form = form_cls(request.POST, instance=entity)
+        if form.is_valid():
+            form.save()
+            return render(request, 'edit_ok.html')
+    else:
+        form = form_cls(instance=entity)
+    
+    data = {'form': form, 'target': target, 'entity_id': entity_id,
+            'title': title + ' ' + entity.name}
+    return render(request, 'edit_dialog.html', data)
+
+
+@login_required
 def new_building_entity(request, building_id, form_cls, target,
                         title='New Entity', save_kwargs=None):
     building = ApartmentGroup.objects.get(pk=building_id).building()

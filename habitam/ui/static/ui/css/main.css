@@ -20,3 +20,12 @@ body {
      margin-left: auto !important;
      margin-right: auto !important;
 }
+
+.btn-toolbar-apartment {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.tab-content-building {
+	padding-bottom: 20px;
+}

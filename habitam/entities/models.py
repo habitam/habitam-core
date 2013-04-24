@@ -87,12 +87,16 @@ class ApartmentGroup(Entity):
             staircase = ApartmentGroup.create(parent=building, name=str(i + 1),
                                               group_type='stair')
             for j in range(per_staircase):
-                Apartment.objects.create(name=str(ap_idx), parent=staircase)
+                name = str(ap_idx)
+                owner = Person.bootstrap_owner(name)
+                Apartment.objects.create(name=name, parent=staircase, owner=owner)
                 ap_idx = ap_idx + 1
             if i + 1 < staircases:
                 continue
             for j in range(remainder):
-                Apartment.objects.create(name=str(ap_idx), parent=staircase)
+                name = str(ap_idx)
+                owner = Person.bootstrap_owner(name)
+                Apartment.objects.create(name=name, parent=staircase, owner=owner)
                 ap_idx = ap_idx + 1
         building.save()
         return building.id
@@ -228,12 +232,25 @@ class AccountLink(models.Model):
     
 class Person(models.Model):
     name = models.CharField(max_length=200)
-    email = models.EmailField()
+    email = models.EmailField(null=True, blank=True)
+   
+    @classmethod
+    def bootstrap_owner(cls, name):
+        return Person.objects.create(name=Person.default_owner_name(name))
+    
+    @classmethod 
+    def default_owner_name(cls, name): 
+        return 'Proprietar ' + name
+    
+    def __unicode__(self):
+        return self.name
+    
+    def can_delete(self):
+        return False
 
 
 class Apartment(SingleAccountEntity):
-    owner = models.ForeignKey(Person, related_name='owner', null=True,
-                              blank=True)
+    owner = models.ForeignKey(Person, related_name='owner')
     parent = models.ForeignKey(ApartmentGroup, null=True, blank=True)
     rented_to = models.ForeignKey(Person, related_name='rented_to',
                                   null=True, blank=True)
@@ -242,8 +259,9 @@ class Apartment(SingleAccountEntity):
     rooms = models.SmallIntegerField(default=1) 
     floor = models.SmallIntegerField(null=True, blank=True)
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):       
         super(Apartment, self).__init__(*args, **kwargs) 
+        self._old_name = self.name
         self._old_parent = self.parent
         
         
@@ -257,8 +275,13 @@ class Apartment(SingleAccountEntity):
 
     def can_delete(self):
         return self.account.can_delete() and not self.account.has_quotas()
+   
+    
+    def delete(self):
+        self.owner.delete()
+        super(Apartment, self).delete()
         
-
+    
     def weight(self, quota_type='equally'):
         if quota_type == 'equally':
             return 1
@@ -274,6 +297,13 @@ class Apartment(SingleAccountEntity):
 
 
     def save(self, **kwargs):
+        try:
+            if self.owner.name == Person.default_owner_name(self._old_name):
+                self.owner.name = Person.default_owner_name(self.name)
+                self.owner.save()
+        except Person.DoesNotExist:
+            self.owner = Person.bootstrap_owner(self.name) 
+        
         super(Apartment, self).save(**kwargs)
         print self.parent
         
