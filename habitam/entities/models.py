@@ -238,7 +238,7 @@ class Apartment(SingleAccountEntity):
     rented_to = models.ForeignKey(Person, related_name='rented_to',
                                   null=True, blank=True)
     inhabitance = models.SmallIntegerField(default=0)
-    area = models.DecimalField(default=1, decimal_places=4, max_digits=6)
+    area = models.DecimalField(default=1, decimal_places=2, max_digits=6)
     rooms = models.SmallIntegerField(default=1) 
     floor = models.SmallIntegerField(null=True, blank=True)
 
