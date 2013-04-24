@@ -23,7 +23,7 @@ from django.conf.urls import patterns, url
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person
 from habitam.ui import views
 from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm
-from habitam.ui.forms.building import EditStaircaseForm
+from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
 from habitam.ui.forms.fund import NewFundTransfer
 from habitam.ui.forms.generic import NewDocPaymentForm, NewPaymentForm
 from habitam.ui.forms.service import EditServiceForm, NewServicePayment
@@ -45,6 +45,10 @@ urlpatterns = patterns('',
          'title': 'Apartament nou'},
         name='new_apartment'),
                        
+    url(r'^buildings/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
+        {'entity_cls': ApartmentGroup, 'form_cls': EditBuildingForm,
+         'target': 'edit_building', 'title': ''}, name='edit_building'),
+
     url(r'^buildings/(?P<building_id>\d+)/staircases/new$',
         views.new_building_entity,
         {'form_cls': EditStaircaseForm, 'target': 'new_staircase',
@@ -104,6 +108,5 @@ urlpatterns = patterns('',
                        
     url(r'^owners/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
         {'entity_cls': Person, 'form_cls': EditPersonForm,
-         'target': 'edit_owner', 'title': ''},
-        name='edit_owner'),
+         'target': 'edit_owner', 'title': ''}, name='edit_owner'),
 )

@@ -96,7 +96,7 @@
 </div>
 
 <script>
-function delete_click(path) {
+function delete_click(path, success) {
 	var csrftoken = $.cookie('csrftoken');
 	$('#deleteButton').click(function() {
 		$.ajax({
@@ -106,7 +106,10 @@ function delete_click(path) {
 	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
 		    } 
 		}).done(function() {
-			location.reload();		
+			if (typeof success === 'undefined')
+				location.reload();
+			else
+				location.replace(success);
 		});
 	});
 }

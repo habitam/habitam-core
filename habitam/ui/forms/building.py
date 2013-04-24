@@ -24,11 +24,18 @@ from django import forms
 from habitam.entities.models import ApartmentGroup
 
 
+class EditBuildingForm(forms.ModelForm):
+    name = forms.CharField(label='Nume')
+
+    class Meta:
+        model = ApartmentGroup
+        fields = ('name',)
+
 class EditStaircaseForm(forms.ModelForm):
     name = forms.CharField(label='Nume')
     type = forms.CharField(label='Type',
                         widget=forms.HiddenInput())
-    parent = forms.ModelChoiceField(label='Cladirea', 
+    parent = forms.ModelChoiceField(label='Cladirea',
                         queryset=ApartmentGroup.objects.all(),
                         widget=forms.HiddenInput())
     
