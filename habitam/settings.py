@@ -126,7 +126,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'habitam.entities',
     'habitam.services',
-    'habitam.ui'
+    'habitam.ui',
+    'habitam.licensing'
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )

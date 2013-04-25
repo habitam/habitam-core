@@ -14,4 +14,5 @@ encoding//habitam/ui/templates/home.html=UTF-8
 encoding//habitam/ui/templates/login.html=UTF-8
 encoding//habitam/ui/templates/operation_list.html=UTF-8
 encoding//habitam/ui/templates/service_list.html=UTF-8
+encoding//habitam/ui/templates/user_popup.html=UTF-8
 encoding//habitam/ui/views.py=utf-8

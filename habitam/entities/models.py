@@ -21,6 +21,7 @@ Created on Apr 8, 2013
 @author: Stefan Guna
 '''
 from decimal import Decimal
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from habitam.services.models import Account, Quota

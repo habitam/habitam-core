@@ -20,8 +20,7 @@
 	href="{% static 'ui/css/bootstrap-responsive.min.css' %}">
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script
-	src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
 <script src="{% static 'ui/js/jquery.form.js' %}"></script>
 <script src="{% static 'ui/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'ui/js/jquery.form.js' %}"></script>
@@ -40,20 +39,23 @@
 	        {% if user.is_authenticated %}
 		        <div class="nav-collapse collapse">
 		        	<ul class="nav pull-right">
-			        	<li class="dropdown">
-				            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i> {{ user }} <b class="caret"></b></a>
-				            <ul class="dropdown-menu">
-					            <li class="divider"></li>
-								<li><a href="{% url 'logout' %}">Ieșire</a></li>
-				            </ul>
+				        <li class="dropdown">
+				        	<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user icon-white"></i> {{ user }} <b class="caret"></b></a>
+				        	<ul class="dropdown-menu" style="padding: 10px;">
+								{% include 'user_popup.html' %}
+							</ul>
 				        </li>
 		        	</ul>
 		            <ul class="nav">
 			            <li class="dropdown">
 				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clădiri <b class="caret"></b></a>
 				            <ul class="dropdown-menu">
+				            {% with license=user.administrator.license %}
+				            {% if license.apartment_count < license.max_apartments %}
 					            <li><a href="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a> 
 					            <li class="divider"></li>
+					        {% endif %}
+					        {% endwith %}
 								{% for building in buildings %}
 									<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
 								{% endfor %}
@@ -69,7 +71,6 @@
 <div class="container">
 {% block body %}{% endblock %}
 </div>
-
 
 <div id="editModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editLabel" aria-hidden="true">
 	<div class="modal-header">

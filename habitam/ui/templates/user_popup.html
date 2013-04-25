@@ -1,0 +1,24 @@
+{% with license=user.administrator.license %}
+<table width="300px">
+	<tbody>
+		<tr>
+			<th>Valabilitate:</th>
+			<td>{{ license.valid_until }}</td>
+		</tr>
+		<tr>
+			<th>Folosiți:</th>
+			<td>{{ license.apartment_count }} din {{ license.max_apartments }} apartamente</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<div class="progress">
+					<div class="bar" style="width: {{ license.usage_ratio }}%;"></div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><a class="btn" href="{% url 'logout' %}">Deconectare</a></td>
+		</tr>
+	</tbody>
+</table>
+{% endwith %}
