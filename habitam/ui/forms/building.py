@@ -46,6 +46,7 @@ class EditStaircaseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
         del kwargs['building']
+        del kwargs['user']
         
         print kwargs
         initial = {'parent': building.id,

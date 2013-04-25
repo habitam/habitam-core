@@ -61,14 +61,15 @@ def home(request):
 @login_required   
 def new_building(request):
     if request.method == 'POST':
-        form = NewBuildingForm(request.POST)
+        form = NewBuildingForm(request.user, request.POST)
         if form.is_valid():
-            building_id = ApartmentGroup.bootstrap_building(**form.cleaned_data)
+            building_id = ApartmentGroup.bootstrap_building(
+                    request.user.administrator.license, **form.cleaned_data)
             url = reverse('apartment_list', args=[building_id])
             data = {'location': url}
             return render(request, 'edit_redirect.html', data)
     else:
-        form = NewBuildingForm() 
+        form = NewBuildingForm(request.user) 
     data = {'form': form, 'target': 'new_building', 'title': 'Cladire noua'}
     return render(request, 'edit_dialog.html', data)
 
@@ -108,12 +109,13 @@ def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'
             return HttpResponseBadRequest()
     
     if request.method == 'POST':
-        form = form_cls(request.POST, building=building, instance=entity)
+        form = form_cls(request.POST, user=request.user, building=building,
+                        instance=entity)
         if form.is_valid():
             form.save()
             return render(request, 'edit_ok.html')
     else:
-        form = form_cls(building=building, instance=entity)
+        form = form_cls(user=request.user, building=building, instance=entity)
     
     data = {'form': form, 'target': target, 'entity_id': entity_id,
             'building': building, 'title': title + ' ' + entity.name}
@@ -150,7 +152,7 @@ def new_building_entity(request, building_id, form_cls, target,
     building = ApartmentGroup.objects.get(pk=building_id).building()
     
     if request.method == 'POST':
-        form = form_cls(request.POST, building=building)
+        form = form_cls(request.POST, user=request.user, building=building)
         if form.is_valid():
             entity = form.save(commit=False)
             if save_kwargs != None:
@@ -160,7 +162,7 @@ def new_building_entity(request, building_id, form_cls, target,
                 entity.save()
             return render(request, 'edit_ok.html')
     else:
-        form = form_cls(building=building)
+        form = form_cls(user=request.user, building=building)
     data = {'form': form, 'target': target, 'parent_id': building_id,
             'building': building, 'title': title}
     return render(request, 'edit_dialog.html', data)
@@ -193,7 +195,7 @@ def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
     
     if request.method == 'POST':
         form = form_cls(request.POST, account=src_account,
-                               building=building)
+                               user=request.user, building=building)
         if form.is_valid():
             dest_account = form.cleaned_data[form_dest_key].account
             del form.cleaned_data[form_dest_key]
@@ -201,7 +203,8 @@ def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
                                 **form.cleaned_data)
             return render(request, 'edit_ok.html')
     else:
-        form = form_cls(account=src_account, building=building)
+        form = form_cls(account=src_account, user=request.user,
+                        building=building)
     
     data = {'form' : form, 'target': target, 'entity_id': account_id,
             'building': building,

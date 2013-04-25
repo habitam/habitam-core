@@ -42,6 +42,7 @@ class EditServiceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
         del kwargs['building']
+        del kwargs['user']
         super(EditServiceForm, self).__init__(*args, **kwargs)
         self.fields['billed'].queryset = ApartmentGroup.objects.filter(Q(parent=building) | Q(pk=building.id))
    
@@ -54,6 +55,7 @@ class NewServicePayment(NewDocPaymentForm):
         building = kwargs['building']
         del kwargs['building']
         del kwargs['account']
+        del kwargs['user']
         super(NewServicePayment, self).__init__(*args, **kwargs)
         queryset = Service.objects.filter(
                             Q(billed=building) | Q(billed__parent=building))

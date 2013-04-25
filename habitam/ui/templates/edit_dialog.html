@@ -5,6 +5,13 @@
 		{% for hidden in form.hidden_fields %}
 	    {{ hidden }}
 	    {% endfor %}
+	    {% if form.non_field_errors %}
+	    	<div class="alert alert-error">
+			    {% for error in form.non_field_errors %}
+					<span class="help-inline">{{ error }}</span>
+		    	{% endfor %}
+	    	</div>
+	    {% endif %}
 		{% for field in form.visible_fields %}
 			<div class="control-group {% if field.errors %}error{% endif %}">
 				<label class="control-label" for="id_{{ field.html_name }}">{{ field.label_tag }}</label>

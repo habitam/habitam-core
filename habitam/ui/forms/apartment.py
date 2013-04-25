@@ -41,10 +41,21 @@ class EditApartmentForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
+        user = kwargs['user']
         del kwargs['building']
+        del kwargs['user']
         super(EditApartmentForm, self).__init__(*args, **kwargs)
         staircases = ApartmentGroup.objects.filter(parent=building)
-        self.fields['parent'].queryset = staircases 
+        self.fields['parent'].queryset = staircases
+        self.user = user
+        
+    
+    def clean(self):
+        l = self.user.administrator.license
+        a = l.max_apartments - l.apartment_count()
+        if self.instance.id == None and a < 1:
+            raise forms.ValidationError('Prea multe apartamente')
+        return self.cleaned_data
 
 
 class EditPersonForm(forms.ModelForm):

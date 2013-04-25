@@ -77,12 +77,13 @@ class ApartmentGroup(Entity):
     default_account = models.ForeignKey(Account)
   
     @classmethod
-    def bootstrap_building(cls, name, staircases, apartments, apartment_offset):
+    def bootstrap_building(cls, license, name, staircases, apartments,
+                           apartment_offset):
         per_staircase = apartments / staircases
         remainder = apartments % staircases
         
         building = ApartmentGroup.create(parent=None, name=name,
-                                         group_type='building') 
+                                         group_type='building')
         ap_idx = apartment_offset
         for i in range(staircases):
             staircase = ApartmentGroup.create(parent=building, name=str(i + 1),
@@ -99,7 +100,11 @@ class ApartmentGroup(Entity):
                 owner = Person.bootstrap_owner(name)
                 Apartment.objects.create(name=name, parent=staircase, owner=owner)
                 ap_idx = ap_idx + 1
-        building.save()
+        if license != None:
+            license.buildings.add(building)
+            license.save()
+        else:
+            building.save()
         return building.id
     
     

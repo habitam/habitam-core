@@ -66,7 +66,11 @@
 </table>
 <div class="container">
 	<div class="btn-group pull-right">
+		{% with license=user.administrator.license %}
+		{% if license.apartment_count < license.max_apartments %}
 		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_apartment' building.id %}')">Apartament nou</button>
+		{% endif %}
+		{% endwith %}
 		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_staircase' building.id %}')">Scară nouă</button>
 	</div>
 </div>

@@ -35,6 +35,7 @@ class NewFundTransfer(NewDocPaymentForm):
         account = kwargs['account']
         del kwargs['building']
         del kwargs['account']
+        del kwargs['user']
         super(NewFundTransfer, self).__init__(*args, **kwargs)
         queryset = AccountLink.objects.filter(~Q(account=account) & Q(
                             Q(holder=building) | Q(holder__parent=building)))
