@@ -25,7 +25,8 @@ from habitam.entities.models import ApartmentGroup
 
 
 class License(models.Model):
-    buildings = models.ManyToManyField(ApartmentGroup)
+    buildings = models.ManyToManyField(ApartmentGroup,
+                                       limit_choices_to={'parent': None})
     max_apartments = models.IntegerField()
     valid_until = models.DateField()
     
