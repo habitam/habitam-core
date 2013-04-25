@@ -20,7 +20,8 @@ Created on Apr 12, 2013
 
 @author: Stefan Guna
 '''
-from django.contrib.auth.decorators import login_required
+from datetime import date
+from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
@@ -53,12 +54,17 @@ def __find_building(account):
     return None
 
 
-@login_required
+def license_valid(user):
+    l = user.administrator.license
+    return date.today() < l.valid_until
+
+
+@user_passes_test(license_valid)
 def home(request):
     return render(request, 'home.html')
 
 
-@login_required   
+@user_passes_test(license_valid)   
 def new_building(request):
     if request.method == 'POST':
         form = NewBuildingForm(request.user, request.POST)
@@ -74,14 +80,14 @@ def new_building(request):
     return render(request, 'edit_dialog.html', data)
 
 
-@login_required
+@user_passes_test(license_valid)
 def building_tab(request, building_id, tab):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     return render(request, tab + '.html',
                   {'building': building, 'active_tab': tab})  
 
 
-@login_required   
+@user_passes_test(license_valid)   
 def operation_list(request, account_id):
     account = Account.objects.get(pk=account_id)
     
@@ -90,13 +96,13 @@ def operation_list(request, account_id):
     return render(request, 'operation_list.html', data)
 
 
-@login_required
+@user_passes_test(license_valid)
 def operation_doc(request, account_id, operationdoc_id):
     OperationDoc.delete_doc(operationdoc_id)
     return redirect('operation_list', account_id=account_id)
 
 
-@login_required
+@user_passes_test(license_valid)
 def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'):
     entity = entity_cls.objects.get(pk=entity_id)
     building = entity.building()
@@ -122,7 +128,7 @@ def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'
     return render(request, 'edit_dialog.html', data)
 
 
-@login_required
+@user_passes_test(license_valid)
 def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'):
     entity = entity_cls.objects.get(pk=entity_id)
     
@@ -146,7 +152,7 @@ def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='
     return render(request, 'edit_dialog.html', data)
 
 
-@login_required
+@user_passes_test(license_valid)
 def new_building_entity(request, building_id, form_cls, target,
                         title='New Entity', save_kwargs=None):
     building = ApartmentGroup.objects.get(pk=building_id).building()
@@ -168,7 +174,7 @@ def new_building_entity(request, building_id, form_cls, target,
     return render(request, 'edit_dialog.html', data)
 
 
-@login_required
+@user_passes_test(license_valid)
 def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
                         title):
     entity = entity_cls.objects.get(pk=entity_id)
@@ -187,7 +193,7 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
     return render(request, 'edit_dialog.html', data)  
 
 
-@login_required
+@user_passes_test(license_valid)
 def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
     src_account = Account.objects.get(pk=account_id)
     account_link = AccountLink.objects.get(account=src_account)
