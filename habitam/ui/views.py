@@ -20,7 +20,8 @@ Created on Apr 12, 2013
 
 @author: Stefan Guna
 '''
-from datetime import date
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse, HttpResponseBadRequest
@@ -88,10 +89,24 @@ def building_tab(request, building_id, tab):
 
 
 @user_passes_test(license_valid)   
-def operation_list(request, account_id):
-    account = Account.objects.get(pk=account_id)
+def operation_list(request, account_id, month=None):
+    if month == None:
+        today = date.today()
+        month = date(day=1, month=today.month, year=today.year)
+    else:
+        month = datetime.strptime(month +'-01', "%Y-%m-%d").date()
     
-    data = {'account': account, 'docs': account.operation_list(),
+    l = request.user.administrator.license
+    l.validate_month(month)
+    month_end = month + relativedelta(months=1) 
+    
+    account = Account.objects.get(pk=account_id)
+    ops = account.operation_list(month, month_end)
+    initial = account.balance(month)
+    final = account.balance(month_end) 
+    
+    data = {'account': account, 'docs': ops, 'initial_balance': initial,
+            'final_balance': final, 'month': month,
             'building': __find_building(account)}
     return render(request, 'operation_list.html', data)
 

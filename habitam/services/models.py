@@ -51,7 +51,7 @@ class Quota(models.Model):
     
     
 class OperationDoc(models.Model):
-    date = models.TimeField()
+    date = models.DateTimeField()
     no = models.CharField(max_length=100)
     src = models.ForeignKey('Account', related_name='doc_src_set')
     billed = models.ForeignKey('Account', related_name='doc_billed_set')
@@ -79,12 +79,30 @@ class Account(models.Model):
         except OperationDoc.DoesNotExist:
             pass
     
-    def balance(self):
-        ops = self.operation_list()
-        bsign = lambda y:-1 if y.src == self else 1
-        amount = lambda y: y.total_amount if y.total_amount != None else 0
-        bsum = lambda x, y: x + bsign(y) * amount(y)
-        return reduce(bsum, ops, 0)
+    def balance(self, month=None):
+        q_time = None
+        if month != None:
+            q_time = Q(doc__date__lt=month.strftime('%Y-%m-%d'))
+            
+        balance = 0
+        
+        if q_time != None:
+            q = Q(Q(doc__src=self) & q_time)
+        else:
+            q = Q(doc__src=self)
+        ops = Operation.objects.filter(q).aggregate(total_amount=Sum('amount'))
+        if ops['total_amount'] != None:
+            balance = balance - ops['total_amount']
+        
+        if q_time != None:
+            q = Q(Q(dest=self) & q_time)
+        else:
+            q = Q(dest=self)
+        ops = Operation.objects.filter(q).aggregate(total_amount=Sum('amount'))
+        if ops['total_amount'] != None:
+            balance = balance + ops['total_amount']
+        
+        return balance 
     
     def can_delete(self):
         if OperationDoc.objects.filter(Q(src=self) | Q(billed=self)).count() > 0:
@@ -131,14 +149,16 @@ class Account(models.Model):
         
         self.save()
         
-    def operation_list(self):
-        docs_src = self.doc_src_set.annotate(
-                    total_amount=Sum('operation__amount')).order_by('-date')
-        docs_dest = OperationDoc.objects.filter(operation__dest=self).annotate(
-                    total_amount=Sum('operation__amount')).order_by('-date')
-        docs = []
-        docs.extend(docs_src)
-        docs.extend(docs_dest)
-        docs.sort(cmp=lambda x, y: cmp(x.date, y.date), reverse=True)
-        return docs
+    def operation_list(self, month, month_end):
+        result = []
+        
+        q_time = Q(Q(date__gte=month.strftime('%Y-%m-%d')) & 
+                   Q(date__lt=month_end.strftime('%Y-%m-%d')))
+        q_accnt_link = Q(Q(src=self) | Q(operation__dest=self))
+        q = Q(q_time & q_accnt_link)
+        docs = OperationDoc.objects.filter(q).annotate(
+                    total_amount=Sum('operation__amount')).order_by('date')
+        result.extend(docs)
+        
+        return result 
 

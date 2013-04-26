@@ -91,7 +91,7 @@ urlpatterns = patterns('',
          'target': 'new_payment', 'title': 'Incasare de la'},
         name='new_payment'),
     
-    url(r'^accounts/(?P<account_id>\d+)/operations$', views.operation_list, name='operation_list'),
+    url(r'^accounts/(?P<account_id>\d+)/operations/(?P<month>\d{4}-\d{2})?$', views.operation_list, name='operation_list'),
     url(r'^accounts/(?P<account_id>\d+)/operations/(?P<operationdoc_id>\d+)$', views.operation_doc, name='operation_doc'),
     
     url(r'^accounts/(?P<account_id>\d+)/operations/pay_service$',

@@ -19,6 +19,8 @@ Created on Apr 24, 2013
 
 @author: Stefan Guna
 '''
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.db import models
 from habitam.entities.models import ApartmentGroup
@@ -26,8 +28,9 @@ from habitam.entities.models import ApartmentGroup
 
 class License(models.Model):
     buildings = models.ManyToManyField(ApartmentGroup,
-                                       limit_choices_to={'parent': None})
+        limit_choices_to={'parent': None}, blank=True, null=True)
     max_apartments = models.IntegerField()
+    months_back = models.IntegerField()
     valid_until = models.DateField()
     
     def apartment_count(self):
@@ -36,8 +39,26 @@ class License(models.Model):
             no = no + len(b.apartments())
         return no
     
+    def available_months(self):
+        result = []
+        today = date.today()
+        crnt = date(day=1, month=today.month, year=today.year)
+        for i in range(self.months_back):
+            tmp = crnt - relativedelta(months=i)
+            result.append(tmp)
+        return result
+    
     def usage_ratio(self):
         return self.apartment_count() * 100 / self.max_apartments
+    
+    def validate_month(self, month):
+        today = date.today()
+        crnt = date(day=1, month=today.month, year=today.year)
+        if month > crnt:
+            raise ValueError('Received a future value')
+        first = crnt - relativedelta(months=self.months_back)
+        if month < first:
+            raise ValueError('Received a value outside of the licensed range')
     
     
 class Administrator(models.Model):
