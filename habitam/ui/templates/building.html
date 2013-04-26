@@ -3,11 +3,11 @@
 {% block body %}
 <div class="container">
 	<h1>
-		<div class="btn-group">
+		{{ building.name }}
+		<span class="btn-group pull-right">
 			{% if building.can_delete %}<button class="btn btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_building' entity_id=building.id %}', '{% url 'home' %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
 			<button class="btn" onclick="editDialog('{% url 'edit_building' entity_id=building.id %}')"><i class="icon-edit"></i></button>
-		</div>	
-		{{ building.name }}
+		</span>	
 	</h1>
 </div>
 <div class="container">
