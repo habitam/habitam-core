@@ -23,7 +23,19 @@ Created on Apr 13, 2013
 from django.contrib import admin
 from habitam.services.models import Quota, OperationDoc, Operation, Account
 
-admin.site.register(Quota)
-admin.site.register(OperationDoc)
-admin.site.register(Operation)
-admin.site.register(Account)
+class QuotaAdmin(admin.ModelAdmin):
+    list_display = ('src', 'dest', 'ratio')
+
+class OperationDocAdmin(admin.ModelAdmin):
+    list_display = ('date', 'no', 'src', 'billed', 'type')
+
+class OperationAdmin(admin.ModelAdmin):
+    list_display = ('doc', 'dest', 'amount')
+
+class AccountAdmin(admin.ModelAdmin):
+    list_display = ('holder',)
+
+admin.site.register(Quota, QuotaAdmin)
+admin.site.register(OperationDoc, OperationDocAdmin)
+admin.site.register(Operation, OperationAdmin)
+admin.site.register(Account, AccountAdmin)

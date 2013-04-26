@@ -23,7 +23,20 @@ Created on Apr 13, 2013
 from django.contrib import admin
 from habitam.entities.models import ApartmentGroup, Apartment, Person, Service
 
-admin.site.register(ApartmentGroup)
-admin.site.register(Apartment)
-admin.site.register(Person)
-admin.site.register(Service)
+class ApartmentGroupAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'type', 'parent')
+    
+class ApartmentAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'parent', 'owner')
+    
+class PersonAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email')
+
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'billed', 'quota_type')
+    
+
+admin.site.register(ApartmentGroup, ApartmentGroupAdmin)
+admin.site.register(Apartment, ApartmentAdmin)
+admin.site.register(Person, PersonAdmin)
+admin.site.register(Service, ServiceAdmin)

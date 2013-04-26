@@ -33,7 +33,7 @@ class UserAdmin(UserAdmin):
     inlines = (AdministratorInline, )
     
 class LicenseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'valid_until', 'max_apartments')
+    list_display = ('id', 'valid_until', 'max_apartments', 'months_back')
  
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
