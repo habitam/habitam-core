@@ -30,8 +30,26 @@ from habitam.ui.forms.service import EditServiceForm, NewServicePayment
 
 
 urlpatterns = patterns('',
-    url(r'^users/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}, 'login'),
-    url(r'^users/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'logout.html'}, 'logout'),
+    url(r'^users/login/$', 'django.contrib.auth.views.login',
+        {'template_name': 'login.html'}, 'login'),
+    url(r'^users/logout/$', 'django.contrib.auth.views.logout',
+        {'template_name': 'logout.html'}, 'logout'),
+    url(r'^users/reset/$', 'django.contrib.auth.views.password_reset', 
+        {'template_name': 'password_reset.html',
+         'email_template_name': 'password_reset_email.txt',
+         'subject_template_name': 'password_reset_subject.txt'},
+        name='password_reset'),
+    url(r'^users/reset/done/$', 'django.contrib.auth.views.password_reset_done',
+        {'template_name': 'password_reset_done.html'},
+        name='password_reset_done'),
+    url(r'^users/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
+        'django.contrib.auth.views.password_reset_confirm', 
+        {'template_name': 'password_reset_confirm.html'},
+        name='password_reset_confirm'),
+    url(r'^users/reset/complete/$',
+        'django.contrib.auth.views.password_reset_complete',
+        {'template_name': 'password_reset_complete.html'},
+        name='password_reset_complete'),
     
     url(r'^$', views.home, name='home'),
     
