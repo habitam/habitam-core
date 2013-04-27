@@ -159,10 +159,10 @@ class ServiceTests(EntitiesTestBase):
    
     
     def test_apartment1_balance(self):
-        self.__assert_ap_balance('1', 11)
+        self.__assert_ap_balance('1', -11)
         
     def test_apartment2_balance(self):
-        self.__assert_ap_balance('2', 6)
+        self.__assert_ap_balance('2', -6)
         
     def test_leftgroup_Balance(self):
         self.__assert_apgroup_balance('left', 0)

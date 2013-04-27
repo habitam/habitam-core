@@ -71,6 +71,7 @@ class Operation(models.Model):
 
 class Account(models.Model):
     holder = models.CharField(max_length=100)
+    negate = models.BooleanField(default=False)
     
     def __assert_doc_not_exists(self, no):
         try:
@@ -102,6 +103,8 @@ class Account(models.Model):
         if ops['total_amount'] != None:
             balance = balance + ops['total_amount']
         
+        if self.negate:
+            return balance * -1
         return balance 
     
     def can_delete(self):
@@ -158,6 +161,11 @@ class Account(models.Model):
         q = Q(q_time & q_accnt_link)
         docs = OperationDoc.objects.filter(q).annotate(
                     total_amount=Sum('operation__amount')).order_by('date')
+        
+        if self.negate:
+            for d in docs:
+                d.total_amount = d.total_amount * -1
+            
         result.extend(docs)
         
         return result 

@@ -46,9 +46,11 @@ class Entity(models.Model):
 class SingleAccountEntity(Entity):   
     account = models.ForeignKey(Account)
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, account_negate, *args, **kwargs):
         if 'name' in kwargs.keys():
-            kwargs.setdefault('account', Account.objects.create(holder=kwargs['name']))
+            account = Account.objects.create(holder=kwargs['name'],
+                                             negate=account_negate)
+            kwargs.setdefault('account', account)
         super(SingleAccountEntity, self).__init__(*args, **kwargs)
 
     def balance(self):
@@ -57,12 +59,13 @@ class SingleAccountEntity(Entity):
     class Meta:
         abstract = True
         
-    def save(self, **kwargs):
+    def save(self, account_negate, **kwargs):
         try:
             self.account.holder = self.__unicode__()
             self.account.save()
         except Account.DoesNotExist:
-            self.account = Account.objects.create(holder=self.__unicode__())
+            self.account = Account.objects.create(holder=self.__unicode__(),
+                                                  negate=account_negate)
         
         self.account.holder = self.name     
         super(SingleAccountEntity, self).save(**kwargs)
@@ -282,15 +285,15 @@ class Apartment(SingleAccountEntity):
     floor = models.SmallIntegerField(null=True, blank=True)
 
     def __init__(self, *args, **kwargs):       
-        super(Apartment, self).__init__(*args, **kwargs) 
+        super(Apartment, self).__init__(True, *args, **kwargs) 
         self._old_name = self.name
         self._old_parent = self.parent
         
         
     def __unicode__(self):
         return 'Apartament ' + self.name
+
         
-    
     def building(self):
         return self.parent.building()
 
@@ -326,7 +329,7 @@ class Apartment(SingleAccountEntity):
         except Person.DoesNotExist:
             self.owner = Person.bootstrap_owner(self.name) 
         
-        super(Apartment, self).save(**kwargs)
+        super(Apartment, self).save(True, **kwargs)
         print self.parent
         
         if self._old_parent != self.parent: 
@@ -349,7 +352,7 @@ class Service(SingleAccountEntity):
 
    
     def __init__(self, *args, **kwargs): 
-        super(Service, self).__init__(*args, **kwargs) 
+        super(Service, self).__init__(False, *args, **kwargs) 
         try:
             self._old_billed = self.billed
         except:
@@ -387,7 +390,7 @@ class Service(SingleAccountEntity):
         Quota.del_quota(self.account)
 
     def save(self, **kwargs):
-        super(Service, self).save(**kwargs)
+        super(Service, self).save(False, **kwargs)
        
         if self._old_billed != self.billed and self._old_billed != None:
             self.drop_quota()
