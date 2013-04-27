@@ -15,7 +15,7 @@
 			<tr>
 				<td>{{ service }}</td>
 				<td>{{ service.billed }}</td>
-				<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance }}</td>
+				<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance|floatformat:2 }}</td>
 				<td>
 					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' building_id=building.id account_id=service.account.id %}'">Operațiuni</button>
 					<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_service' entity_id=service.id %}')">Modifică</button>

@@ -13,7 +13,7 @@
 		{% for account in building.funds %}
 			<tr>
 				<td>{{ account.holder }}</td>
-				<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ account.balance }}</td>
+				<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ account.balance|floatformat:2 }}</td>
 				<td>
 					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' building_id=building.id account_id=account.id %}'">Operațiuni</button>
 					<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'new_fund_transfer' account_id=account.id %}')">Transfer</button>

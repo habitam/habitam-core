@@ -39,7 +39,7 @@
 				<td>{{ ap.rooms }}</td>
 				<td>{{ ap.inhabitance }}</td>
 				<td>{{ ap.area }}</td>
-				<td class="{% if ap.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ ap.balance }}</td>
+				<td class="{% if ap.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ ap.balance|floatformat:2 }}</td>
 				<td class="{% if ap.penalties > 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ ap.penalties|floatformat:2 }}</td>
 				<td>
 					<div class="btn-toolbar btn-toolbar-apartment">
