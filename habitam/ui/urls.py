@@ -80,6 +80,9 @@ urlpatterns = patterns('',
     url(r'^buildings/(?P<building_id>\d+)/accounts/(?P<account_id>\d+)/operations/(?P<month>\d{4}-\d{2})?$',
         views.operation_list, name='operation_list'),
     
+    url(r'^buildings/(?P<building_id>\d+)/accounts/(?P<account_id>\d+)/operations/(?P<operationdoc_id>\d+)$',
+        views.operation_doc, name='operation_doc'),
+    
     url(r'^buildings/(?P<building_id>\d+)/services$', views.building_tab, {'tab': 'service_list'}, name='service_list'),
     
     url(r'^buildings/(?P<building_id>\d+)/services/new$',
@@ -111,8 +114,6 @@ urlpatterns = patterns('',
         {'entity_cls': Apartment, 'form_cls': NewPaymentForm,
          'target': 'new_payment', 'title': 'Incasare de la'},
         name='new_payment'),
-    
-    url(r'^accounts/(?P<account_id>\d+)/operations/(?P<operationdoc_id>\d+)$', views.operation_doc, name='operation_doc'),
     
     url(r'^accounts/(?P<account_id>\d+)/operations/pay_service$',
         views.new_transfer,

@@ -121,9 +121,10 @@ def operation_list(request, building_id, account_id, month=None):
 
 @login_required
 @user_passes_test(license_valid)
-def operation_doc(request, account_id, operationdoc_id):
+def operation_doc(request, building_id, account_id, operationdoc_id):
     OperationDoc.delete_doc(operationdoc_id)
-    return redirect('operation_list', account_id=account_id)
+    return redirect('operation_list', building_id=building_id,
+                    account_id=account_id)
 
 
 @login_required
