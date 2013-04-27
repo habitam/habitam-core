@@ -29,7 +29,7 @@ from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink
 from habitam.services.models import Account, OperationDoc
-from habitam.ui.forms.generic import NewBuildingForm
+from habitam.ui.forms.building import NewBuildingForm
 import logging
 
 
@@ -93,15 +93,18 @@ def building_tab(request, building_id, tab):
 
 @login_required
 @user_passes_test(license_valid)   
-def operation_list(request, account_id, month=None):
+def operation_list(request, building_id, account_id, month=None):
+    building = ApartmentGroup.objects.get(pk=building_id)
     if month == None:
         today = date.today()
-        month = date(day=1, month=today.month, year=today.year)
+        month = date(day=building.issuance_day, month=today.month,
+                     year=today.year)
     else:
-        month = datetime.strptime(month +'-01', "%Y-%m-%d").date()
+        month = datetime.strptime(month + '-%02d' % building.issuance_day,
+                                  "%Y-%m-%d").date()
     
     l = request.user.administrator.license
-    l.validate_month(month)
+    l.validate_month(building, month)
     month_end = month + relativedelta(months=1) 
     
     account = Account.objects.get(pk=account_id)
@@ -109,8 +112,9 @@ def operation_list(request, account_id, month=None):
     initial = account.balance(month)
     final = account.balance(month_end) 
     
-    data = {'account': account, 'docs': ops, 'initial_balance': initial,
-            'final_balance': final, 'month': month,
+    data = {'account': account, 'docs': ops, 'building': building,
+            'initial_balance': initial, 'final_balance': final,
+            'month': month, 'month_end': month_end,
             'building': __find_building(account)}
     return render(request, 'operation_list.html', data)
 

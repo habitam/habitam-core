@@ -21,9 +21,12 @@ Created on Apr 8, 2013
 @author: Stefan Guna
 '''
 from decimal import Decimal
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils import timezone
 from habitam.services.models import Account, Quota
+from habitam.settings import MAX_ISSUANCE_DAY, MAX_PAYMENT_DUE_DAYS, \
+    MAX_PENALTY_PER_DAY
 from uuid import uuid1
 import logging
 
@@ -71,18 +74,28 @@ class ApartmentGroup(Entity):
              ('building', 'building')
     )
 
-    parent = models.ForeignKey('self', null=True, blank=True)
-    type = models.CharField(max_length=5, choices=TYPES)
     default_account = models.ForeignKey(Account)
+    issuance_day = models.SmallIntegerField(null=True, blank=True,
+            validators=[MaxValueValidator(MAX_ISSUANCE_DAY)])
+    type = models.CharField(max_length=5, choices=TYPES)
+    parent = models.ForeignKey('self', null=True, blank=True)
+    payment_due_days = models.SmallIntegerField(null=True, blank=True,
+            validators=[MaxValueValidator(MAX_PAYMENT_DUE_DAYS)])
+    daily_penalty = models.DecimalField(null=True, blank=True,
+            decimal_places=2, max_digits=4,
+            validators=[MaxValueValidator(MAX_PENALTY_PER_DAY)])
   
     @classmethod
-    def bootstrap_building(cls, license, name, staircases, apartments,
-                           apartment_offset):
+    def bootstrap_building(cls, user_license, name, staircases, apartments,
+                           apartment_offset, daily_penalty, issuance_day,
+                           payment_due_days):
         per_staircase = apartments / staircases
         remainder = apartments % staircases
         
         building = ApartmentGroup.create(parent=None, name=name,
-                                         group_type='building')
+                        group_type='building', daily_penalty=daily_penalty,
+                        issuance_day=issuance_day,
+                        payment_due_days=payment_due_days)
         ap_idx = apartment_offset
         for i in range(staircases):
             staircase = ApartmentGroup.create(parent=building, name=str(i + 1),
@@ -99,19 +112,23 @@ class ApartmentGroup(Entity):
                 owner = Person.bootstrap_owner(name)
                 Apartment.objects.create(name=name, parent=staircase, owner=owner)
                 ap_idx = ap_idx + 1
-        if license != None:
-            license.buildings.add(building)
-            license.save()
+        if user_license != None:
+            user_license.buildings.add(building)
+            user_license.save()
         else:
             building.save()
         return building.id
     
     
     @classmethod
-    def create(cls, name, group_type, parent=None):
+    def create(cls, name, group_type, parent=None, daily_penalty=None,
+               issuance_day=None, payment_due_days=None):
         account = Account.objects.create()
         apGroup = ApartmentGroup.objects.create(parent=parent, name=name,
-                                type=group_type, default_account=account)
+                                type=group_type, default_account=account,
+                                daily_penalty=daily_penalty,
+                                issuance_day=issuance_day,
+                                payment_due_days=payment_due_days)
         AccountLink.objects.create(holder=apGroup, account=account)
         account.holder = apGroup.__unicode__()
         account.save()
@@ -273,7 +290,7 @@ class Apartment(SingleAccountEntity):
     def __unicode__(self):
         return 'Apartament ' + self.name
         
-        
+    
     def building(self):
         return self.parent.building()
 

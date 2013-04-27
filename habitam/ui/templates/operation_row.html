@@ -1,6 +1,6 @@
 {% load ui_extras %}
 <tr>
-	<td>{{ doc.date }}</td>
+	<td>{{ doc.date|date:"d-m-Y" }}</td>
 	<td>{{ other }}</td>
 	<td>{{ doc.no }}</td>
 	<td class="{% if negative and amount > 0 or not negative and amount < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ amount | operation_sign:negative }}</td>

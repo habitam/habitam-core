@@ -175,3 +175,17 @@ LOGGING = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DEFAULT_FROM_EMAIL = '"Habitam" <fake@email.com>'
+
+
+# APPLICATION CONFIGURATION
+
+# The maximum last day of the month when the payment list is issued
+MAX_ISSUANCE_DAY = 28
+# The maximum number of days after payment list issuance when debts should be
+# paid
+MAX_PAYMENT_DUE_DAYS = 20
+# The number of days after the payment deadline when penalties start to be
+# calculated
+PENALTY_START_DAYS = 30
+# The maximum penalty percentage per day
+MAX_PENALTY_PER_DAY = .2

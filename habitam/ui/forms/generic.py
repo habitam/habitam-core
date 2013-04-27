@@ -22,27 +22,6 @@ Created on Apr 21, 2013
 '''
 from django import forms
 
-
-class NewBuildingForm(forms.Form):
-    name = forms.CharField(label='Nume', max_length=100)
-    staircases = forms.IntegerField(label='Număr scări', min_value=1, max_value=100)
-    apartments = forms.IntegerField(label='Număr apartamente', min_value=1, max_value=1000)
-    apartment_offset = forms.IntegerField(label='Primul apartament', min_value=1, max_value=1000)
-
-    def __init__(self, user, *args, **kwargs):
-        super(NewBuildingForm, self).__init__(*args, **kwargs)
-        self.user = user
-        
-    def clean(self):
-        l = self.user.administrator.license
-        a = l.max_apartments - l.apartment_count()
-        if a < self.cleaned_data['apartments']:
-            raise forms.ValidationError('Prea multe apartamente')
-        return self.cleaned_data
-
-    def spinners(self):
-        return ['staircases', 'apartments', 'apartment_offset']
-
    
 class NewPaymentForm(forms.Form):
     amount = forms.DecimalField(label='Suma')

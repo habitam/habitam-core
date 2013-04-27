@@ -11,7 +11,7 @@ Operațiuni pentru {{ account.holder }} în {{ month|date:"F Y" }}
   	<ul class="dropdown-menu">
 	{% with license=user.administrator.license %}
 	{% for m in license.available_months %}
-		<li><a href="{% url 'operation_list' account_id=account.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
+		<li><a href="{% url 'operation_list' building_id=building.id account_id=account.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
 	{% endfor %}
 	{% endwith %}
 	</ul>
@@ -27,9 +27,9 @@ Operațiuni pentru {{ account.holder }} în {{ month|date:"F Y" }}
 	</thead>
 	<tbody>
 	<tr>
+		<td><em>{{ month|date:"d-m-Y" }}</em></td>
+		<td><em>Sold inițial</em></td>
 		<td></td>
-		<td></td>
-		<td style="text-align: right;"><em>Sold inițial</em></td>
 		<td class="{% if initial_balance < 0 %}negative_balance{% else %}positive_balance{% endif %}"><em>{{ initial_balance }}</em></td>
 		<td></td>
 	</tr>
@@ -41,9 +41,9 @@ Operațiuni pentru {{ account.holder }} în {{ month|date:"F Y" }}
 		{% endif %}
 	{% endfor %}
 	<tr>
+		<td><em>{{ month_end|date:"d-m-Y" }}</em></td>
+		<td><em>Sold final</em></td>
 		<td></td>
-		<td></td>
-		<td style="text-align: right;"><em>Sold final</em></td>
 		<td class="{% if final_balance < 0 %}negative_balance{% else %}positive_balance{% endif %}"><em>{{ final_balance }}</em></td>
 		<td></td>
 	</tr>

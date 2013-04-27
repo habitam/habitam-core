@@ -51,9 +51,10 @@ class License(models.Model):
     def usage_ratio(self):
         return self.apartment_count() * 100 / self.max_apartments
     
-    def validate_month(self, month):
+    def validate_month(self, building, month):
         today = date.today()
-        crnt = date(day=1, month=today.month, year=today.year)
+        crnt = date(day=building.issuance_day, month=today.month,
+                    year=today.year)
         if month > crnt:
             raise ValueError('Received a future value')
         first = crnt - relativedelta(months=self.months_back)

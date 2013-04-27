@@ -42,7 +42,7 @@
 				<td>
 					<div class="btn-toolbar btn-toolbar-apartment">
 						<div class="btn-group">
-							<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' account_id=ap.account.id %}'"><i class="icon-list-alt"></i> Operațiuni</button>
+							<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' building_id=building.id account_id=ap.account.id %}'"><i class="icon-list-alt"></i> Operațiuni</button>
 							<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_payment' entity_id=ap.id %}')"><i class="icon-plus-sign icon-white"></i> Încasează</button>
 						</div>
 						<div class="btn-group">

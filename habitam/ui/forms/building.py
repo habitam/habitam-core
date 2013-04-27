@@ -22,6 +22,8 @@ Created on Apr 21, 2013
 '''
 from django import forms
 from habitam.entities.models import ApartmentGroup
+from habitam.settings import MAX_ISSUANCE_DAY, MAX_PAYMENT_DUE_DAYS, \
+    MAX_PENALTY_PER_DAY
 
 
 class EditBuildingForm(forms.ModelForm):
@@ -58,4 +60,40 @@ class EditStaircaseForm(forms.ModelForm):
         print kwargs
         super(EditStaircaseForm, self).__init__(*args, **kwargs)
         print self.fields
+        
          
+class NewBuildingForm(forms.Form):
+    apartments = forms.IntegerField(label='Număr apartamente', min_value=1,
+                                    max_value=1000)
+    apartment_offset = forms.IntegerField(label='Primul apartament',
+                                    initial=1, min_value=1, max_value=1000)
+    daily_penalty = forms.DecimalField(label='Penalitate (procent zilnic)',
+                                    initial=MAX_PENALTY_PER_DAY, min_value=0,
+                                    max_value=MAX_PENALTY_PER_DAY)
+    issuance_day = forms.IntegerField(label='Data afișare listă',
+                                    initial=1, min_value=1,
+                                    max_value=MAX_ISSUANCE_DAY)
+    payment_due_days = forms.IntegerField(label='Zile de scadență',
+                                    initial=MAX_PAYMENT_DUE_DAYS, min_value=1,
+                                    max_value=MAX_PAYMENT_DUE_DAYS)
+    name = forms.CharField(label='Nume', max_length=100)
+    staircases = forms.IntegerField(label='Număr scări', initial=1,
+                                    min_value=1, max_value=100)
+
+    def __init__(self, user, *args, **kwargs):
+        super(NewBuildingForm, self).__init__(*args, **kwargs)
+        self.user = user
+        self.fields.keyOrder = ['name', 'staircases', 'apartments',
+                                'apartment_offset', 'issuance_day',
+                                'payment_due_days', 'daily_penalty']
+        
+    def clean(self):
+        l = self.user.administrator.license
+        a = l.max_apartments - l.apartment_count()
+        if a < self.cleaned_data['apartments']:
+            raise forms.ValidationError('Prea multe apartamente')
+        return self.cleaned_data
+
+    def spinners(self):
+        return ['staircases', 'apartments', 'apartment_offset', 'issuance_day',
+                'payment_due_days', 'daily_penalty']
