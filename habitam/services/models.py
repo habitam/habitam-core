@@ -168,5 +168,23 @@ class Account(models.Model):
             
         result.extend(docs)
         
-        return result 
+        return result
+    
+    def payments(self, since):
+        payments = 0
+        q_time = Q(doc__date__gt=since.strftime('%Y-%m-%d'))
+        
+        q = Q(Q(amount__gt=0) & Q(doc__src=self) & q_time)
+        ops = Operation.objects.filter(q).aggregate(total_amount=Sum('amount'))
+        if ops['total_amount'] != None:
+            payments = payments - ops['total_amount']
+        
+        q = Q(Q(amount__lt=0) & Q(dest=self) & q_time)
+        ops = Operation.objects.filter(q).aggregate(total_amount=Sum('amount'))
+        if ops['total_amount'] != None:
+            payments = payments + ops['total_amount']
+        
+        if self.negate:
+            return payments * -1
+        return payments 
 

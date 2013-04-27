@@ -27,7 +27,7 @@ class ApartmentGroupAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'type', 'parent')
     
 class ApartmentAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'parent', 'owner')
+    list_display = ('__unicode__', 'parent', 'owner', 'no_penalties_since')
     
 class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')

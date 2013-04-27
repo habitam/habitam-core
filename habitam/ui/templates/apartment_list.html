@@ -13,6 +13,7 @@
 			<th>Nr. persoane</th>
 			<th>Suprafață</th>
 			<th>Balanță</th>
+			<th>Penalități</th>
 			<th>&nbsp;</th>
 		</tr>
 	</thead>
@@ -20,7 +21,7 @@
 		{% for sc in building.apartmentgroup_set.all %}
 			<tr>
 				<td>&nbsp;</td>
-				<th colspan="8">Scara {{ sc.name }}</th>
+				<th colspan="9">Scara {{ sc.name }}</th>
 				<td>
 					<div class="btn-group">
 					    {% if sc.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_staircase' entity_id=sc.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
@@ -39,6 +40,7 @@
 				<td>{{ ap.inhabitance }}</td>
 				<td>{{ ap.area }}</td>
 				<td class="{% if ap.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ ap.balance }}</td>
+				<td class="{% if ap.penalties > 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ ap.penalties|floatformat:2 }}</td>
 				<td>
 					<div class="btn-toolbar btn-toolbar-apartment">
 						<div class="btn-group">

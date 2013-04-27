@@ -20,13 +20,15 @@ Created on Apr 8, 2013
 
 @author: Stefan Guna
 '''
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils import timezone
 from habitam.services.models import Account, Quota
 from habitam.settings import MAX_ISSUANCE_DAY, MAX_PAYMENT_DUE_DAYS, \
-    MAX_PENALTY_PER_DAY
+    MAX_PENALTY_PER_DAY, PENALTY_START_DAYS
 from uuid import uuid1
 import logging
 
@@ -275,14 +277,15 @@ class Person(models.Model):
 
 
 class Apartment(SingleAccountEntity):
+    area = models.DecimalField(default=1, decimal_places=2, max_digits=6)
+    floor = models.SmallIntegerField(null=True, blank=True)
+    inhabitance = models.SmallIntegerField(default=0)
+    no_penalties_since = models.DateField(auto_now_add=True)
     owner = models.ForeignKey(Person, related_name='owner')
     parent = models.ForeignKey(ApartmentGroup, null=True, blank=True)
     rented_to = models.ForeignKey(Person, related_name='rented_to',
                                   null=True, blank=True)
-    inhabitance = models.SmallIntegerField(default=0)
-    area = models.DecimalField(default=1, decimal_places=2, max_digits=6)
     rooms = models.SmallIntegerField(default=1) 
-    floor = models.SmallIntegerField(null=True, blank=True)
 
     def __init__(self, *args, **kwargs):       
         super(Apartment, self).__init__(True, *args, **kwargs) 
@@ -306,6 +309,60 @@ class Apartment(SingleAccountEntity):
         self.owner.delete()
         super(Apartment, self).delete()
         
+    
+    def __monthly_penalties(self, nps, payments_carry, begin, end):
+        begin_balance = self.account.balance(begin)
+        end_balance = self.account.balance(end)
+        monthly_debt = end_balance - begin_balance
+        payments = self.account.payments(end) - payments_carry
+        balance = monthly_debt + payments
+
+        if balance >= 0:
+            logger.debug('No debts at %s %f %f' % (end, balance, payments))
+            return end, monthly_debt, 0
+        
+        building = self.building()
+        count_since = end + relativedelta(days=building.payment_due_days)
+        count_since = count_since + relativedelta(days=PENALTY_START_DAYS)
+        days = (date.today() - count_since).days
+        
+        penalties = days * building.daily_penalty * balance * -1 / 100 
+        
+        logger.debug('Penalties %s -> %s are %f for debts are %f in %d days, used %f to pay the monthly debt %f' % 
+                     (begin, end, penalties, balance, days, payments, monthly_debt))
+        
+        return nps, payments, penalties
+     
+     
+    def penalties(self):
+        building = self.building()
+        today = date.today()
+        last = date(day=building.issuance_day, month=today.month,
+                    year=today.year)
+        last = last - relativedelta(days=building.payment_due_days)
+        last = last - relativedelta(days=PENALTY_START_DAYS)
+        
+        iterator = date(day=building.issuance_day,
+                   month=self.no_penalties_since.month,
+                   year=self.no_penalties_since.year)
+        nps = start = iterator
+        p = 0
+        carry = 0
+        while iterator < last:
+            following = iterator + relativedelta(months=1)
+            nps, carry, m = self.__monthly_penalties(nps, carry, iterator,
+                                                     following)
+            p = p + m
+            iterator = following
+            
+        if nps != start:
+            logger.info('Increment nps for %s(pk=%d) from %s to %s' %
+                        (self, self.pk, start, nps))
+            self.no_penalties_since = nps
+            self.save()
+            
+        return p
+    
     
     def weight(self, quota_type='equally'):
         if quota_type == 'equally':
