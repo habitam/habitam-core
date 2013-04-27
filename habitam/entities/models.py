@@ -28,7 +28,7 @@ from django.db import models
 from django.utils import timezone
 from habitam.services.models import Account, Quota
 from habitam.settings import MAX_ISSUANCE_DAY, MAX_PAYMENT_DUE_DAYS, \
-    MAX_PENALTY_PER_DAY, PENALTY_START_DAYS
+    MAX_PENALTY_PER_DAY, PENALTY_START_DAYS, EPS
 from uuid import uuid1
 import logging
 
@@ -48,10 +48,10 @@ class Entity(models.Model):
 class SingleAccountEntity(Entity):   
     account = models.ForeignKey(Account)
     
-    def __init__(self, account_negate, *args, **kwargs):
+    def __init__(self, account_type, *args, **kwargs):
         if 'name' in kwargs.keys():
             account = Account.objects.create(holder=kwargs['name'],
-                                             negate=account_negate)
+                                             type=account_type)
             kwargs.setdefault('account', account)
         super(SingleAccountEntity, self).__init__(*args, **kwargs)
 
@@ -61,13 +61,13 @@ class SingleAccountEntity(Entity):
     class Meta:
         abstract = True
         
-    def save(self, account_negate, **kwargs):
+    def save(self, account_type, **kwargs):
         try:
             self.account.holder = self.__unicode__()
             self.account.save()
         except Account.DoesNotExist:
             self.account = Account.objects.create(holder=self.__unicode__(),
-                                                  negate=account_negate)
+                                                  type=account_type)
         
         self.account.holder = self.name     
         super(SingleAccountEntity, self).save(**kwargs)
@@ -79,13 +79,16 @@ class ApartmentGroup(Entity):
              ('building', 'building')
     )
 
-    default_account = models.ForeignKey(Account)
+    default_account = models.ForeignKey(Account, null=True, blank=True,
+                                        related_name='default_account')
     issuance_day = models.SmallIntegerField(null=True, blank=True,
             validators=[MaxValueValidator(MAX_ISSUANCE_DAY)])
     type = models.CharField(max_length=5, choices=TYPES)
     parent = models.ForeignKey('self', null=True, blank=True)
     payment_due_days = models.SmallIntegerField(null=True, blank=True,
             validators=[MaxValueValidator(MAX_PAYMENT_DUE_DAYS)])
+    penalties_account = models.ForeignKey(Account, null=True, blank=True,
+                                          related_name='penalties_account')
     daily_penalty = models.DecimalField(null=True, blank=True,
             decimal_places=2, max_digits=4,
             validators=[MaxValueValidator(MAX_PENALTY_PER_DAY)])
@@ -97,25 +100,28 @@ class ApartmentGroup(Entity):
         per_staircase = apartments / staircases
         remainder = apartments % staircases
         
-        building = ApartmentGroup.create(parent=None, name=name,
-                        group_type='building', daily_penalty=daily_penalty,
+        building = ApartmentGroup.building_create(name=name,
+                        daily_penalty=daily_penalty,
                         issuance_day=issuance_day,
                         payment_due_days=payment_due_days)
         ap_idx = apartment_offset
+        today = date.today()
         for i in range(staircases):
-            staircase = ApartmentGroup.create(parent=building, name=str(i + 1),
-                                              group_type='stair')
+            staircase = ApartmentGroup.staircase_create(parent=building,
+                                                        name=str(i + 1))
             for j in range(per_staircase):
                 name = str(ap_idx)
                 owner = Person.bootstrap_owner(name)
-                Apartment.objects.create(name=name, parent=staircase, owner=owner)
+                Apartment.objects.create(name=name, parent=staircase,
+                                         owner=owner, no_penalties_since=today)
                 ap_idx = ap_idx + 1
             if i + 1 < staircases:
                 continue
             for j in range(remainder):
                 name = str(ap_idx)
                 owner = Person.bootstrap_owner(name)
-                Apartment.objects.create(name=name, parent=staircase, owner=owner)
+                Apartment.objects.create(name=name, parent=staircase,
+                                         owner=owner, no_penalties_since=today)
                 ap_idx = ap_idx + 1
         if user_license != None:
             user_license.buildings.add(building)
@@ -126,20 +132,44 @@ class ApartmentGroup(Entity):
     
     
     @classmethod
-    def create(cls, name, group_type, parent=None, daily_penalty=None,
-               issuance_day=None, payment_due_days=None):
-        account = Account.objects.create()
-        apGroup = ApartmentGroup.objects.create(parent=parent, name=name,
-                                type=group_type, default_account=account,
+    def building_create(cls, name, daily_penalty=None, issuance_day=None, 
+                        payment_due_days=None):
+        default_account = Account.objects.create(type='std')
+        penalties_account = Account.objects.create(type='penalties')
+        building = ApartmentGroup.objects.create(name=name, type='building',
+                                default_account=default_account,
+                                penalties_account=penalties_account,
                                 daily_penalty=daily_penalty,
                                 issuance_day=issuance_day,
                                 payment_due_days=payment_due_days)
-        AccountLink.objects.create(holder=apGroup, account=account)
-        account.holder = apGroup.__unicode__()
-        account.save()
-        return apGroup
+        
+        AccountLink.objects.create(holder=building, account=default_account)
+        default_account.holder = building.__unicode__()
+        default_account.save()
+        
+        AccountLink.objects.create(holder=building, account=penalties_account)
+        penalties_account.holder = building.__unicode__()
+        penalties_account.save()
+        
+        return building
     
     
+    @classmethod
+    def staircase_create(cls, name, parent, daily_penalty=None, issuance_day=None, 
+                        payment_due_days=None):
+        default_account = Account.objects.create(type='std')
+        staircase = ApartmentGroup.objects.create(name=name, parent=parent,
+                                type='stair', default_account=default_account,
+                                daily_penalty=daily_penalty,
+                                issuance_day=issuance_day,
+                                payment_due_days=payment_due_days)
+        AccountLink.objects.create(holder=staircase, account=default_account)
+        default_account.holder = staircase.__unicode__()
+        default_account.save()
+        
+        return staircase
+    
+        
     def __unicode__(self):
         if self.type == 'building':
             return 'Block ' + self.name
@@ -217,11 +247,10 @@ class ApartmentGroup(Entity):
         try:
             self.default_account.holder = self.__unicode__()
             self.default_account.save()
-            account_created = False
-        except Account.DoesNotExist:
-            account = Account.objects.create(holder=self.__unicode__())
-            self.default_account = account
-            account_created = True 
+            self.penalties_account.holder = self.__unicode__()
+            self.penalties_account.save()
+        except AttributeError:
+            pass
         
         if 'building' in kwargs.keys():
             self.parent = kwargs['building']
@@ -231,9 +260,6 @@ class ApartmentGroup(Entity):
             del kwargs['type'] 
         super(ApartmentGroup, self).save(**kwargs)
         
-        if account_created:
-            default_link = AccountLink.objects.create(holder=self, account=account)
-            default_link.save()
     
     def services(self):
         result = []
@@ -280,7 +306,7 @@ class Apartment(SingleAccountEntity):
     area = models.DecimalField(default=1, decimal_places=2, max_digits=6)
     floor = models.SmallIntegerField(null=True, blank=True)
     inhabitance = models.SmallIntegerField(default=0)
-    no_penalties_since = models.DateField(auto_now_add=True)
+    no_penalties_since = models.DateField()
     owner = models.ForeignKey(Person, related_name='owner')
     parent = models.ForeignKey(ApartmentGroup, null=True, blank=True)
     rented_to = models.ForeignKey(Person, related_name='rented_to',
@@ -288,7 +314,7 @@ class Apartment(SingleAccountEntity):
     rooms = models.SmallIntegerField(default=1) 
 
     def __init__(self, *args, **kwargs):       
-        super(Apartment, self).__init__(True, *args, **kwargs) 
+        super(Apartment, self).__init__('apart', *args, **kwargs) 
         self._old_name = self.name
         self._old_parent = self.parent
         
@@ -311,17 +337,20 @@ class Apartment(SingleAccountEntity):
         
     
     def __monthly_penalties(self, nps, payments_carry, begin, end):
+        building = self.building()
+        
         begin_balance = self.account.balance(begin)
         end_balance = self.account.balance(end)
         monthly_debt = end_balance - begin_balance
-        payments = self.account.payments(end) - payments_carry
+        payments = self.account.payments(end, building.penalties_account)
+        payments = payments - payments_carry
         balance = monthly_debt + payments
 
+        logger.debug('%s -> %s' %(begin_balance, end_balance))
         if balance >= 0:
             logger.debug('No debts at %s %f %f' % (end, balance, payments))
             return end, monthly_debt, 0
         
-        building = self.building()
         count_since = end + relativedelta(days=building.payment_due_days)
         count_since = count_since + relativedelta(days=PENALTY_START_DAYS)
         days = (date.today() - count_since).days
@@ -356,12 +385,12 @@ class Apartment(SingleAccountEntity):
             iterator = following
             
         if nps != start:
-            logger.info('Increment nps for %s(pk=%d) from %s to %s' %
+            logger.info('Increment nps for %s(pk=%d) from %s to %s' % 
                         (self, self.pk, start, nps))
             self.no_penalties_since = nps
             self.save()
             
-        return p
+        return Decimal(p).quantize(EPS)
     
     
     def weight(self, quota_type='equally'):
@@ -373,9 +402,13 @@ class Apartment(SingleAccountEntity):
     def new_inbound_operation(self, amount, date=timezone.now()):
         no = uuid1()
         building = self.building()
-        logger.info('New payment %s from %s to %s worth %f', no, self, building,
-                    amount)
-        self.account.new_transfer(amount, no, building.default_account, date)
+        penalties = self.penalties()
+        logger.info('New payment %s from %s worth %f + %f penalties' %
+                    (no, self, amount, penalties))
+        self.account.new_multi_transfer(no, building.default_account,
+                                [(building.default_account, amount - penalties),
+                                 (building.penalties_account, penalties)],
+                                date)
 
 
     def save(self, **kwargs):
@@ -386,7 +419,7 @@ class Apartment(SingleAccountEntity):
         except Person.DoesNotExist:
             self.owner = Person.bootstrap_owner(self.name) 
         
-        super(Apartment, self).save(True, **kwargs)
+        super(Apartment, self).save('apart', **kwargs)
         print self.parent
         
         if self._old_parent != self.parent: 
@@ -409,7 +442,7 @@ class Service(SingleAccountEntity):
 
    
     def __init__(self, *args, **kwargs): 
-        super(Service, self).__init__(False, *args, **kwargs) 
+        super(Service, self).__init__('std', *args, **kwargs) 
         try:
             self._old_billed = self.billed
         except:
@@ -447,7 +480,7 @@ class Service(SingleAccountEntity):
         Quota.del_quota(self.account)
 
     def save(self, **kwargs):
-        super(Service, self).save(False, **kwargs)
+        super(Service, self).save('std', **kwargs)
        
         if self._old_billed != self.billed and self._old_billed != None:
             self.drop_quota()

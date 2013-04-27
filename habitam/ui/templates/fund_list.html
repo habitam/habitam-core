@@ -12,7 +12,7 @@
 	<tbody>
 		{% for account in building.funds %}
 			<tr>
-				<td>{{ account.holder }}</td>
+				<td>{{ account }}</td>
 				<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ account.balance|floatformat:2 }}</td>
 				<td>
 					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' building_id=building.id account_id=account.id %}'">Operațiuni</button>

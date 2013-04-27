@@ -108,6 +108,7 @@ def operation_list(request, building_id, account_id, month=None):
     month_end = month + relativedelta(months=1) 
     
     account = Account.objects.get(pk=account_id)
+    
     ops = account.operation_list(month, month_end)
     initial = account.balance(month)
     final = account.balance(month_end) 

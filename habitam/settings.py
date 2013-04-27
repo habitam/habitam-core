@@ -1,4 +1,5 @@
 # Django settings for habitam project.
+from decimal import Decimal
 import os
 
 DEBUG = True
@@ -189,3 +190,5 @@ MAX_PAYMENT_DUE_DAYS = 20
 PENALTY_START_DAYS = 30
 # The maximum penalty percentage per day
 MAX_PENALTY_PER_DAY = .2
+
+EPS = Decimal('0.01')

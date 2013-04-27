@@ -42,13 +42,11 @@ class EntitiesTestBase(unittest.TestCase):
             pass
         EntitiesTestBase.already_setup = True
         
-        root = ApartmentGroup.create(name='mybuilding', group_type='building')
+        root = ApartmentGroup.building_create(name='mybuilding')
         root.save()
-        left = ApartmentGroup.create(name='left', group_type='stair',
-                                     parent=root)
+        left = ApartmentGroup.staircase_create(name='left', parent=root)
         left.save()
-        right = ApartmentGroup.create(name='right', group_type='stair',
-                                      parent=root)
+        right = ApartmentGroup.staircase_create(name='right', parent=root)
         right.save()
        
         def create_apartment(i, parent):

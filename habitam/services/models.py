@@ -24,6 +24,7 @@ from django.db import models
 from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
 from django.utils import timezone
+from habitam.settings import EPS
 from random import choice
 import logging
 
@@ -70,8 +71,13 @@ class Operation(models.Model):
 
 
 class Account(models.Model):
+    TYPES = (
+        ('apart', 'apartment'),
+        ('std', 'standard'),
+        ('penalties', 'penalties')
+    )
     holder = models.CharField(max_length=100)
-    negate = models.BooleanField(default=False)
+    type = models.CharField(default='std', max_length=10, choices=TYPES) 
     
     def __assert_doc_not_exists(self, no):
         try:
@@ -79,6 +85,11 @@ class Account(models.Model):
             raise NameError('Document already exists')
         except OperationDoc.DoesNotExist:
             pass
+        
+    def __unicode__(self):
+        if self.type == 'penalties':
+            return self.holder + ' (penalitati)'
+        return self.holder
     
     def balance(self, month=None):
         q_time = None
@@ -103,7 +114,7 @@ class Account(models.Model):
         if ops['total_amount'] != None:
             balance = balance + ops['total_amount']
         
-        if self.negate:
+        if self.type == 'apart':
             return balance * -1
         return balance 
     
@@ -125,6 +136,15 @@ class Account(models.Model):
         Operation.objects.create(amount=amount, doc=doc, dest=dest_account)
         self.save()
         
+    def new_multi_transfer(self, no, billed, ops, date=timezone.now()):
+        self.__assert_doc_not_exists(no)
+        doc = OperationDoc.objects.create(date=date, no=no, src=self,
+                                          type='transfer', billed=billed)
+        for op in ops:
+            print op
+            Operation.objects.create(doc=doc, dest=op[0], amount=op[1])
+        self.save()
+        
     def new_invoice(self, amount, date, no, billed, dest_accounts):
         self.__assert_doc_not_exists(no)
         
@@ -132,8 +152,7 @@ class Account(models.Model):
                             billed=billed, src=self, type='invoice')
         
         quotas = Quota.objects.filter(src=self)
-        eps = Decimal('0.01')
-        sum_fun = lambda x, q: x + Decimal(q.ratio * amount).quantize(eps)
+        sum_fun = lambda x, q: x + Decimal(q.ratio * amount).quantize(EPS)
         qsum = reduce(sum_fun, quotas, 0)
         remainder_quota = None
         if qsum != amount:
@@ -162,7 +181,7 @@ class Account(models.Model):
         docs = OperationDoc.objects.filter(q).annotate(
                     total_amount=Sum('operation__amount')).order_by('date')
         
-        if self.negate:
+        if self.type == 'apart':
             for d in docs:
                 d.total_amount = d.total_amount * -1
             
@@ -170,21 +189,18 @@ class Account(models.Model):
         
         return result
     
-    def payments(self, since):
+    def payments(self, since, exclude=None):
         payments = 0
         q_time = Q(doc__date__gt=since.strftime('%Y-%m-%d'))
         
         q = Q(Q(amount__gt=0) & Q(doc__src=self) & q_time)
+        if exclude != None:
+            q = Q(q & ~Q(dest=exclude))
         ops = Operation.objects.filter(q).aggregate(total_amount=Sum('amount'))
         if ops['total_amount'] != None:
             payments = payments - ops['total_amount']
         
-        q = Q(Q(amount__lt=0) & Q(dest=self) & q_time)
-        ops = Operation.objects.filter(q).aggregate(total_amount=Sum('amount'))
-        if ops['total_amount'] != None:
-            payments = payments + ops['total_amount']
-        
-        if self.negate:
+        if self.type == 'apart':
             return payments * -1
         return payments 
 
