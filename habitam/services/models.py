@@ -64,7 +64,7 @@ class OperationDoc(models.Model):
     
     def penalties(self):
         penalty_ops = self.operation_set.filter(dest__type='penalties').aggregate(total_amount=Sum('amount'))
-        return penalty_ops['total_amount']
+        return -1 * penalty_ops['total_amount']
   
    
 class Operation(models.Model):
