@@ -110,11 +110,14 @@ def operation_list(request, building_id, account_id, month=None):
     account = Account.objects.get(pk=account_id)
     
     ops = account.operation_list(month, month_end)
+    initial_penalties, final_penalties = Apartment.month_penalties(account,
+                                                            month, month_end)
     initial = account.balance(month)
-    final = account.balance(month_end) 
+    final = account.balance(month_end)
     
     data = {'account': account, 'docs': ops, 'building': building,
-            'initial_balance': initial, 'final_balance': final,
+            'initial_balance': initial, 'initial_penalties': initial_penalties,
+            'final_balance': final, 'final_penalties': final_penalties,
             'month': month, 'month_end': month_end,
             'building': __find_building(account)}
     return render(request, 'operation_list.html', data)

@@ -61,7 +61,10 @@ class OperationDoc(models.Model):
     @classmethod
     def delete_doc(cls, op_id):
         OperationDoc.objects.get(pk=op_id).delete()
-        
+    
+    def penalties(self):
+        penalty_ops = self.operation_set.filter(dest__type='penalties').aggregate(total_amount=Sum('amount'))
+        return penalty_ops['total_amount']
   
    
 class Operation(models.Model):
@@ -178,20 +181,23 @@ class Account(models.Model):
                    Q(date__lt=month_end.strftime('%Y-%m-%d')))
         q_accnt_link = Q(Q(src=self) | Q(operation__dest=self))
         q = Q(q_time & q_accnt_link)
-        docs = OperationDoc.objects.filter(q).annotate(
-                    total_amount=Sum('operation__amount')).order_by('date')
-        
+        qs = OperationDoc.objects.filter(q)
+        docs = qs.annotate(total_amount=Sum('operation__amount')).order_by(
+                                                                    'date')
         if self.type == 'apart':
             for d in docs:
+                if d.penalties() != None:
+                    d.total_amount = d.total_amount - d.penalties()
                 d.total_amount = d.total_amount * -1
             
         result.extend(docs)
         
         return result
     
-    def payments(self, since, exclude=None):
+    def payments(self, since, until, exclude=None):
         payments = 0
-        q_time = Q(doc__date__gt=since.strftime('%Y-%m-%d'))
+        q_time = Q(Q(doc__date__gt=since.strftime('%Y-%m-%d')) &
+                   Q(doc__date__lt=until.strftime('%Y-%m-%d')))
         
         q = Q(Q(amount__gt=0) & Q(doc__src=self) & q_time)
         if exclude != None:
