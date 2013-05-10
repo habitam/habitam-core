@@ -349,6 +349,10 @@ class Apartment(SingleAccountEntity):
         super(Apartment, self).delete()
         
     
+    def initial_operation(self):
+        return {'amount' : -1 * (self.balance() + self.penalties())}
+        
+    
     def __monthly_penalties(self, cp, begin, end, day=date.today()):
         building = self.building()
         
@@ -497,6 +501,9 @@ class Service(SingleAccountEntity):
     
     def can_delete(self):
         return self.account.can_delete()
+    
+    def initial_operation(self):
+        return {'amount': 0}
     
     def new_inbound_operation(self, amount, no, date=timezone.now()):
         accounts = [] 
