@@ -422,7 +422,7 @@ class Apartment(SingleAccountEntity):
     def new_inbound_operation(self, amount, date=timezone.now()):
         no = uuid1()
         building = self.building()
-        penalties = self.penalties()
+        penalties = 0 - self.penalties()
         logger.info('New payment %s from %s worth %f + %f penalties' % 
                     (no, self, amount, penalties))
         self.account.new_multi_transfer(no, building.default_account,
