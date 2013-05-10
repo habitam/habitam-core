@@ -200,11 +200,15 @@ class Account(models.Model):
                    Q(doc__date__lt=until.strftime('%Y-%m-%d')))
         
         q = Q(Q(amount__gt=0) & Q(doc__src=self) & q_time)
+        qs = Operation.objects.filter(q)
         if exclude != None:
-            q = Q(q & ~Q(dest=exclude))
-        ops = Operation.objects.filter(q).aggregate(total_amount=Sum('amount'))
+            qs = qs.exclude(Q(dest=exclude))
+        ops = qs.aggregate(total_amount=Sum('amount'))
         if ops['total_amount'] != None:
-            payments = payments - ops['total_amount']
+            payments = 0 - ops['total_amount']
+        
+        logger.debug('Payments from %s %s -> %s excluding %s are %f' % 
+                     (self, since, until, exclude, payments))
         
         if self.type == 'apart':
             return payments * -1

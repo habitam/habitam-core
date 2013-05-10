@@ -351,7 +351,8 @@ class Apartment(SingleAccountEntity):
         begin_balance = self.account.balance(begin)
         end_balance = self.account.balance(end)
         monthly_debt = end_balance - begin_balance
-        balance = monthly_debt 
+        payments = self.account.payments(end, day, building.penalties_account)
+        balance = monthly_debt + payments
 
         logger.debug('%s -> %s' % (begin_balance, end_balance))
         if balance >= 0:
