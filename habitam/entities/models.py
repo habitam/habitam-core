@@ -314,13 +314,12 @@ class Apartment(SingleAccountEntity):
     rooms = models.SmallIntegerField(default=1)
     
     @classmethod
-    def month_penalties(cls, account, begin, end):
+    def for_account(cls, account):
         logger.debug('Searching apartment for %s' % account)
         try:
-            apartment = Apartment.objects.get(account=account)
+            return Apartment.objects.get(account=account)
         except Apartment.DoesNotExist:
-            return None, None
-        return apartment.penalties(begin), apartment.penalties(end)
+            return None
 
     def __init__(self, *args, **kwargs):       
         super(Apartment, self).__init__('apart', *args, **kwargs) 
@@ -331,6 +330,11 @@ class Apartment(SingleAccountEntity):
     def __unicode__(self):
         return 'Apartament ' + self.name
 
+
+    def balance(self):
+        penalties_account = self.building().penalties_account
+        return self.account.balance(exclude=penalties_account)
+        
         
     def building(self):
         return self.parent.building()
@@ -345,19 +349,19 @@ class Apartment(SingleAccountEntity):
         super(Apartment, self).delete()
         
     
-    def __monthly_penalties(self, begin, end, day=date.today()):
+    def __monthly_penalties(self, cp, begin, end, day=date.today()):
         building = self.building()
         
         begin_balance = self.account.balance(begin)
         end_balance = self.account.balance(end)
         monthly_debt = end_balance - begin_balance
         payments = self.account.payments(end, day, building.penalties_account)
-        balance = monthly_debt + payments
+        balance = monthly_debt + payments - cp
 
         logger.debug('%s -> %s' % (begin_balance, end_balance))
         if balance >= 0:
             logger.debug('No debts at %s %f' % (end, balance))
-            return 0
+            return 0, payments
         
         count_since = end + relativedelta(days=building.payment_due_days)
         count_since = count_since + relativedelta(days=PENALTY_START_DAYS)
@@ -366,14 +370,14 @@ class Apartment(SingleAccountEntity):
         if days < 0:
             logger.debug('Not enough time (%d) for penalties at %s %f' % 
                          (days, day, balance))
-            return 0
+            return 0, payments
         
         penalties = days * building.daily_penalty * balance * -1 / 100 
         
         logger.debug('Penalties %s -> %s are %f for debts are %f in %d days, the monthly debt is %f' % 
                      (begin, end, penalties, balance, days, monthly_debt))
         
-        return penalties
+        return penalties, payments
      
      
     def penalties(self, day=date.today()):
@@ -388,11 +392,11 @@ class Apartment(SingleAccountEntity):
                    month=self.no_penalties_since.month,
                    year=self.no_penalties_since.year)
         nps = start = iterator
-        p = 0
+        p, cp = 0, 0
         penalties_found = False
         while iterator < last:
             following = iterator + relativedelta(months=1)
-            m = self.__monthly_penalties(iterator, following, day)
+            m, cp = self.__monthly_penalties(cp, iterator, following, day)
             p = p + m
             
             if m > 0:
@@ -410,7 +414,10 @@ class Apartment(SingleAccountEntity):
             self.save()
         
         logger.debug('Penalties for %s at %s are %f' % (self, day, p))    
-        return Decimal(p).quantize(EPS) * -1
+        p = Decimal(p).quantize(EPS) * -1
+        if p == 0:
+            return None
+        return p
     
     
     def weight(self, quota_type='equally'):

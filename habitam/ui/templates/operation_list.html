@@ -33,7 +33,7 @@ Operațiuni pentru {{ account.holder }} în {{ month|date:"F Y" }}
 		<td class="{% if initial_balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">
 			<em>
 				{{ initial_balance|floatformat:2 }}
-		  		{% if initial_penalties != 0 %} și {{ initial_penalties|floatformat:2 }} penalități{% endif %}
+		  		{% if initial_penalties != None %} și {{ initial_penalties|floatformat:2 }} penalități{% endif %}
 			</em>
 		</td>
 		<td></td>
@@ -52,7 +52,7 @@ Operațiuni pentru {{ account.holder }} în {{ month|date:"F Y" }}
 		<td class="{% if final_balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">
 			<em>
 		  		{{ final_balance|floatformat:2 }}
-		  		{% if final_penalties != 0 %} și {{ final_penalties|floatformat:2 }} penalități{% endif %}
+		  		{% if final_penalties != None %} și {{ final_penalties|floatformat:2 }} penalități{% endif %}
 		  	</em>
 		</td>
 		<td></td>

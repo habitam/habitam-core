@@ -94,7 +94,7 @@ class Account(models.Model):
             return self.holder + ' (penalitati)'
         return self.holder
     
-    def balance(self, month=None):
+    def balance(self, month=None, exclude=None):
         q_time = None
         if month != None:
             q_time = Q(doc__date__lt=month.strftime('%Y-%m-%d'))
@@ -105,7 +105,10 @@ class Account(models.Model):
             q = Q(Q(doc__src=self) & q_time)
         else:
             q = Q(doc__src=self)
-        ops = Operation.objects.filter(q).aggregate(total_amount=Sum('amount'))
+        qs = Operation.objects.filter(q)
+        if exclude != None:
+            qs = qs.exclude(Q(dest=exclude))
+        ops = qs.aggregate(total_amount=Sum('amount'))
         if ops['total_amount'] != None:
             balance = balance - ops['total_amount']
         
@@ -196,7 +199,7 @@ class Account(models.Model):
     
     def payments(self, since, until, exclude=None):
         payments = 0
-        q_time = Q(Q(doc__date__gt=since.strftime('%Y-%m-%d')) &
+        q_time = Q(Q(doc__date__gt=since.strftime('%Y-%m-%d')) & 
                    Q(doc__date__lt=until.strftime('%Y-%m-%d')))
         
         q = Q(Q(amount__gt=0) & Q(doc__src=self) & q_time)

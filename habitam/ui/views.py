@@ -110,10 +110,17 @@ def operation_list(request, building_id, account_id, month=None):
     account = Account.objects.get(pk=account_id)
     
     ops = account.operation_list(month, month_end)
-    initial_penalties, final_penalties = Apartment.month_penalties(account,
-                                                            month, month_end)
-    initial = account.balance(month)
-    final = account.balance(month_end)
+    initial_penalties, final_penalties = None, None
+    exclude = None
+    
+    apartment = Apartment.for_account(account)
+    if apartment != None:
+        initial_penalties = apartment.penalties(month)
+        final_penalties = apartment.penalties(month_end)
+        exclude = apartment.building().penalties_account
+        
+    initial = account.balance(month, exclude)
+    final = account.balance(month_end, exclude)
     
     data = {'account': account, 'docs': ops, 'building': building,
             'initial_balance': initial, 'initial_penalties': initial_penalties,
