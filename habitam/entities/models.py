@@ -355,7 +355,8 @@ class Apartment(SingleAccountEntity):
         begin_balance = self.account.balance(begin)
         end_balance = self.account.balance(end)
         monthly_debt = end_balance - begin_balance
-        payments = self.account.payments(end, day, building.penalties_account)
+        next_day = day + relativedelta(days=1)
+        payments = self.account.payments(end, next_day, building.penalties_account)
         balance = monthly_debt + payments - cp
 
         logger.debug('%s -> %s' % (begin_balance, end_balance))
@@ -383,6 +384,9 @@ class Apartment(SingleAccountEntity):
     def penalties(self, day=date.today()):
         logger.debug('Computing penalties for %s at %s' % (self, day))
         building = self.building()
+        if building.issuance_day == None:
+            return None
+        
         last = date(day=building.issuance_day, month=day.month,
                     year=day.year)
         last = last - relativedelta(days=building.payment_due_days)
@@ -429,7 +433,11 @@ class Apartment(SingleAccountEntity):
     def new_inbound_operation(self, amount, date=timezone.now()):
         no = uuid1()
         building = self.building()
-        penalties = 0 - self.penalties()
+        penalties = self.penalties()
+        if penalties != None:
+            penalties = penalties * -1
+        else:
+            penalties = 0
         logger.info('New payment %s from %s worth %f + %f penalties' % 
                     (no, self, amount, penalties))
         self.account.new_multi_transfer(no, building.default_account,
@@ -444,10 +452,12 @@ class Apartment(SingleAccountEntity):
                 self.owner.name = Person.default_owner_name(self.name)
                 self.owner.save()
         except Person.DoesNotExist:
-            self.owner = Person.bootstrap_owner(self.name) 
+            self.owner = Person.bootstrap_owner(self.name)
+             
+        if self.no_penalties_since == None:
+            self.no_penalties_since = date.today() 
         
         super(Apartment, self).save('apart', **kwargs)
-        print self.parent
         
         if self._old_parent != self.parent: 
             logger.info('Moving apartment %s from %s to %s, updating quotas',
