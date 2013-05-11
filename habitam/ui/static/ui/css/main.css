@@ -32,8 +32,9 @@ body {
 
 .habitam-brand {
 	padding: 0px 15px 2px !important;
+	margin-top: -5px;
 }
 
-.navbar .nav a {
-	padding: 15px 15px 10px !important;
+.navbar-inner {
+	padding-top: 5px;
 }
