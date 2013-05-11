@@ -16,9 +16,9 @@ body {
 }
 
 .center {
-     float: none !important;
-     margin-left: auto !important;
-     margin-right: auto !important;
+	float: none !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
 }
 
 .btn-toolbar-apartment {
@@ -28,4 +28,12 @@ body {
 
 .tab-content-building {
 	padding-bottom: 200px;
+}
+
+.habitam-brand {
+	padding: 0px 15px 2px !important;
+}
+
+.navbar .nav a {
+	padding: 15px 15px 10px !important;
 }
