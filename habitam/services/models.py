@@ -120,7 +120,7 @@ class Account(models.Model):
         if ops['total_amount'] != None:
             balance = balance + ops['total_amount']
         
-        if self.type == 'apart':
+        if self.type == 'apart' and balance != 0:
             return balance * -1
         return balance 
     

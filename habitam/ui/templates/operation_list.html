@@ -28,7 +28,7 @@ Operațiuni pentru {{ account.holder }} în {{ month|date:"F Y" }}
 	<tbody>
 	<tr>
 		<td><em>{{ month|date:"d-m-Y" }}</em></td>
-		<td><em>Sold inițial</em></td>
+		<td><em>Balanță inițial</em></td>
 		<td></td>
 		<td class="{% if initial_balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">
 			<em>
@@ -47,7 +47,7 @@ Operațiuni pentru {{ account.holder }} în {{ month|date:"F Y" }}
 	{% endfor %}
 	<tr>
 		<td><em>{{ month_end|date:"d-m-Y" }}</em></td>
-		<td><em>Sold final</em></td>
+		<td><em>Balanță finală</em></td>
 		<td></td>
 		<td class="{% if final_balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">
 			<em>

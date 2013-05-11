@@ -350,7 +350,11 @@ class Apartment(SingleAccountEntity):
         
     
     def initial_operation(self):
-        return {'amount' : -1 * (self.balance() + self.penalties())}
+        amount = self.balance()
+        penalties = self.penalties()
+        if penalties != None:
+            amount = amount + penalties
+        return {'amount' :-1 * amount}
         
     
     def __monthly_penalties(self, cp, begin, end, day=date.today()):
