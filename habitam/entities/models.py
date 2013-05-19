@@ -480,7 +480,8 @@ class Service(SingleAccountEntity):
         ('equally', 'în mod egal'),
         ('inhabitance', 'după număr persoane'),
         ('area', 'după suprafață'),
-        ('rooms', 'după număr camere')
+        ('rooms', 'după număr camere'),
+        ('manual', 'manual'),
     )
     billed = models.ForeignKey(ApartmentGroup)
     quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
@@ -528,22 +529,40 @@ class Service(SingleAccountEntity):
         Quota.del_quota(self.account)
 
     def save(self, **kwargs):
+        ap_quotas = None
+        if 'ap_quotas' in kwargs.keys():
+            ap_quotas = kwargs['ap_quotas']
+            del kwargs['ap_quotas']
+        
         super(Service, self).save('std', **kwargs)
        
         if self._old_billed != self.billed and self._old_billed != None:
             self.drop_quota()
         if self._old_billed != self.billed or self._old_quota_type != self.quota_type:
-            self.set_quota()
+            self.drop_quota()
+            if ap_quotas != None and self.quota_type == 'manual':
+                self.set_manual_quota(ap_quotas)
+            else:
+                self.set_quota()
+    
+    def set_manual_quota(self, ap_quotas):            
+        logger.info('Setting quota %s (%s) on %s', self.quota_type, ap_quotas,
+                     self)
+        if self.quota_type != 'manual':
+            logger.error('Quota type %s is invalid', self.quota_type)
+            raise NameError('Invalid quota type')
+        
+        for k, v in ap_quotas.items():
+            a = Apartment.objects.get(pk=k)
+            Quota.set_quota(self.account, a.account, v)
     
     def set_quota(self):
-        self.drop_quota()
-        
         logger.info('Setting quota %s on %s', self.quota_type, self)
         found = False
         for qt in Service.QUOTA_TYPES:
             if qt[0] == self.quota_type:
                 found = True
-        if not found:
+        if self.quota_type == 'manual' or not found:
             logger.error('Quota type %s is invalid', self.quota_type)
             raise NameError('Invalid quota type')
         

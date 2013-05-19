@@ -1,15 +1,29 @@
 <div id="editFormContainer">
 	<form id="editForm" class="form-horizontal" method="post"
 		action="{% if parent_id %}{% if entity_id %}{% url target parent_id entity_id %}{% else %}{% url target parent_id %}{% endif %}{% else %}{% if entity_id %}{% url target entity_id %}{% else %}{% url target %}{% endif %}{% endif %}">
-	{% include 'form.html' %}
+		{% include 'form.html' %}
 	</form>
 </div>
 
 <script>
+function refresh_values() {
+	$('#id_cmd').val('refresh');
+	$('#editForm').submit();
+}
+
+submit_clicked = false;
+
 $(document).ready(function() {
 	$("#editTitle").text("{{ title }}");
+
 	{% for s in form.spinners %}
 	$("#id_{{s}}").spinner();
+	{% endfor %}
+	
+	{% for s in refresh_ids %}
+	$('#{{ s }}').change(function() {
+		refresh_values();
+	});
 	{% endfor %}
 	
 	$('#editForm').ajaxForm({
@@ -17,6 +31,10 @@ $(document).ready(function() {
 	});
 	
 	$('#submitButton').click(function() {
+		if (submit_clicked)
+			return false;
+		submit_clicked = true;
+		$('#id_cmd').val('save');
 		$('#editForm').submit();
 	});
 });

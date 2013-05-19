@@ -21,7 +21,7 @@ Created on Apr 12, 2013
 '''
 from django.conf.urls import patterns, url
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person
-from habitam.ui import views
+from habitam.ui import views, service_views
 from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
 from habitam.ui.forms.fund import NewFundTransfer
@@ -86,10 +86,7 @@ urlpatterns = patterns('',
     url(r'^buildings/(?P<building_id>\d+)/services$', views.building_tab, {'tab': 'service_list'}, name='service_list'),
     
     url(r'^buildings/(?P<building_id>\d+)/services/new$',
-        views.new_building_entity,
-        {'form_cls': EditServiceForm, 'target': 'new_service', 
-         'title': 'Serviciu nou'},
-        name='new_service'),
+        service_views.new_service, name='new_service'),
     
     url(r'^buildings/(?P<building_id>\d+)/funds$', views.building_tab, {'tab': 'fund_list'}, name='fund_list'),
     
