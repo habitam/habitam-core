@@ -90,9 +90,7 @@ urlpatterns = patterns('',
     
     url(r'^buildings/(?P<building_id>\d+)/funds$', views.building_tab, {'tab': 'fund_list'}, name='fund_list'),
     
-    url(r'^services/(?P<entity_id>\d+)/edit$', views.edit_entity, 
-        {'entity_cls': Service, 'form_cls': EditServiceForm,
-         'target': 'edit_service', 'title': 'Serviciul'},
+    url(r'^services/(?P<entity_id>\d+)/edit$', service_views.edit_service, 
         name='edit_service'),
     
     url(r'^services/(?P<entity_id>\d+)/invoices/new$',

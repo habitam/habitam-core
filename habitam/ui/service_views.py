@@ -20,8 +20,9 @@ Created on May 19, 2013
 @author: Stefan Guna
 '''
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
-from habitam.entities.models import ApartmentGroup
+from habitam.entities.models import ApartmentGroup, Service
 from habitam.ui.forms.service import EditServiceForm
 from habitam.ui.views import license_valid
 
@@ -32,10 +33,36 @@ def __save_new_service(request, form):
     kwargs = {}
     if ap_quotas != None:
         kwargs['ap_quotas'] = ap_quotas
-    print kwargs
     entity.save(**kwargs)
     return render(request, 'edit_ok.html')
 
+@login_required
+@user_passes_test(license_valid)
+def edit_service(request, entity_id):
+    entity = Service.objects.get(pk=entity_id)
+    building = entity.building()
+    
+    if request.method == 'DELETE':
+        if entity.can_delete():
+            entity.delete()
+            return HttpResponse()
+        else:
+            return HttpResponseBadRequest()
+    
+    if request.method == 'POST':
+        form = EditServiceForm(request.POST, user=request.user,
+                        building=building, instance=entity)
+        if form.is_valid() and form.cleaned_data['cmd'] == 'save':
+            return __save_new_service(request, form)
+    else:
+        form = EditServiceForm(user=request.user, building=building,
+                               instance=entity)
+    
+    refresh_ids = ['id_quota_type', 'id_billed']
+    data = {'form': form, 'target': 'edit_service', 'entity_id': entity_id,
+            'building': building, 'title': 'Serviciul ' + entity.name,
+            'refresh_ids': refresh_ids}
+    return render(request, 'edit_dialog.html', data)
 
 @login_required
 @user_passes_test(license_valid)

@@ -538,7 +538,8 @@ class Service(SingleAccountEntity):
        
         if self._old_billed != self.billed and self._old_billed != None:
             self.drop_quota()
-        if self._old_billed != self.billed or self._old_quota_type != self.quota_type:
+        if self.quota_type == 'manual' or self._old_billed != self.billed or \
+                self._old_quota_type != self.quota_type:
             self.drop_quota()
             if ap_quotas != None and self.quota_type == 'manual':
                 self.set_manual_quota(ap_quotas)

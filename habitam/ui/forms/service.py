@@ -25,6 +25,7 @@ from django import forms
 from django.db.models.query_utils import Q
 from django.forms.fields import DecimalField
 from habitam.entities.models import ApartmentGroup, Service
+from habitam.services.models import Quota
 from habitam.ui.forms.generic import NewDocPaymentForm
 import logging
 
@@ -47,12 +48,24 @@ class EditServiceForm(forms.ModelForm):
         del kwargs['building']
         del kwargs['user']
         super(EditServiceForm, self).__init__(*args, **kwargs)
-        self.__init_manual_quotas__(args)
+        if len(args) > 0:
+            self.__init_manual_quotas__(args)
+        elif len(kwargs) > 0 and 'instance' in kwargs.keys():
+            self.__init_db_quotas__(kwargs['instance'])
         self.fields['billed'].queryset = ApartmentGroup.objects.filter(Q(parent=building) | Q(pk=building.id))
     
+    def __init_db_quotas__(self, service):
+        if service.quota_type != 'manual':
+            return
+        
+        aps = service.billed.apartments()
+        for ap in aps:
+            q = Quota.objects.get(Q(src=service.account) & Q(dest=ap.account))
+            self.fields['quota_ap_' + str(ap.pk)] = DecimalField(
+                        label='Cota ' + str(ap), decimal_places=3,
+                        max_digits=4, initial=q.ratio)
+        
     def __init_manual_quotas__(self, args):
-        if len(args) == 0:
-            return 
         billed = args[0].get('billed')
         qt = args[0].get('quota_type')
         if qt != 'manual' or billed == '':
