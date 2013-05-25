@@ -10,6 +10,10 @@
 		$("[data-toggle=tooltip]").tooltip();
 	});
 
+	$(function() {
+		$(".datePicker").datepicker();
+	});
+
 	function refresh_values() {
 		$('#id_cmd').val('refresh');
 		$('#editForm').submit();
