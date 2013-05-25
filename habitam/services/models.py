@@ -147,7 +147,6 @@ class Account(models.Model):
         doc = OperationDoc.objects.create(date=date, no=no, src=self,
                                           type='transfer', billed=billed)
         for op in ops:
-            print op
             Operation.objects.create(amount=op[1], doc=doc, dest=op[0])
         self.save()
         
