@@ -26,6 +26,11 @@ from django import forms
 class NewPaymentForm(forms.Form):
     amount = forms.DecimalField(label='Suma')
     
+    def __init__(self, *args, **kwargs):
+        if 'entity' in kwargs.keys():
+            del kwargs['entity']
+        super(NewPaymentForm, self).__init__(*args, **kwargs)
+        
     def spinners(self):
         return ['amount']        
 

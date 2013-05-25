@@ -148,7 +148,7 @@ class Account(models.Model):
                                           type='transfer', billed=billed)
         for op in ops:
             print op
-            Operation.objects.create(doc=doc, dest=op[0], amount=op[1])
+            Operation.objects.create(amount=op[1], doc=doc, dest=op[0])
         self.save()
         
     def new_invoice(self, amount, date, no, billed, dest_accounts):

@@ -102,9 +102,50 @@ class EditServiceForm(forms.ModelForm):
         return ap_quotas
     
 
-class NewServicePayment(NewDocPaymentForm):
-    service = forms.ModelChoiceField(label='Serviciu', queryset=Service.objects.all())
+class NewServiceInvoice(NewDocPaymentForm):
+   
+    def __init__(self, *args, **kwargs):
+        self.service = kwargs['entity']
+        super(NewServiceInvoice, self).__init__(*args, **kwargs)
+        
+        if self.service.quota_type == 'noquota':
+            self.fields['amount'] = forms.DecimalField(label='Suma',
+                                                    widget=forms.HiddenInput())
+            aps = self.service.billed.apartments()
+            for ap in aps:
+                self.fields['sum_ap_' + str(ap.pk)] = DecimalField(
+                            label='Suma ' + str(ap), decimal_places=3,
+                            max_digits=4)
     
+    def clean(self):
+        cleaned_data = super(NewServiceInvoice, self).clean()
+        if self.service.quota_type != 'noquota':
+            return cleaned_data
+        ap_sums = {}
+        amount = 0
+        for k, v in cleaned_data.items():
+            if not k.startswith('sum_ap_'):
+                continue
+            ap_sums[int(k[len('sum_ap_'):])] = v
+            amount = amount + v
+        
+        cleaned_data['amount'] = amount
+        cleaned_data['ap_sums'] = ap_sums
+        
+        for ap_id in ap_sums.keys():
+            del cleaned_data['sum_ap_' + str(ap_id)]
+            
+        return cleaned_data    
+    
+    def spinners(self):
+        if self.service.quota_type == 'noquota':
+            return []
+        return super(NewServiceInvoice, self).spinners()
+
+
+class NewServicePayment(NewDocPaymentForm):
+    service = forms.ModelChoiceField(label='Serviciu',
+                                     queryset=Service.objects.all())
     
     def __init__(self, *args, **kwargs):
         building = kwargs['building']

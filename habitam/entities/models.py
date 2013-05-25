@@ -508,6 +508,21 @@ class Service(SingleAccountEntity):
     def __change_billed(self):
         return self._old_billed != self.billed and self._old_billed != None
     
+    def __new_invoice_with_quotas(self, amount, no, date):
+        accounts = [] 
+        for ap in self.billed.apartments():
+            accounts.append(ap.account)
+        self.account.new_invoice(amount, date, no, self.billed.default_account,
+                                 accounts)
+        
+    def __new_invoice_without_quotas(self, ap_sums, no, date):
+        ops = []
+        for k, v in ap_sums.items():
+            ap = Apartment.objects.get(pk=k)
+            ops.append((ap.account, v))
+        self.account.new_multi_transfer(no, self.billed.default_account, ops,
+                                        date)
+        
     def __unicode__(self):
         return self.name
     
@@ -526,12 +541,12 @@ class Service(SingleAccountEntity):
     def initial_operation(self):
         return {'amount': 0}
     
-    def new_inbound_operation(self, amount, no, date=timezone.now()):
-        accounts = [] 
-        for ap in self.billed.apartments():
-            accounts.append(ap.account)
-        self.account.new_invoice(amount, date, no, self.billed.default_account,
-                                 accounts)
+    def new_inbound_operation(self, amount, no, ap_sums=None,
+                              date=timezone.now()):
+        if ap_sums == None:
+            self.__new_invoice_with_quotas(amount, no, date)
+        else:
+            self.__new_invoice_without_quotas(ap_sums, no, date)
 
     def delete(self):
         if not self.can_delete():

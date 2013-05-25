@@ -221,12 +221,12 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
     building = entity.building()
     
     if request.method == 'POST':
-        form = form_cls(request.POST)
+        form = form_cls(request.POST, entity=entity)
         if form.is_valid():
             entity.new_inbound_operation(**form.cleaned_data)
             return render(request, 'edit_ok.html')
     else:
-        form = form_cls(initial = entity.initial_operation())
+        form = form_cls(entity=entity, initial=entity.initial_operation())
     
     data = {'form': form, 'target': target, 'parent_id': entity_id,
             'building': building, 'title': title + ' ' + entity.name}

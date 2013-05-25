@@ -25,8 +25,8 @@ from habitam.ui import views, service_views
 from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
 from habitam.ui.forms.fund import NewFundTransfer
-from habitam.ui.forms.generic import NewDocPaymentForm, NewPaymentForm
-from habitam.ui.forms.service import EditServiceForm, NewServicePayment
+from habitam.ui.forms.generic import NewPaymentForm
+from habitam.ui.forms.service import NewServicePayment, NewServiceInvoice
 
 
 urlpatterns = patterns('',
@@ -95,7 +95,7 @@ urlpatterns = patterns('',
     
     url(r'^services/(?P<entity_id>\d+)/invoices/new$',
         views.new_inbound_operation, 
-        {'entity_cls': Service, 'form_cls': NewDocPaymentForm,
+        {'entity_cls': Service, 'form_cls': NewServiceInvoice,
          'target': 'new_invoice', 'title': 'Factura pentru'},
         name='new_invoice'),
     

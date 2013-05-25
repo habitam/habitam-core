@@ -36,6 +36,7 @@ def __save_new_service(request, form):
     entity.save(**kwargs)
     return render(request, 'edit_ok.html')
 
+
 @login_required
 @user_passes_test(license_valid)
 def edit_service(request, entity_id):
@@ -64,11 +65,10 @@ def edit_service(request, entity_id):
             'refresh_ids': refresh_ids}
     return render(request, 'edit_dialog.html', data)
 
+
 @login_required
 @user_passes_test(license_valid)
 def new_service(request, building_id, save_kwargs=None):
-    target = 'new_service'
-    title = 'Serviciu nou'
     building = ApartmentGroup.objects.get(pk=building_id).building()
     
     if request.method == 'POST':
@@ -79,6 +79,7 @@ def new_service(request, building_id, save_kwargs=None):
         form = EditServiceForm(user=request.user, building=building)
     
     refresh_ids = ['id_quota_type', 'id_billed']
-    data = {'form': form, 'target': target, 'parent_id': building_id,
-            'building': building, 'title': title, 'refresh_ids': refresh_ids }
+    data = {'form': form, 'target': 'new_service', 'parent_id': building_id,
+            'building': building, 'title': 'Serviciu nou',
+            'refresh_ids': refresh_ids }
     return render(request, 'edit_dialog.html', data)
