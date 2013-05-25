@@ -571,12 +571,12 @@ class Service(SingleAccountEntity):
             charge_type = 'collection'
         return charge_type
     
-    def __new_charge_with_quotas(self, amount, no, date):
+    def __new_charge_with_quotas(self, amount, no, date, vat, issue_date, due_date, document_id, start_service_date, end_service_date, quantity, unit_type):
         accounts = [] 
         for ap in self.billed.apartments():
             accounts.append(ap.account)
         self.account.new_charge(amount, date, no, self.billed.default_account,
-                                 accounts, self.__charge_type())
+                                 accounts, self.__charge_type(), vat, issue_date, due_date, document_id, start_service_date, end_service_date, quantity, unit_type)
         
     def __new_charge_with_consumptions(self, amount, no, ap_consumptions,
                                        consumption, date):
@@ -640,9 +640,9 @@ class Service(SingleAccountEntity):
     def initial_operation(self):
         return {'amount': 0}
     
-    def new_inbound_operation(self, amount, no, ap_sums=None,
+    def new_inbound_operation(self, amount, no, vat, issue_date, due_date, document_id=None, start_service_date=None, end_service_date=None, ap_sums=None,
                         ap_consumptions=None, consumption=None,
-                        date=timezone.now()):
+                        date=timezone.now(),  quantity=None, unit_type=None):
         logger.info('new inbound op for %s amount=%f no=%s ap_sums=%s ap_consumptions=%s consumption=%s date=%s' % 
                     (self, amount, no, ap_sums, ap_consumptions, consumption, date))
         if self.quota_type == 'consumption':
@@ -651,7 +651,7 @@ class Service(SingleAccountEntity):
         elif self.quota_type == 'noquota': 
             self.__new_charge_without_quotas(ap_sums, no, date)
         else:
-            self.__new_charge_with_quotas(amount, no, date)
+            self.__new_charge_with_quotas(amount, no, date, vat, issue_date, due_date, document_id, start_service_date, end_service_date, quantity, unit_type)
 
     def delete(self):
         if not self.can_delete():
