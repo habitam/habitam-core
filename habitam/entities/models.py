@@ -482,6 +482,7 @@ class Service(SingleAccountEntity):
         ('area', 'după suprafață'),
         ('rooms', 'după număr camere'),
         ('manual', 'manual'),
+        ('noquota', 'fără cotă')
     )
     billed = models.ForeignKey(ApartmentGroup)
     quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
@@ -497,9 +498,24 @@ class Service(SingleAccountEntity):
             self._old_quota_type = self.quota_type
         except:
             self._old_quota_type = None
+            
+    def __change_quotas(self):
+        if self.quota_type == 'noquota':
+            return False
+        return self.quota_type == 'manual' or self._old_billed != self.billed \
+            or self._old_quota_type != self.quota_type
+    
+    def __change_billed(self):
+        return self._old_billed != self.billed and self._old_billed != None
     
     def __unicode__(self):
         return self.name
+    
+    def __update_quotas(self, ap_quotas):
+        if ap_quotas != None and self.quota_type == 'manual':
+            self.set_manual_quota(ap_quotas)
+            return
+        self.set_quota()
         
     def building(self):
         return self.billed.building() 
@@ -536,15 +552,11 @@ class Service(SingleAccountEntity):
         
         super(Service, self).save('std', **kwargs)
        
-        if self._old_billed != self.billed and self._old_billed != None:
+        if self.__change_billed() or self.__change_quotas() or \
+            self.quota_type == 'noquota':
             self.drop_quota()
-        if self.quota_type == 'manual' or self._old_billed != self.billed or \
-                self._old_quota_type != self.quota_type:
-            self.drop_quota()
-            if ap_quotas != None and self.quota_type == 'manual':
-                self.set_manual_quota(ap_quotas)
-            else:
-                self.set_quota()
+        if self.__change_quotas():
+            self.__update_quotas(ap_quotas)
     
     def set_manual_quota(self, ap_quotas):            
         logger.info('Setting quota %s (%s) on %s', self.quota_type, ap_quotas,
