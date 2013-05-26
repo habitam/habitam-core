@@ -22,7 +22,7 @@ Created on Apr 21, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
-from habitam.services.models import Account
+from habitam.financial.models import Account
 from habitam.ui.forms.generic import NewDocPaymentForm
 
 

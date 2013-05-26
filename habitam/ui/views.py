@@ -29,7 +29,7 @@ from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink
-from habitam.services.models import Account, OperationDoc
+from habitam.financial.models import Account, OperationDoc
 from habitam.ui.forms.building import NewBuildingForm
 import logging
 

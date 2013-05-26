@@ -21,7 +21,7 @@ Created on Apr 13, 2013
 '''
 
 from django.contrib import admin
-from habitam.services.models import Quota, OperationDoc, Operation, Account
+from habitam.financial.models import Quota, OperationDoc, Operation, Account
 
 class QuotaAdmin(admin.ModelAdmin):
     list_display = ('src', 'dest', 'ratio')

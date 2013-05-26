@@ -25,7 +25,7 @@ from django import forms
 from django.db.models.query_utils import Q
 from django.forms.fields import DecimalField
 from habitam.entities.models import ApartmentGroup, Service
-from habitam.services.models import Quota, Account
+from habitam.financial.models import Quota, Account
 from habitam.ui.forms.generic import NewDocPaymentForm
 import logging
 
@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 class EditServiceForm(forms.ModelForm):
     name = forms.CharField(label='Nume', max_length=100)
     billed = forms.ModelChoiceField(label='Clienți', queryset=ApartmentGroup.objects.all())
-    quota_type = forms.ChoiceField(label='Distribuie cota', choices=Service.QUOTA_TYPES)
+    quota_type = forms.ChoiceField(label='Distribuie costuri', choices=Service.QUOTA_TYPES)
     cmd = forms.CharField(initial='save', widget=forms.HiddenInput())
 
     class Meta:

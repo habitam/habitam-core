@@ -27,7 +27,7 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models.query_utils import Q
 from django.utils import timezone
-from habitam.services.models import Account, Quota
+from habitam.financial.models import Account, Quota
 from habitam.settings import MAX_ISSUANCE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY, PENALTY_START_DAYS, EPS
 from uuid import uuid1
@@ -482,8 +482,9 @@ class Service(SingleAccountEntity):
         ('inhabitance', 'după număr persoane'),
         ('area', 'după suprafață'),
         ('rooms', 'după număr camere'),
-        ('manual', 'manual'),
-        ('noquota', 'fără cotă')
+        ('consumption', 'după consum'),
+        ('manual', 'cotă indiviză'),
+        ('noquota', 'la fiecare introducere'),
     )
     SERVICE_TYPE = (
         ('general', 'serviciu'),
@@ -513,7 +514,7 @@ class Service(SingleAccountEntity):
             self._old_quota_type = None
             
     def __change_quotas(self):
-        if self.quota_type == 'noquota':
+        if self.quota_type in ['noquota', 'consumption']:
             return False
         return self.quota_type == 'manual' or self._old_billed != self.billed \
             or self._old_quota_type != self.quota_type
@@ -594,7 +595,7 @@ class Service(SingleAccountEntity):
         super(Service, self).save('std', **kwargs)
        
         if self.__change_billed() or self.__change_quotas() or \
-            self.quota_type == 'noquota':
+            self.quota_type in ['noquota', 'consumption']:
             self.drop_quota()
         if self.__change_quotas():
             self.__update_quotas(ap_quotas)

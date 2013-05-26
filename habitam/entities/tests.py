@@ -22,7 +22,7 @@ Created on Apr 9, 2013
 from decimal import Decimal
 from django.utils import unittest, timezone
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person
-from habitam.services.models import Quota
+from habitam.financial.models import Quota
 import logging
 
 
