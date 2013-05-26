@@ -39,11 +39,7 @@ Operațiuni pentru {{ account.holder }} în {{ month|date:"F Y" }}
 		<td></td>
 	</tr>
 	{% for doc in docs %}
-		{% if doc.src == account %}
-		{% include 'operation_row.html' with doc=doc other=doc.billed.holder negative=True amount=doc.total_amount %}
-		{% else %}
-		{% include 'operation_row.html' with doc=doc other=doc.src.holder negative=False amount=doc.total_amount %}
-		{% endif %}
+		{% include 'operation_row.html' with doc=doc %}
 	{% endfor %}
 	<tr>
 		<td><em>{{ month_end|date:"d-m-Y" }}</em></td>
