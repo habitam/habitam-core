@@ -86,9 +86,24 @@ urlpatterns = patterns('',
     url(r'^buildings/(?P<building_id>\d+)/services$', views.building_tab, {'tab': 'service_list'}, name='service_list'),
     
     url(r'^buildings/(?P<building_id>\d+)/services/new$',
-        service_views.new_service, name='new_service'),
+        service_views.new_service, {'service_type': 'general'},
+        name='new_service_general'),
     
     url(r'^buildings/(?P<building_id>\d+)/funds$', views.building_tab, {'tab': 'fund_list'}, name='fund_list'),
+    
+    url(r'^buildings/(?P<building_id>\d+)/collecting_funds$',
+        views.building_tab, {'tab': 'collecting_fund_list'},
+        name='collecting_fund_list'),
+
+    url(r'^buildings/(?P<building_id>\d+)/collecting_funds/new$',
+        service_views.new_service, {'service_type': 'collecting'},
+        name='new_service_collecting'),
+    
+    url(r'^collecting_funds/(?P<entity_id>\d+)/collection/new$',
+        views.new_inbound_operation, 
+        {'entity_cls': Service, 'form_cls': NewServiceInvoice,
+         'target': 'new_invoice', 'title': 'Colectare pentru'},
+        name='new_collection'),
     
     url(r'^services/(?P<entity_id>\d+)/edit$', service_views.edit_service, 
         name='edit_service'),

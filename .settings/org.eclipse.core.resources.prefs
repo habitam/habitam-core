@@ -8,6 +8,7 @@ encoding//habitam/ui/forms/generic.py=utf-8
 encoding//habitam/ui/forms/service.py=utf-8
 encoding//habitam/ui/templates/apartment_list.html=UTF-8
 encoding//habitam/ui/templates/building.html=UTF-8
+encoding//habitam/ui/templates/collecting_fund_list.html=UTF-8
 encoding//habitam/ui/templates/edit_dialog.html=UTF-8
 encoding//habitam/ui/templates/fund_list.html=UTF-8
 encoding//habitam/ui/templates/home.html=UTF-8

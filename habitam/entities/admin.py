@@ -33,7 +33,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'billed', 'quota_type')
+    list_display = ('name', 'service_type', 'billed', 'quota_type')
     
 
 admin.site.register(ApartmentGroup, ApartmentGroupAdmin)

@@ -153,6 +153,6 @@ class NewServicePayment(NewDocPaymentForm):
         del kwargs['account']
         del kwargs['user']
         super(NewServicePayment, self).__init__(*args, **kwargs)
-        queryset = Service.objects.filter(
-                            Q(billed=building) | Q(billed__parent=building))
+        qb = Q(billed=building) | Q(billed__parent=building)
+        queryset = Service.objects.filter(~Q(service_type='collecting') & qb)
         self.fields['service'].queryset = queryset

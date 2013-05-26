@@ -27,59 +27,69 @@ from habitam.ui.forms.service import EditServiceForm
 from habitam.ui.views import license_valid
 
 
-def __save_new_service(request, form):
-    entity = form.save(commit=False)
+def __save_service(request, form, service_type=None):
+    service = form.save(commit=False)
     ap_quotas = form.manual_quotas()
     kwargs = {}
     if ap_quotas != None:
         kwargs['ap_quotas'] = ap_quotas
-    entity.save(**kwargs)
+    if service_type != None:
+        service.service_type = service_type
+    service.save(**kwargs)
     return render(request, 'edit_ok.html')
 
 
 @login_required
 @user_passes_test(license_valid)
 def edit_service(request, entity_id):
-    entity = Service.objects.get(pk=entity_id)
-    building = entity.building()
+    service = Service.objects.get(pk=entity_id)
+    building = service.building()
     
     if request.method == 'DELETE':
-        if entity.can_delete():
-            entity.delete()
+        if service.can_delete():
+            service.delete()
             return HttpResponse()
         else:
             return HttpResponseBadRequest()
     
     if request.method == 'POST':
         form = EditServiceForm(request.POST, user=request.user,
-                        building=building, instance=entity)
+                        building=building, instance=service)
         if form.is_valid() and form.cleaned_data['cmd'] == 'save':
-            return __save_new_service(request, form)
+            return __save_service(request, form)
     else:
         form = EditServiceForm(user=request.user, building=building,
-                               instance=entity)
+                               instance=service)
     
     refresh_ids = ['id_quota_type', 'id_billed']
+    if service.service_type == 'general':
+        title = 'Serviciu '
+    else:
+        title = 'Fond '
     data = {'form': form, 'target': 'edit_service', 'entity_id': entity_id,
-            'building': building, 'title': 'Serviciul ' + entity.name,
+            'building': building, 'title': title + service.name,
             'refresh_ids': refresh_ids}
     return render(request, 'edit_dialog.html', data)
 
 
 @login_required
 @user_passes_test(license_valid)
-def new_service(request, building_id, save_kwargs=None):
+def new_service(request, building_id, service_type, save_kwargs=None):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     
     if request.method == 'POST':
         form = EditServiceForm(request.POST, user=request.user, building=building)
         if form.is_valid() and form.cleaned_data['cmd'] == 'save':
-            return __save_new_service(request, form)
+            return __save_service(request, form, service_type)
     else:
         form = EditServiceForm(user=request.user, building=building)
     
     refresh_ids = ['id_quota_type', 'id_billed']
-    data = {'form': form, 'target': 'new_service', 'parent_id': building_id,
-            'building': building, 'title': 'Serviciu nou',
-            'refresh_ids': refresh_ids }
+    if service_type == 'general':
+        title = 'Serviciu nou'
+    else:
+        title = 'Fond nou'
+    data = {'form': form, 'target': 'new_service_' + service_type,
+            'parent_id': building_id, 'building': building,
+            'title': title, 'refresh_ids': refresh_ids }
     return render(request, 'edit_dialog.html', data)

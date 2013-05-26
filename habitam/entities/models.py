@@ -484,9 +484,15 @@ class Service(SingleAccountEntity):
         ('manual', 'manual'),
         ('noquota', 'fără cotă')
     )
+    SERVICE_TYPE = (
+        ('general', 'serviciu'),
+        ('collecting', 'colectare'),
+    )
+    
     billed = models.ForeignKey(ApartmentGroup)
     quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
-
+    service_type = models.CharField(max_length=10, choices=SERVICE_TYPE)
+    
    
     def __init__(self, *args, **kwargs): 
         super(Service, self).__init__('std', *args, **kwargs) 
