@@ -94,6 +94,22 @@ class Account(models.Model):
             return self.holder + ' (penalitati)'
         return self.holder
     
+    def __source_amount(self, query, month):
+        q_time = None
+        if month != None:
+            q_time = Q(doc__date__lt=month.strftime('%Y-%m-%d'))
+            
+        if q_time != None:
+            q = Q(Q(doc__src=self) & q_time)
+        else:
+            q = Q(doc__src=self)
+        q = Q(q & query)
+        qs = Operation.objects.filter(q)
+        ops = qs.aggregate(total_amount=Sum('amount'))
+        if ops['total_amount'] != None:
+            return ops['total_amount']
+        return 0
+    
     def balance(self, month=None, exclude=None):
         q_time = None
         if month != None:
@@ -130,7 +146,11 @@ class Account(models.Model):
         if Operation.objects.filter(dest=self).count() > 0:
             return False
         return True
-    
+
+    def charged(self, month=None):
+        query = Q(Q(doc__type='invoice') | Q(doc__type='collection'))
+        return self.__source_amount(query, month)
+     
     def has_quotas(self):
         return Quota.objects.filter(Q(dest=self) | Q(src=self)).count() > 0
     
@@ -142,19 +162,21 @@ class Account(models.Model):
         Operation.objects.create(amount=amount, doc=doc, dest=dest_account)
         self.save()
         
-    def new_multi_transfer(self, no, billed, ops, date=timezone.now()):
+    def new_multi_transfer(self, no, billed, ops, date=timezone.now(),
+                           transfer_type='transfer'):
         self.__assert_doc_not_exists(no)
         doc = OperationDoc.objects.create(date=date, no=no, src=self,
-                                          type='transfer', billed=billed)
+                                          type=transfer_type, billed=billed)
         for op in ops:
             Operation.objects.create(amount=op[1], doc=doc, dest=op[0])
         self.save()
         
-    def new_invoice(self, amount, date, no, billed, dest_accounts):
+    def new_charge(self, amount, date, no, billed, dest_accounts,
+                    charge_type):
         self.__assert_doc_not_exists(no)
         
-        new_invoice = OperationDoc.objects.create(date=date, no=no,
-                            billed=billed, src=self, type='invoice')
+        new_charge = OperationDoc.objects.create(date=date, no=no,
+                            billed=billed, src=self, type=charge_type)
         
         quotas = Quota.objects.filter(src=self)
         sum_fun = lambda x, q: x + Decimal(q.ratio * amount).quantize(EPS)
@@ -171,7 +193,7 @@ class Account(models.Model):
                             remainder)
                 q_amount = q_amount - remainder
             
-            Operation.objects.create(amount=q_amount, doc=new_invoice,
+            Operation.objects.create(amount=q_amount, doc=new_charge,
                                      dest=q.dest)
         
         self.save()
@@ -215,4 +237,22 @@ class Account(models.Model):
         if self.type == 'apart':
             return payments * -1
         return payments 
-
+    
+    def received(self, month=None):
+        q_time = None
+        if month != None:
+            q_time = Q(doc__date__lt=month.strftime('%Y-%m-%d'))
+            
+        if q_time != None:
+            q = Q(Q(dest=self) & q_time)
+        else:
+            q = Q(dest=self)
+        ops = Operation.objects.filter(q).aggregate(total_amount=Sum('amount'))
+        if ops['total_amount'] != None:
+            return ops['total_amount']
+        return 0
+     
+    def transferred(self, month=None):
+        query = Q(doc__type='transfer')
+        return self.__source_amount(query, month)
+     

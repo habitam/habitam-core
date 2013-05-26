@@ -6,6 +6,7 @@
 		<tr>
 			<th>Nume</th>
 			<th>Colectare de la</th>
+			<th>De colectat</th>
 			<th>Balanță</th>
 			<th>&nbsp;</th>
 		</tr>
@@ -16,6 +17,7 @@
 			<tr>
 				<td>{{ service }}</td>
 				<td>{{ service.billed }}</td>
+				<td class="{% if service.to_collect < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.to_collect|floatformat:2 }}</td>
 				<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance|floatformat:2 }}</td>
 				<td>
 					<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_service' entity_id=service.id %}')">Modifică</button>

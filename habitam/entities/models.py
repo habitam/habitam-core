@@ -514,20 +514,26 @@ class Service(SingleAccountEntity):
     def __change_billed(self):
         return self._old_billed != self.billed and self._old_billed != None
     
-    def __new_invoice_with_quotas(self, amount, no, date):
+    def __charge_type(self):
+        charge_type = 'invoice'
+        if self.service_type == 'collecting':
+            charge_type = 'collection'
+        return charge_type
+    
+    def __new_charge_with_quotas(self, amount, no, date):
         accounts = [] 
         for ap in self.billed.apartments():
             accounts.append(ap.account)
-        self.account.new_invoice(amount, date, no, self.billed.default_account,
-                                 accounts)
+        self.account.new_charge(amount, date, no, self.billed.default_account,
+                                 accounts, self.__charge_type())
         
-    def __new_invoice_without_quotas(self, ap_sums, no, date):
+    def __new_charge_without_quotas(self, ap_sums, no, date):
         ops = []
         for k, v in ap_sums.items():
             ap = Apartment.objects.get(pk=k)
             ops.append((ap.account, v))
         self.account.new_multi_transfer(no, self.billed.default_account, ops,
-                                        date)
+                                        date, self.__charge_type())
         
     def __unicode__(self):
         return self.name
@@ -537,6 +543,13 @@ class Service(SingleAccountEntity):
             self.set_manual_quota(ap_quotas)
             return
         self.set_quota()
+        
+    def balance(self):
+        if self.service_type == 'general':
+            return super(Service, self).balance()
+        received = self.account.received()
+        transferred = self.account.transferred()
+        return received - transferred
         
     def building(self):
         return self.billed.building() 
@@ -550,9 +563,9 @@ class Service(SingleAccountEntity):
     def new_inbound_operation(self, amount, no, ap_sums=None,
                               date=timezone.now()):
         if ap_sums == None:
-            self.__new_invoice_with_quotas(amount, no, date)
+            self.__new_charge_with_quotas(amount, no, date)
         else:
-            self.__new_invoice_without_quotas(ap_sums, no, date)
+            self.__new_charge_without_quotas(ap_sums, no, date)
 
     def delete(self):
         if not self.can_delete():
@@ -606,3 +619,8 @@ class Service(SingleAccountEntity):
         for a in apartments:
             Quota.set_quota(self.account, a.account,
                         Decimal(a.weight(self.quota_type)) / Decimal(total))
+
+    def to_collect(self):
+        charged = self.account.charged()
+        received = self.account.received()
+        return charged - received
