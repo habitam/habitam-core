@@ -333,7 +333,7 @@ class Apartment(SingleAccountEntity):
 
     def balance(self):
         penalties_account = self.building().penalties_account
-        return self.account.balance(exclude=penalties_account)
+        return self.account.balance(src_exclude=penalties_account)
         
         
     def building(self):
@@ -493,6 +493,12 @@ class Service(SingleAccountEntity):
     quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
     service_type = models.CharField(max_length=10, choices=SERVICE_TYPE)
     
+    @classmethod
+    def for_account(cls, account):
+        try:
+            return Service.objects.get(account=account)
+        except Service.DoesNotExist:
+            return None        
    
     def __init__(self, *args, **kwargs): 
         super(Service, self).__init__('std', *args, **kwargs) 

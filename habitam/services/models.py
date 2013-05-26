@@ -110,7 +110,7 @@ class Account(models.Model):
             return ops['total_amount']
         return 0
     
-    def balance(self, month=None, exclude=None):
+    def balance(self, month=None, src_exclude=None):
         q_time = None
         if month != None:
             q_time = Q(doc__date__lt=month.strftime('%Y-%m-%d'))
@@ -122,8 +122,8 @@ class Account(models.Model):
         else:
             q = Q(doc__src=self)
         qs = Operation.objects.filter(q)
-        if exclude != None:
-            qs = qs.exclude(Q(dest=exclude))
+        if src_exclude != None:
+            qs = qs.exclude(src_exclude)
         ops = qs.aggregate(total_amount=Sum('amount'))
         if ops['total_amount'] != None:
             balance = balance - ops['total_amount']

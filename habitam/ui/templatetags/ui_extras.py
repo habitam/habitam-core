@@ -36,3 +36,17 @@ def operation_sign(val, negate):
 @register.assignment_tag
 def available_buildings():
     return ApartmentGroup.objects.filter(type='building')
+
+@register.simple_tag
+def op_amount_class(doc, negative, amount, service):
+    if doc.type == 'collection' and service != None:
+        return 'collection'
+    if negative and amount > 0 or not negative and amount < 0:
+        return 'negative_balance'
+    return 'positive_balance'
+
+@register.simple_tag
+def op_class(doc, service):
+    if doc.type == 'collection' and service != None:
+        return 'collection'
+    return ''

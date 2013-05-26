@@ -3,6 +3,10 @@ body {
 	padding-bottom: 40px;
 }
 
+.collection {
+	color: rgb(180, 180, 180);
+}
+
 .negative_balance {
 	color: rgb(200, 0, 0);
 }

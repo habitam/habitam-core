@@ -1,9 +1,11 @@
 {% load ui_extras %}
-<tr>
+<tr class="{% op_class doc service %}">
 	<td>{{ doc.date|date:"d-m-Y" }}</td>
-	<td>{{ other }}</td>
+	<td>
+	{% if doc.type == "collection" %}Colectare pentru {% endif %}{{ other }}
+	</td>
 	<td>{{ doc.no }}</td>
-	<td class="{% if negative and amount > 0 or not negative and amount < 0 %}negative_balance{% else %}positive_balance{% endif %}">
+	<td class="{% op_amount_class doc negative amount service %}">
 		{{ amount|operation_sign:negative|floatformat:2 }}
 		{% if account.type == 'apart' and doc.penalties != None %} și {{ doc.penalties }} penalități{% endif %}
 	</td>

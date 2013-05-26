@@ -24,6 +24,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.core.urlresolvers import reverse
+from django.db.models.query_utils import Q
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
@@ -111,21 +112,26 @@ def operation_list(request, building_id, account_id, month=None):
     
     ops = account.operation_list(month, month_end)
     initial_penalties, final_penalties = None, None
-    exclude = None
+    src_exclude = None
     
     apartment = Apartment.for_account(account)
+    # TODO(Stefan) there's logic put in the view, this is uncool
     if apartment != None:
         initial_penalties = apartment.penalties(month)
         final_penalties = apartment.penalties(month_end)
-        exclude = apartment.building().penalties_account
+        src_exclude = Q(dest=apartment.building().penalties_account)
         
-    initial = account.balance(month, exclude)
-    final = account.balance(month_end, exclude)
+    service = Service.for_account(account)
+    if service != None and service.service_type == 'collecting':
+        src_exclude = Q(doc__type='collection')
+        
+    initial = account.balance(month, src_exclude)
+    final = account.balance(month_end, src_exclude)
     
     data = {'account': account, 'docs': ops, 'building': building,
             'initial_balance': initial, 'initial_penalties': initial_penalties,
             'final_balance': final, 'final_penalties': final_penalties,
-            'month': month, 'month_end': month_end,
+            'month': month, 'month_end': month_end, 'service': service,
             'building': __find_building(account)}
     return render(request, 'operation_list.html', data)
 
