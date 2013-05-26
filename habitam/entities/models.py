@@ -25,6 +25,7 @@ from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 from django.core.validators import MaxValueValidator
 from django.db import models
+from django.db.models.query_utils import Q
 from django.utils import timezone
 from habitam.services.models import Account, Quota
 from habitam.settings import MAX_ISSUANCE_DAY, MAX_PAYMENT_DUE_DAYS, \
@@ -333,7 +334,7 @@ class Apartment(SingleAccountEntity):
 
     def balance(self):
         penalties_account = self.building().penalties_account
-        return self.account.balance(src_exclude=penalties_account)
+        return self.account.balance(src_exclude=Q(dest=penalties_account))
         
         
     def building(self):
