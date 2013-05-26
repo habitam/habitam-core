@@ -22,13 +22,13 @@ Created on Apr 21, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
-from habitam.entities.models import AccountLink
+from habitam.services.models import Account
 from habitam.ui.forms.generic import NewDocPaymentForm
 
 
 class NewFundTransfer(NewDocPaymentForm):
-    dest_link = forms.ModelChoiceField(label='Fond',
-                            queryset=AccountLink.objects.all())
+    dest_account = forms.ModelChoiceField(label='Fond',
+                            queryset=Account.objects.all())
     
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
@@ -37,6 +37,16 @@ class NewFundTransfer(NewDocPaymentForm):
         del kwargs['account']
         del kwargs['user']
         super(NewFundTransfer, self).__init__(*args, **kwargs)
-        queryset = AccountLink.objects.filter(~Q(account=account) & Q(
-                            Q(holder=building) | Q(holder__parent=building)))
-        self.fields['dest_link'].queryset = queryset
+        
+        qdirect = Q(accountlink__holder=building)
+        qparent = Q(accountlink__holder__parent=building)
+        qbuilding_accounts = Q(qdirect | qparent)
+        
+        qbilled_direct = Q(service__billed=building)
+        qbilled_parent = Q(service__billed__parent=building)
+        qbilled_accounts = Q(Q(service__service_type='collecting') & 
+                             Q(qbilled_direct | qbilled_parent))
+        
+        queryset = Account.objects.filter(Q(qbuilding_accounts | qbilled_accounts))
+        queryset = queryset.exclude(pk=account.id)
+        self.fields['dest_account'].queryset = queryset

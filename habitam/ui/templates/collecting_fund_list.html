@@ -17,11 +17,13 @@
 			<tr>
 				<td>{{ service }}</td>
 				<td>{{ service.billed }}</td>
-				<td class="{% if service.to_collect < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.to_collect|floatformat:2 }}</td>
+				<td class="{% if service.to_collect > 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.to_collect|floatformat:2 }}</td>
 				<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance|floatformat:2 }}</td>
 				<td>
 					<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_service' entity_id=service.id %}')">Modifică</button>
+					<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' building_id=building.id account_id=service.account.id %}'">Operațiuni</button>
 					<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_collection' entity_id=service.id %}')">Colectare nouă</button>
+					<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_service_payment' account_id=service.account.id %}')">Plată serviciu</button>
 				    {% if service.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_service' entity_id=service.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
 				</td>
 			</tr>

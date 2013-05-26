@@ -25,7 +25,7 @@ from django import forms
 from django.db.models.query_utils import Q
 from django.forms.fields import DecimalField
 from habitam.entities.models import ApartmentGroup, Service
-from habitam.services.models import Quota
+from habitam.services.models import Quota, Account
 from habitam.ui.forms.generic import NewDocPaymentForm
 import logging
 
@@ -144,8 +144,8 @@ class NewServiceInvoice(NewDocPaymentForm):
 
 
 class NewServicePayment(NewDocPaymentForm):
-    service = forms.ModelChoiceField(label='Serviciu',
-                                     queryset=Service.objects.all())
+    dest_account = forms.ModelChoiceField(label='Serviciu',
+                            queryset=Account.objects.all())
     
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
@@ -153,6 +153,12 @@ class NewServicePayment(NewDocPaymentForm):
         del kwargs['account']
         del kwargs['user']
         super(NewServicePayment, self).__init__(*args, **kwargs)
-        qb = Q(billed=building) | Q(billed__parent=building)
-        queryset = Service.objects.filter(~Q(service_type='collecting') & qb)
-        self.fields['service'].queryset = queryset
+     
+        qbilled_direct = Q(service__billed=building)
+        qbilled_parent = Q(service__billed__parent=building)
+        qbilled_accounts = Q(~Q(service__service_type='collecting') & 
+                             Q(qbilled_direct | qbilled_parent))
+        
+        queryset = Account.objects.filter(qbilled_accounts)
+        self.fields['dest_account'].queryset = queryset
+

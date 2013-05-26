@@ -237,17 +237,18 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
 @user_passes_test(license_valid)
 def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
     src_account = Account.objects.get(pk=account_id)
-    account_link = AccountLink.objects.get(account=src_account)
-    building = account_link.holder.building()
+    try:
+        account_link = AccountLink.objects.get(account=src_account)
+        building = account_link.holder.building()
+    except AccountLink.DoesNotExist:
+        service = Service.objects.get(account=src_account)
+        building = service.building()
     
     if request.method == 'POST':
         form = form_cls(request.POST, account=src_account,
                                user=request.user, building=building)
         if form.is_valid():
-            dest_account = form.cleaned_data[form_dest_key].account
-            del form.cleaned_data[form_dest_key]
-            src_account.new_transfer(dest_account=dest_account,
-                                **form.cleaned_data)
+            src_account.new_transfer(**form.cleaned_data)
             return render(request, 'edit_ok.html')
     else:
         form = form_cls(account=src_account, user=request.user,
