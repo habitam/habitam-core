@@ -284,6 +284,12 @@ class AccountLink(models.Model):
         return self.account.holder
    
     
+class Consumption(models.Model):
+    consumed = models.DecimalField(null=True, blank=True,
+            decimal_places=2, max_digits=4)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    
 class Person(models.Model):
     name = models.CharField(max_length=200)
     email = models.EmailField(null=True, blank=True)
@@ -474,8 +480,12 @@ class Apartment(SingleAccountEntity):
             if self._old_parent != None:
                 self._old_parent.update_quotas()
             self.parent.update_quotas()
-            
- 
+
+
+class ApartmentConsumption(Consumption):
+    apartment = models.ForeignKey(Apartment)
+
+
 class Service(SingleAccountEntity):
     QUOTA_TYPES = (
         ('equally', 'în mod egal'),
@@ -535,6 +545,35 @@ class Service(SingleAccountEntity):
         self.account.new_charge(amount, date, no, self.billed.default_account,
                                  accounts, self.__charge_type())
         
+    def __new_charge_with_consumptions(self, amount, no, ap_consumptions,
+                                       consumption, date):
+        ops = []
+        db_ap_consumptions = []
+        declared = sum(ap_consumptions.values())
+        per_unit = amount / consumption
+        logger.info('Declared consumption is %f, price per unit is %f' % 
+                    (declared, per_unit))
+        for k, v in ap_consumptions.items():
+            ap = Apartment.objects.get(pk=k)
+            total_ap = Decimal(v) / declared * amount
+            loss = total_ap - v * per_unit
+            logger.info('Consumption for %s is %f, total to pay %f, lost %f' % 
+                        (ap, v, total_ap, loss))
+            ops.append((ap.account, total_ap, loss))
+            db_ap_consumptions.append(ApartmentConsumption(consumed=v,
+                                                           apartment=ap))
+            
+        self.account.new_multi_transfer(no, self.billed.default_account, ops,
+                                        date, self.__charge_type())
+        
+        svc_consumption = ServiceConsumption(consumed=consumption,
+                                             service=self)
+        
+        svc_consumption.save()
+        for ap_consumption in db_ap_consumptions:
+            ap_consumption.save()
+        
+         
     def __new_charge_without_quotas(self, ap_sums, no, date):
         ops = []
         for k, v in ap_sums.items():
@@ -569,11 +608,17 @@ class Service(SingleAccountEntity):
         return {'amount': 0}
     
     def new_inbound_operation(self, amount, no, ap_sums=None,
-                              date=timezone.now()):
-        if ap_sums == None:
-            self.__new_charge_with_quotas(amount, no, date)
-        else:
+                        ap_consumptions=None, consumption=None,
+                        date=timezone.now()):
+        logger.info('new inbound op for %s amount=%f no=%s ap_sums=%s ap_consumptions=%s consumption=%s date=%s' % 
+                    (self, amount, no, ap_sums, ap_consumptions, consumption, date))
+        if self.quota_type == 'consumption':
+            self.__new_charge_with_consumptions(amount, no, ap_consumptions,
+                                                consumption, date)
+        elif self.quota_type == 'noquota': 
             self.__new_charge_without_quotas(ap_sums, no, date)
+        else:
+            self.__new_charge_with_quotas(amount, no, date)
 
     def delete(self):
         if not self.can_delete():
@@ -632,3 +677,7 @@ class Service(SingleAccountEntity):
         charged = self.account.charged()
         received = self.account.received()
         return charged - received
+
+
+class ServiceConsumption(Consumption):
+    service = models.ForeignKey(Service)

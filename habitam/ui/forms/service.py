@@ -111,30 +111,43 @@ class NewServiceInvoice(NewDocPaymentForm):
         if self.service.quota_type == 'noquota':
             self.fields['amount'] = forms.DecimalField(label='Suma',
                                                     widget=forms.HiddenInput())
+            self.__add_apartments('Suma ', 'sum_ap_')
+        
+        if self.service.quota_type == 'consumption':
+            self.fields['consumption'] = forms.DecimalField(label='Cantitate')
+            self.__add_apartments('Cantitate pentru ', 'consumption_ap_')
+    
+    def __add_apartments(self, label, var_name):
             aps = self.service.billed.apartments()
             for ap in aps:
-                self.fields['sum_ap_' + str(ap.pk)] = DecimalField(
-                            label='Suma ' + str(ap), decimal_places=3,
+                self.fields[var_name + str(ap.pk)] = DecimalField(
+                            label=label + str(ap), decimal_places=3,
                             max_digits=4)
+                
+    def clean_apartments(self, cleaned_data, label):
+        all_data = {}
+        all_sum = 0
+        for k, v in cleaned_data.items():
+            if not k.startswith(label):
+                continue
+            all_data[int(k[len(label):])] = v
+            all_sum = all_sum + v
+            
+        for k in all_data.keys():
+            del cleaned_data[label + str(k)]
+        
+        if all_sum == 0 or len(all_data) == 0:
+            return None, None 
+        return all_sum, all_data
     
     def clean(self):
         cleaned_data = super(NewServiceInvoice, self).clean()
-        if self.service.quota_type != 'noquota':
-            return cleaned_data
-        ap_sums = {}
-        amount = 0
-        for k, v in cleaned_data.items():
-            if not k.startswith('sum_ap_'):
-                continue
-            ap_sums[int(k[len('sum_ap_'):])] = v
-            amount = amount + v
-        
-        cleaned_data['amount'] = amount
-        cleaned_data['ap_sums'] = ap_sums
-        
-        for ap_id in ap_sums.keys():
-            del cleaned_data['sum_ap_' + str(ap_id)]
-            
+        if self.service.quota_type == 'noquota':
+            cleaned_data['amount'], cleaned_data['ap_sums'] = \
+                self.clean_apartments(cleaned_data, 'sum_ap_')
+        if self.service.quota_type=='consumption': 
+            dummy, cleaned_data['ap_consumptions'] = \
+                self.clean_apartments(cleaned_data, 'consumption_ap_')
         return cleaned_data    
     
     def spinners(self):

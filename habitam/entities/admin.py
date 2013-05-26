@@ -21,7 +21,8 @@ Created on Apr 13, 2013
 '''
 
 from django.contrib import admin
-from habitam.entities.models import ApartmentGroup, Apartment, Person, Service
+from habitam.entities.models import ApartmentGroup, Apartment, Person, Service, \
+    ServiceConsumption, ApartmentConsumption
 
 class ApartmentGroupAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'type', 'parent')
@@ -29,14 +30,21 @@ class ApartmentGroupAdmin(admin.ModelAdmin):
 class ApartmentAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'parent', 'owner', 'no_penalties_since')
     
+class ApartmentConsumptionAdmin(admin.ModelAdmin):
+    list_display = ('apartment', 'timestamp', 'consumed')
+    
 class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
 
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('name', 'service_type', 'billed', 'quota_type')
     
+class ServiceConsumptionAdmin(admin.ModelAdmin):
+    list_display = ('service', 'timestamp', 'consumed')
 
 admin.site.register(ApartmentGroup, ApartmentGroupAdmin)
 admin.site.register(Apartment, ApartmentAdmin)
+admin.site.register(ApartmentConsumption, ApartmentConsumptionAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Service, ServiceAdmin)
+admin.site.register(ServiceConsumption, ServiceConsumptionAdmin)

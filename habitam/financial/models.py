@@ -69,6 +69,8 @@ class OperationDoc(models.Model):
    
 class Operation(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    loss = models.DecimalField(max_digits=10, decimal_places=2, blank=True,
+                               null=True)
     doc = models.ForeignKey(OperationDoc)
     dest = models.ForeignKey('Account', related_name='operation_dest_set')
 
@@ -168,7 +170,11 @@ class Account(models.Model):
         doc = OperationDoc.objects.create(date=date, no=no, src=self,
                                           type=transfer_type, billed=billed)
         for op in ops:
-            Operation.objects.create(amount=op[1], doc=doc, dest=op[0])
+            loss = None
+            if len(op) == 3:
+                loss = op[2]
+            Operation.objects.create(amount=op[1], doc=doc, dest=op[0],
+                                     loss=loss)
         self.save()
         
     def new_charge(self, amount, date, no, billed, dest_accounts,
