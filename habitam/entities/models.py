@@ -452,7 +452,7 @@ class Apartment(SingleAccountEntity):
         return getattr(self, quota_type)
 
 
-    def new_inbound_operation(self, amount, date=timezone.now()):
+    def new_inbound_operation(self, amount, dest_account, date=timezone.now()):
         no = uuid1()
         building = self.building()
         penalties = self.penalties()
@@ -462,8 +462,8 @@ class Apartment(SingleAccountEntity):
             penalties = 0
         logger.info('New payment %s from %s worth %f + %f penalties' % 
                     (no, self, amount, penalties))
-        self.account.new_multi_transfer(no, building.default_account,
-                                [(building.default_account, amount - penalties),
+        self.account.new_multi_transfer(no, dest_account,
+                                [(dest_account, amount - penalties),
                                  (building.penalties_account, penalties)],
                                 date)
 

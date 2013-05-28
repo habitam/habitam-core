@@ -21,7 +21,10 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
+from django.db.models.query_utils import Q
 from habitam.entities.models import ApartmentGroup, Apartment, Person
+from habitam.financial.models import Account
+from habitam.ui.forms.generic import NewPaymentForm
 
 
 class EditApartmentForm(forms.ModelForm):
@@ -61,3 +64,19 @@ class EditApartmentForm(forms.ModelForm):
 class EditPersonForm(forms.ModelForm):
     class Meta:
         model = Person 
+
+
+class NewApartmentPayment(NewPaymentForm):
+    dest_account = forms.ModelChoiceField(label='Cont',
+                            queryset=Account.objects.all())
+    
+    def __init__(self, *args, **kwargs):
+        ap = kwargs['entity']
+        building = ap.building()
+        super(NewApartmentPayment, self).__init__(*args, **kwargs)
+        
+        qdirect = Q(accountlink__holder=building)
+        qparent = Q(accountlink__holder__parent=building)
+        q = Account.objects.filter(qdirect | qparent).exclude(type='penalties')
+        
+        self.fields['dest_account'].queryset = q
