@@ -22,8 +22,35 @@ Created on Apr 21, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
+from habitam.entities.models import AccountLink
 from habitam.financial.models import Account
 from habitam.ui.forms.generic import NewDocPaymentForm
+
+
+class EditAccountForm(forms.ModelForm):
+    class Meta:
+        model = Account
+        fields = ('name',)
+    
+    def __init__(self, *args, **kwargs):
+        if 'building' in kwargs.keys():
+            self._building = kwargs['building']
+            del kwargs['building']
+            del kwargs['user']
+        else:
+            self.set_building = None
+        super(EditAccountForm, self).__init__(*args, **kwargs)
+        
+    def save(self, commit=True):
+        instance = super(EditAccountForm, self).save(commit=False)
+        if commit:
+            instance.save()
+            if self._building != None:
+                al = AccountLink.objects.create(holder=self._building,
+                                                account=instance)
+                al.save()
+        
+        return instance
 
 
 class NewFundTransfer(NewDocPaymentForm):

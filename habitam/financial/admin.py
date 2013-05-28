@@ -33,7 +33,7 @@ class OperationAdmin(admin.ModelAdmin):
     list_display = ('doc', 'dest', 'amount', 'loss')
 
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ('holder',)
+    list_display = ('name',)
 
 admin.site.register(Quota, QuotaAdmin)
 admin.site.register(OperationDoc, OperationDocAdmin)

@@ -51,7 +51,7 @@ class SingleAccountEntity(Entity):
     
     def __init__(self, account_type, *args, **kwargs):
         if 'name' in kwargs.keys():
-            account = Account.objects.create(holder=kwargs['name'],
+            account = Account.objects.create(name=kwargs['name'],
                                              type=account_type)
             kwargs.setdefault('account', account)
         super(SingleAccountEntity, self).__init__(*args, **kwargs)
@@ -64,13 +64,13 @@ class SingleAccountEntity(Entity):
         
     def save(self, account_type, **kwargs):
         try:
-            self.account.holder = self.__unicode__()
+            self.account.name = self.__unicode__()
             self.account.save()
         except Account.DoesNotExist:
             self.account = Account.objects.create(holder=self.__unicode__(),
                                                   type=account_type)
         
-        self.account.holder = self.name     
+        self.account.name = self.name     
         super(SingleAccountEntity, self).save(**kwargs)
 
 
@@ -145,11 +145,11 @@ class ApartmentGroup(Entity):
                                 payment_due_days=payment_due_days)
         
         AccountLink.objects.create(holder=building, account=default_account)
-        default_account.holder = building.__unicode__()
+        default_account.name = building.__unicode__()
         default_account.save()
         
         AccountLink.objects.create(holder=building, account=penalties_account)
-        penalties_account.holder = building.__unicode__()
+        penalties_account.name = building.__unicode__()
         penalties_account.save()
         
         return building
@@ -158,18 +158,19 @@ class ApartmentGroup(Entity):
     @classmethod
     def staircase_create(cls, name, parent, daily_penalty=None, issuance_day=None,
                         payment_due_days=None):
-        default_account = Account.objects.create(type='std')
         staircase = ApartmentGroup.objects.create(name=name, parent=parent,
-                                type='stair', default_account=default_account,
-                                daily_penalty=daily_penalty,
+                                type='stair', daily_penalty=daily_penalty,
                                 issuance_day=issuance_day,
                                 payment_due_days=payment_due_days)
-        AccountLink.objects.create(holder=staircase, account=default_account)
-        default_account.holder = staircase.__unicode__()
-        default_account.save()
+        staircase.save()
         
         return staircase
     
+    
+    def __init__(self, *args, **kwargs):       
+        super(ApartmentGroup, self).__init__(*args, **kwargs) 
+        self._old_unicode = self.__unicode__()
+       
         
     def __unicode__(self):
         if self.type == 'building':
@@ -246,10 +247,15 @@ class ApartmentGroup(Entity):
     
     def save(self, **kwargs):
         try:
-            self.default_account.holder = self.__unicode__()
-            self.default_account.save()
-            self.penalties_account.holder = self.__unicode__()
-            self.penalties_account.save()
+            if self.default_account.name == self._old_unicode:
+                self.default_account.name = self.__unicode__()
+                self.default_account.save()
+        except AttributeError:
+            pass
+        try:
+            if self.penalties_account.name == self._old_unicode:
+                self.penalties_account.name = self.__unicode__()
+                self.penalties_account.save()
         except AttributeError:
             pass
         
@@ -260,6 +266,7 @@ class ApartmentGroup(Entity):
             self.type = kwargs['type']
             del kwargs['type'] 
         super(ApartmentGroup, self).save(**kwargs)
+        self._old_unicode = self.__unicode__()
         
     
     def services(self):
@@ -281,7 +288,7 @@ class AccountLink(models.Model):
     
     
     def __unicode__(self):
-        return self.account.holder
+        return self.account.name
    
     
 class Consumption(models.Model):

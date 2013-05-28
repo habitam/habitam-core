@@ -199,18 +199,22 @@ def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='
 @login_required
 @user_passes_test(license_valid)
 def new_building_entity(request, building_id, form_cls, target,
-                        title='New Entity', save_kwargs=None):
+                        title='New Entity', save_kwargs=None,
+                        commit_directly=False):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     
     if request.method == 'POST':
         form = form_cls(request.POST, user=request.user, building=building)
         if form.is_valid():
-            entity = form.save(commit=False)
-            if save_kwargs != None:
-                save_kwargs['building'] = building
-                entity.save(**save_kwargs)
-            else:
-                entity.save()
+            if commit_directly:
+                form.save()
+            else: 
+                entity = form.save(commit=False)
+                if save_kwargs != None:
+                    save_kwargs['building'] = building
+                    entity.save(**save_kwargs)
+                else:
+                    entity.save()
             return render(request, 'edit_ok.html')
     else:
         form = form_cls(user=request.user, building=building)
@@ -262,5 +266,5 @@ def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
     
     data = {'form' : form, 'target': target, 'entity_id': account_id,
             'building': building,
-            'title': title + ' ' + src_account.holder}
+            'title': title + ' ' + src_account.name}
     return render(request, 'edit_dialog.html', data)

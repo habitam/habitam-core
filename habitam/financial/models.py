@@ -81,7 +81,7 @@ class Account(models.Model):
         ('std', 'standard'),
         ('penalties', 'penalties')
     )
-    holder = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     type = models.CharField(default='std', max_length=10, choices=TYPES) 
     
     def __assert_doc_not_exists(self, no):
@@ -93,8 +93,8 @@ class Account(models.Model):
         
     def __unicode__(self):
         if self.type == 'penalties':
-            return self.holder + ' (penalitati)'
-        return self.holder
+            return self.name + ' (penalitati)'
+        return self.name
     
     def __source_amount(self, query, month):
         q_time = None
@@ -143,6 +143,8 @@ class Account(models.Model):
         return balance 
     
     def can_delete(self):
+        if self.type == 'penalties':
+            return False
         if OperationDoc.objects.filter(Q(src=self) | Q(billed=self)).count() > 0:
             return False
         if Operation.objects.filter(dest=self).count() > 0:

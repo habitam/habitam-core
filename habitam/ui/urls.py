@@ -21,10 +21,11 @@ Created on Apr 12, 2013
 '''
 from django.conf.urls import patterns, url
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person
+from habitam.financial.models import Account
 from habitam.ui import views, service_views
 from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
-from habitam.ui.forms.fund import NewFundTransfer
+from habitam.ui.forms.fund import NewFundTransfer, EditAccountForm
 from habitam.ui.forms.generic import NewPaymentForm
 from habitam.ui.forms.service import NewServicePayment, NewServiceInvoice
 
@@ -90,6 +91,13 @@ urlpatterns = patterns('',
         name='new_service_general'),
     
     url(r'^buildings/(?P<building_id>\d+)/funds$', views.building_tab, {'tab': 'fund_list'}, name='fund_list'),
+
+    url(r'^buildings/(?P<building_id>\d+)/funds/new$', 
+        views.new_building_entity,
+        {'form_cls': EditAccountForm, 'target': 'new_fund',
+         'title': 'Cont nou', 'commit_directly': True},
+        name='new_fund'),
+    
     
     url(r'^buildings/(?P<building_id>\d+)/collecting_funds$',
         views.building_tab, {'tab': 'collecting_fund_list'},
@@ -125,6 +133,12 @@ urlpatterns = patterns('',
          'target': 'new_payment', 'title': 'Incasare de la'},
         name='new_payment'),
     
+    url(r'^accounts/(?P<entity_id>\d+)/edit$',
+        views.edit_simple_entity,
+        {'entity_cls': Account, 'form_cls': EditAccountForm,
+         'target': 'edit_fund', 'title': ''},
+        name='edit_fund'),
+                       
     url(r'^accounts/(?P<account_id>\d+)/operations/pay_service$',
         views.new_transfer,
         {'form_cls': NewServicePayment, 'form_dest_key': 'service',

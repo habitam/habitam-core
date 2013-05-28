@@ -35,8 +35,8 @@ def operation_amount(account, doc, service):
 @register.assignment_tag
 def operation_other_party(account, doc):
     if doc.src == account:
-        return doc.billed.holder
-    return doc.src.holder
+        return doc.billed.name
+    return doc.src.name
 
 @register.assignment_tag
 def available_buildings():
