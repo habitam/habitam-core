@@ -126,9 +126,9 @@ class ServiceTests(EntitiesTestBase):
         service.new_inbound_operation(amount=value, no=no, date=timezone.now())
     
     @classmethod
-    def __apartment_payment(cls, name, value):
+    def __apartment_payment(cls, name, dest_account, value):
         ap = Apartment.objects.get(name=name)
-        ap.new_inbound_operation(value)
+        ap.new_inbound_operation(value, dest_account)
     
     @classmethod 
     def setUpClass(cls):
@@ -145,7 +145,7 @@ class ServiceTests(EntitiesTestBase):
 
         ServiceTests.__setup_invoice('invoice1', 100) 
         ServiceTests.__setup_invoice('invoice2', 10)
-        ServiceTests.__apartment_payment('2', 5)
+        ServiceTests.__apartment_payment('2', building.default_account, 5)
         
     def __assert_ap_balance(self, name, value):
         ap = Apartment.objects.get(name=name)
