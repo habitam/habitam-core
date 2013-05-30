@@ -22,7 +22,7 @@ Created on Apr 21, 2013
 '''
 from django import forms
 from habitam.entities.models import ApartmentGroup
-from habitam.settings import MAX_ISSUANCE_DAY, MAX_PAYMENT_DUE_DAYS, \
+from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY
 
 
@@ -67,12 +67,12 @@ class NewBuildingForm(forms.Form):
                                     max_value=1000)
     apartment_offset = forms.IntegerField(label='Primul apartament',
                                     initial=1, min_value=1, max_value=1000)
+    close_day = forms.IntegerField(label='Data închidere listă',
+                                    initial=1, min_value=1,
+                                    max_value=MAX_CLOSE_DAY)
     daily_penalty = forms.DecimalField(label='Penalitate (procent zilnic)',
                                     initial=MAX_PENALTY_PER_DAY, min_value=0,
                                     max_value=MAX_PENALTY_PER_DAY)
-    issuance_day = forms.IntegerField(label='Data afișare listă',
-                                    initial=1, min_value=1,
-                                    max_value=MAX_ISSUANCE_DAY)
     payment_due_days = forms.IntegerField(label='Zile de scadență',
                                     initial=MAX_PAYMENT_DUE_DAYS, min_value=1,
                                     max_value=MAX_PAYMENT_DUE_DAYS)
@@ -84,7 +84,7 @@ class NewBuildingForm(forms.Form):
         super(NewBuildingForm, self).__init__(*args, **kwargs)
         self.user = user
         self.fields.keyOrder = ['name', 'staircases', 'apartments',
-                                'apartment_offset', 'issuance_day',
+                                'apartment_offset', 'close_day',
                                 'payment_due_days', 'daily_penalty']
         
     def clean(self):
@@ -95,5 +95,5 @@ class NewBuildingForm(forms.Form):
         return self.cleaned_data
 
     def spinners(self):
-        return ['staircases', 'apartments', 'apartment_offset', 'issuance_day',
+        return ['staircases', 'apartments', 'apartment_offset', 'close_day',
                 'payment_due_days', 'daily_penalty']

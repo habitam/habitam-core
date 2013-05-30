@@ -27,7 +27,6 @@ from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm, \
     NewApartmentPayment
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
 from habitam.ui.forms.fund import NewFundTransfer, EditAccountForm
-from habitam.ui.forms.generic import NewPaymentForm
 from habitam.ui.forms.service import NewServicePayment, NewServiceInvoice
 
 
@@ -107,13 +106,16 @@ urlpatterns = patterns('',
     url(r'^buildings/(?P<building_id>\d+)/collecting_funds/new$',
         service_views.new_service, {'service_type': 'collecting'},
         name='new_service_collecting'),
+
+    url(r'^building/(?P<building_id>\d+)/list/(?P<month>\d{4}-\d{2})?$',
+        views.download_list, name='download_list'),
     
     url(r'^collecting_funds/(?P<entity_id>\d+)/collection/new$',
         views.new_inbound_operation, 
         {'entity_cls': Service, 'form_cls': NewServiceInvoice,
          'target': 'new_invoice', 'title': 'Colectare pentru'},
         name='new_collection'),
-    
+
     url(r'^services/(?P<entity_id>\d+)/edit$', service_views.edit_service, 
         name='edit_service'),
     

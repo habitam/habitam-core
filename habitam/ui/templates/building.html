@@ -5,8 +5,23 @@
 	<h1>
 		{{ building.name }}
 		<span class="btn-group pull-right">
-			{% if building.can_delete %}<button class="btn btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_building' entity_id=building.id %}', '{% url 'home' %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
-			<button class="btn" onclick="editDialog('{% url 'edit_building' entity_id=building.id %}')"><i class="icon-edit"></i></button>
+			<div class="btn-group">
+				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+	    			Listă	
+	    			<span class="caret"></span>
+	  			</a>
+			  	<ul class="dropdown-menu">
+				{% with license=user.administrator.license %}
+				{% for m in license.available_list_months %}
+					<li><a href="{% url 'download_list' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
+				{% endfor %}
+				{% endwith %}
+				</ul>
+			</div>
+			<div class="btn-group">
+				{% if building.can_delete %}<button class="btn btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_building' entity_id=building.id %}', '{% url 'home' %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
+				<button class="btn" onclick="editDialog('{% url 'edit_building' entity_id=building.id %}')"><i class="icon-edit"></i></button>
+			</div>
 		</span>	
 	</h1>
 </div>

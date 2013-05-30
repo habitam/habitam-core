@@ -23,10 +23,12 @@ Created on Apr 12, 2013
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import user_passes_test, login_required
+from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from django.db.models.query_utils import Q
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
+from habitam.downloads.display_list import download_display_list
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink
 from habitam.financial.models import Account, OperationDoc
@@ -91,6 +93,25 @@ def building_tab(request, building_id, tab):
     return render(request, tab + '.html',
                   {'building': building, 'active_tab': tab})  
 
+@login_required
+@user_passes_test(license_valid)   
+def download_list(request, building_id, month):
+    building = ApartmentGroup.objects.get(pk=building_id)
+    begin_ts = datetime.strptime(month + '-%02d' % building.close_day,
+                                  "%Y-%m-%d").date()
+    end_ts = begin_ts + relativedelta(months=1) 
+    l = request.user.administrator.license
+    l.validate_month(building, begin_ts)
+
+    temp = download_display_list(building, begin_ts, end_ts)
+    
+    wrapper = FileWrapper(temp)
+    response = HttpResponse(wrapper, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename=lista' + building.name + '_' + month + '.txt'
+    response['Content-Length'] = temp.tell()
+    temp.seek(0)
+    return response
+   
 
 @login_required
 @user_passes_test(license_valid)   
@@ -98,10 +119,10 @@ def operation_list(request, building_id, account_id, month=None):
     building = ApartmentGroup.objects.get(pk=building_id)
     if month == None:
         today = date.today()
-        month = date(day=building.issuance_day, month=today.month,
+        month = date(day=building.close_day, month=today.month,
                      year=today.year)
     else:
-        month = datetime.strptime(month + '-%02d' % building.issuance_day,
+        month = datetime.strptime(month + '-%02d' % building.close_day,
                                   "%Y-%m-%d").date()
     
     l = request.user.administrator.license

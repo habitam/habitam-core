@@ -28,7 +28,7 @@ from django.db import models
 from django.db.models.query_utils import Q
 from django.utils import timezone
 from habitam.financial.models import Account, Quota
-from habitam.settings import MAX_ISSUANCE_DAY, MAX_PAYMENT_DUE_DAYS, \
+from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY, PENALTY_START_DAYS, EPS
 from uuid import uuid1
 import logging
@@ -67,7 +67,6 @@ class SingleAccountEntity(Entity):
             self.account.name = self.__unicode__()
             self.account.save()
         except Account.DoesNotExist:
-            self.account = Account.objects.create(holder=self.__unicode__(),
             self.account = Account.objects.create(name=self.__unicode__(),
                                                   type=account_type)
         
@@ -81,10 +80,10 @@ class ApartmentGroup(Entity):
              ('building', 'building')
     )
 
+    close_day = models.SmallIntegerField(null=True, blank=True,
+            validators=[MaxValueValidator(MAX_CLOSE_DAY)])
     default_account = models.ForeignKey(Account, null=True, blank=True,
                                         related_name='default_account')
-    issuance_day = models.SmallIntegerField(null=True, blank=True,
-            validators=[MaxValueValidator(MAX_ISSUANCE_DAY)])
     type = models.CharField(max_length=5, choices=TYPES)
     parent = models.ForeignKey('self', null=True, blank=True)
     payment_due_days = models.SmallIntegerField(null=True, blank=True,
@@ -97,14 +96,14 @@ class ApartmentGroup(Entity):
   
     @classmethod
     def bootstrap_building(cls, user_license, name, staircases, apartments,
-                           apartment_offset, daily_penalty, issuance_day,
+                           apartment_offset, daily_penalty, close_day,
                            payment_due_days):
         per_staircase = apartments / staircases
         remainder = apartments % staircases
         
         building = ApartmentGroup.building_create(name=name,
                         daily_penalty=daily_penalty,
-                        issuance_day=issuance_day,
+                        close_day=close_day,
                         payment_due_days=payment_due_days)
         ap_idx = apartment_offset
         today = date.today()
@@ -134,7 +133,7 @@ class ApartmentGroup(Entity):
     
     
     @classmethod
-    def building_create(cls, name, daily_penalty=None, issuance_day=None,
+    def building_create(cls, name, daily_penalty=None, close_day=None,
                         payment_due_days=None):
         default_account = Account.objects.create(type='std')
         penalties_account = Account.objects.create(type='penalties')
@@ -142,7 +141,7 @@ class ApartmentGroup(Entity):
                                 default_account=default_account,
                                 penalties_account=penalties_account,
                                 daily_penalty=daily_penalty,
-                                issuance_day=issuance_day,
+                                close_day=close_day,
                                 payment_due_days=payment_due_days)
         
         AccountLink.objects.create(holder=building, account=default_account)
@@ -157,11 +156,11 @@ class ApartmentGroup(Entity):
     
     
     @classmethod
-    def staircase_create(cls, name, parent, daily_penalty=None, issuance_day=None,
+    def staircase_create(cls, name, parent, daily_penalty=None, close_day=None,
                         payment_due_days=None):
         staircase = ApartmentGroup.objects.create(name=name, parent=parent,
                                 type='stair', daily_penalty=daily_penalty,
-                                issuance_day=issuance_day,
+                                close_day=close_day,
                                 payment_due_days=payment_due_days)
         staircase.save()
         
@@ -407,15 +406,15 @@ class Apartment(SingleAccountEntity):
     def penalties(self, day=date.today()):
         logger.debug('Computing penalties for %s at %s' % (self, day))
         building = self.building()
-        if building.issuance_day == None:
+        if building.close_day == None:
             return None
         
-        last = date(day=building.issuance_day, month=day.month,
+        last = date(day=building.close_day, month=day.month,
                     year=day.year)
         last = last - relativedelta(days=building.payment_due_days)
         last = last - relativedelta(days=PENALTY_START_DAYS)
         
-        iterator = date(day=building.issuance_day,
+        iterator = date(day=building.close_day,
                    month=self.no_penalties_since.month,
                    year=self.no_penalties_since.year)
         nps = start = iterator
