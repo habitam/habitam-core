@@ -68,6 +68,7 @@ class SingleAccountEntity(Entity):
             self.account.save()
         except Account.DoesNotExist:
             self.account = Account.objects.create(holder=self.__unicode__(),
+            self.account = Account.objects.create(name=self.__unicode__(),
                                                   type=account_type)
         
         self.account.name = self.name     
