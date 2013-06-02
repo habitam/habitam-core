@@ -20,7 +20,7 @@ Created on Apr 8, 2013
 
 @author: Stefan Guna
 '''
-from datetime import date
+from datetime import date, datetime 
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 from django.core.validators import MaxValueValidator
@@ -233,8 +233,26 @@ class ApartmentGroup(Entity):
                                          quota_type=quota_type)
         service.set_quota(quota_type)
         service.save()
+    
+    
+    def display_dates(self, since, until):
+        q = self.displaydate_set.filter(Q(timestamp__gt=since) & 
+                                        Q(timestamp__lt=until))
+        print '####', since, until
+        return q.order_by('month') 
+
         
+    def mark_display(self, month):
+        month = date(day=self.close_day, month=month.month, year=month.year)
+        # TODO(Stefan) need to synchronize this https://trello.com/c/KztkJ8mt
+        try:
+            self.displaydate_set.get(month=month)
+        except DisplayDate.DoesNotExist:
+            dd = DisplayDate.objects.create(building=self, month=month,
+                                            timestamp=datetime.now())
+            dd.save()
         
+
     def funds(self):
         apartment_groups = self.apartment_groups()
         result = []
@@ -296,6 +314,16 @@ class Consumption(models.Model):
             decimal_places=2, max_digits=4)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+
+class DisplayDate(models.Model):
+    building = models.ForeignKey(ApartmentGroup)
+    timestamp = models.DateTimeField()
+    month = models.DateField()
+    
+    def dbuildingisplay_date(self):
+        ts = self.timestamp
+        return date(day=ts.day, month=ts.month, year=ts.year)
+    
     
 class Person(models.Model):
     name = models.CharField(max_length=200)
@@ -371,14 +399,19 @@ class Apartment(SingleAccountEntity):
         return {'amount' :-1 * amount}
         
     
-    def __monthly_penalties(self, cp, begin, end, day=date.today()):
+    def __monthly_penalties(self, cp, dd, day):
         building = self.building()
+        
+        begin = date(day=building.close_day, month=dd.month.month,
+                     year=dd.month.year)
+        end = begin + relativedelta(months=1)
         
         begin_balance = self.account.balance(begin)
         end_balance = self.account.balance(end)
         monthly_debt = end_balance - begin_balance
         next_day = day + relativedelta(days=1)
-        payments = self.account.payments(end, next_day, building.penalties_account)
+        payments = self.account.payments(end, next_day,
+                                         building.penalties_account)
         balance = monthly_debt + payments - cp
 
         logger.debug('%s -> %s' % (begin_balance, end_balance))
@@ -402,36 +435,29 @@ class Apartment(SingleAccountEntity):
         
         return penalties, payments
      
-     
+    
+    # TODO test this as per https://trello.com/c/djqGiRgQ 
     def penalties(self, day=date.today()):
         logger.debug('Computing penalties for %s at %s' % (self, day))
         building = self.building()
-        if building.close_day == None:
+        if building.daily_penalty == None or building.daily_penalty == 0:
             return None
         
-        last = date(day=building.close_day, month=day.month,
-                    year=day.year)
-        last = last - relativedelta(days=building.payment_due_days)
-        last = last - relativedelta(days=PENALTY_START_DAYS)
-        
-        iterator = date(day=building.close_day,
-                   month=self.no_penalties_since.month,
-                   year=self.no_penalties_since.year)
-        nps = start = iterator
+        until = day - relativedelta(days=building.payment_due_days)
+        until = until - relativedelta(days=PENALTY_START_DAYS)
+       
+        nps = start = None 
         p, cp = 0, 0
         penalties_found = False
-        while iterator < last:
-            following = iterator + relativedelta(months=1)
-            m, cp = self.__monthly_penalties(cp, iterator, following, day)
+        for dd in building.display_dates(self.no_penalties_since, until):
+            print '++++++', dd.month 
+            m, cp = self.__monthly_penalties(cp, dd, day)
             p = p + m
             
             if m > 0:
                 penalties_found = True
-            if not penalties_found:
-                nps = iterator
-            
-            iterator = following
-            
+            if nps == None or not penalties_found:
+                nps = dd.month
             
         if nps != start:
             logger.info('Increment nps for %s(pk=%d) from %s to %s' % 

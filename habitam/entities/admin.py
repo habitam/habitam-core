@@ -22,7 +22,7 @@ Created on Apr 13, 2013
 
 from django.contrib import admin
 from habitam.entities.models import ApartmentGroup, Apartment, Person, Service, \
-    ServiceConsumption, ApartmentConsumption
+    ServiceConsumption, ApartmentConsumption, DisplayDate
 
 class ApartmentGroupAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'type', 'parent')
@@ -32,7 +32,10 @@ class ApartmentAdmin(admin.ModelAdmin):
     
 class ApartmentConsumptionAdmin(admin.ModelAdmin):
     list_display = ('apartment', 'timestamp', 'consumed')
-    
+
+class DisplayDateAdmin(admin.ModelAdmin):
+    list_display = ('building', 'month', 'timestamp')
+     
 class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
 
@@ -45,6 +48,7 @@ class ServiceConsumptionAdmin(admin.ModelAdmin):
 admin.site.register(ApartmentGroup, ApartmentGroupAdmin)
 admin.site.register(Apartment, ApartmentAdmin)
 admin.site.register(ApartmentConsumption, ApartmentConsumptionAdmin)
+admin.site.register(DisplayDate, DisplayDateAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(ServiceConsumption, ServiceConsumptionAdmin)

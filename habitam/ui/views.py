@@ -102,6 +102,8 @@ def download_list(request, building_id, month):
     end_ts = begin_ts + relativedelta(months=1) 
     l = request.user.administrator.license
     l.validate_month(building, begin_ts)
+   
+    building.mark_display(begin_ts) 
 
     temp = download_display_list(building, begin_ts, end_ts)
     
