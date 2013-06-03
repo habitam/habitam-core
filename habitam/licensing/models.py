@@ -47,16 +47,7 @@ class License(models.Model):
             tmp = crnt - relativedelta(months=i)
             result.append(tmp)
         return result
-    
-    def available_list_months(self):
-        result = []
-        today = date.today()
-        crnt = date(day=1, month=today.month, year=today.year)
-        for i in range(1, self.months_back):
-            tmp = crnt - relativedelta(months=i)
-            result.append(tmp)
-        return result
-    
+
     def usage_ratio(self):
         return self.apartment_count() * 100 / self.max_apartments
     

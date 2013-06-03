@@ -180,6 +180,16 @@ class ApartmentGroup(Entity):
         return self.name
     
     
+    def available_list_months(self, months_back):
+        result = []
+        today = date.today()
+        crnt = date(day=self.close_day, month=today.month, year=today.year)
+        for i in range(1, months_back):
+            tmp = crnt - relativedelta(months=i)
+            result.append(tmp)
+        return result
+    
+    
     def balance(self):
         links = self.accountlink_set.all()
         mine = reduce(lambda s, l: s + l.account.balance(), links, 0)
@@ -240,6 +250,14 @@ class ApartmentGroup(Entity):
                                         Q(timestamp__lt=until))
         print '####', since, until
         return q.order_by('month') 
+    
+    def list_downloaded(self, month):
+        month = date(day=self.close_day, month=month.month, year=month.year)
+        try:
+            self.displaydate_set.get(month=month)
+        except DisplayDate.DoesNotExist:
+            return False
+        return True
 
         
     def mark_display(self, month):

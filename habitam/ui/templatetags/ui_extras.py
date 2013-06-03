@@ -21,6 +21,7 @@ Created on Apr 20, 2013
 '''
 from django import template
 from habitam.entities.models import ApartmentGroup
+from habitam.settings import PENALTY_START_DAYS
 
 register = template.Library()
 
@@ -42,6 +43,14 @@ def operation_other_party(account, doc):
 def available_buildings():
     return ApartmentGroup.objects.filter(type='building')
 
+@register.assignment_tag
+def available_list_months(building, user_license):
+    return building.available_list_months(user_license.months_back)        
+
+@register.assignment_tag
+def list_downloaded(building, month):
+    return building.list_downloaded(month) 
+
 @register.simple_tag
 def op_amount_class(account, doc, service):
     if doc.type == 'collection' and service != None:
@@ -58,3 +67,7 @@ def op_class(doc, service):
     if doc.type == 'collection' and service != None:
         return 'collection'
     return ''
+
+@register.filter
+def penalty_collect(building):
+    return building.payment_due_days + PENALTY_START_DAYS

@@ -1,4 +1,5 @@
 {% extends 'base.html' %} 
+{% load ui_extras %}
 
 {% block body %}
 <div class="container">
@@ -12,8 +13,15 @@
 	  			</a>
 			  	<ul class="dropdown-menu">
 				{% with license=user.administrator.license %}
-				{% for m in license.available_list_months %}
-					<li><a href="{% url 'download_list' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
+				{% available_list_months building user.administrator.license as alm %}
+				{% for m in alm %}
+				{% list_downloaded building m as ld %}
+					<li>
+					<a {% if not ld %}class="confirmListDownload"{% endif %} href="{% url 'download_list' building_id=building.id month=m|date:"Y-m" %}">
+					<i class="icon-check" {% if not ld %}style="visibility: hidden"{% endif %}></i>
+					{{ m|date:"F Y" }}
+					</a>
+					</li>
 				{% endfor %}
 				{% endwith %}
 				</ul>
@@ -37,4 +45,42 @@
 		{% endblock %}
 	</div>
 </div>
+
+<div id="listDownloadDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="listConfirmLabel" aria-hidden="true"> 
+	<div class="modal-header">
+		<h3><span id="listConfirmTitle">Sunteți sigur?</span></h3>
+	</div>
+  
+	<div id="modalBody" class="modal-body">
+		<p>Sunteți sigur că vreți să descărcați lista?</p>
+		
+		{% if building.payment_due_days != None and building.payment_due_days > 0 %}
+		<p>Dacă da, apartamentele vor avea obligația să plătească întreținerea în 
+		{{building|penalty_collect}} zile, altfel vom începe 
+		aplicarea de penalități.</p>
+		{% endif %}
+	</div>
+
+	<div class="modal-footer">
+		<button id="downloadListButton" class="btn btn-success">Sunt sigur</button>
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Anulează</button>
+	</div>	
+</div>
+
+<script type="text/javascript">
+$(".confirmListDownload").click(function(e) {
+	e.preventDefault();
+	var targetUrl = $(this).attr('href');
+	var icon = $(this).children('i');
+    
+	$('#downloadListButton').click(function () {
+		icon.css('visibility', 'visible');
+		$('#listDownloadDialog').modal('hide');
+		window.location.href = targetUrl;
+    });
+	
+	$('#listDownloadDialog').modal();
+});
+</script>
+
 {% endblock %}
