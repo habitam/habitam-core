@@ -21,6 +21,8 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
+from django.forms.extras.widgets import SelectDateWidget
+
 
    
 class NewPaymentForm(forms.Form):
@@ -32,11 +34,10 @@ class NewPaymentForm(forms.Form):
         super(NewPaymentForm, self).__init__(*args, **kwargs)
         
     def spinners(self):
-        return []    
-  
+        return ['amount']        
+
 
 class NewDocPaymentForm(NewPaymentForm):
     no = forms.CharField(label='Numar document', help_text="Seria si numarul documentului.")
-    issue_date = forms.DateField(label='Data emiterii', help_text="Data emiterii documentului.")
-    issue_date.widget.format = '%m/%d/%Y'
-    issue_date.widget.attrs.update({'class':'datePicker', 'readonly':'true'})
+    issue_date = forms.DateField(label='Data emiterii', widget=SelectDateWidget, help_text="Data emiterii documentului.")
+    

@@ -27,6 +27,7 @@ from django.forms.fields import DecimalField
 from habitam.entities.models import ApartmentGroup, Service
 from habitam.financial.models import Quota, Account, OperationDoc
 from habitam.ui.forms.generic import NewDocPaymentForm
+from django.forms.extras.widgets import SelectDateWidget
 
 
 import logging
@@ -105,22 +106,21 @@ class EditServiceForm(forms.ModelForm):
     
 
 class NewServiceInvoice(NewDocPaymentForm):
-    due_date = forms.DateField(label='Data scadenta', help_text="Data scadenta de plata a facturii.")
-    due_date.widget.format = '%m/%d/%Y'
-    due_date.widget.attrs.update({'class':'datePicker', 'readonly':'true'})
-        
-    start_service_date = forms.DateField(label='Data inceput perioada serviciu', required=False, help_text="Inceputul perioadei furnizarii serviciului facturat.")
-    start_service_date.widget.format = '%m/%d/%Y'
-    start_service_date.widget.attrs.update({'class':'datePicker', 'readonly':'true'})
-    end_service_date = forms.DateField(label='Data sfarsit perioada serviciu', required=False, help_text="Sfarsitul perioadei furnizarii serviciului facturat.")
-    end_service_date.widget.format = '%m/%d/%Y'
-    end_service_date.widget.attrs.update({'class':'datePicker', 'readonly':'true'})
-        
-    document_id = forms.CharField(label='ID factura', required=False, help_text="Id-ul facturii folosit la tranzactile electronice")
-        
-    quantity = forms.DecimalField(label='Cantitatea', initial=1, required=False, help_text="Cantitatea facturata")
-    unit_type = forms.ChoiceField(label='Unitatea de masura', choices=OperationDoc.UNIT_TYPES, required=False, help_text="Unitatea de masura")
-        
+    due_date = forms.DateField(label='Data scadenta', widget=SelectDateWidget,
+                        help_text="Data scadenta de plata a facturii.")
+    start_service_date = forms.DateField(label='Data inceput perioada serviciu',
+                        widget=SelectDateWidget, required=False, 
+                        help_text="Inceputul perioadei furnizarii serviciului facturat.")
+    end_service_date = forms.DateField(label='Data sfarsit perioada serviciu', 
+                        widget=SelectDateWidget, required=False,
+                        help_text="Sfarsitul perioadei furnizarii serviciului facturat.")
+    document_id = forms.CharField(label='ID factura', required=False,
+                        help_text="Id-ul facturii folosit la tranzactile electronice")
+    quantity = forms.DecimalField(label='Cantitatea', initial=1, required=False,
+                        help_text="Cantitatea facturata")
+    unit_type = forms.ChoiceField(label='Unitatea de masura',
+                        choices=OperationDoc.UNIT_TYPES, required=False,
+                        help_text="Unitatea de masura")
     vat = forms.DecimalField(label='TVA', initial=24, help_text="Cota TVA")
    
     def __init__(self, *args, **kwargs):
@@ -143,7 +143,6 @@ class NewServiceInvoice(NewDocPaymentForm):
                             label=label + str(ap), decimal_places=3,
                             max_digits=4)
         
-
     def clean_apartments(self, cleaned_data, label):
         all_data = {}
         all_sum = 0
