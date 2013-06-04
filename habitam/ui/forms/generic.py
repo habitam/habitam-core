@@ -21,12 +21,10 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
-from django.forms.extras.widgets import SelectDateWidget
-
 
    
 class NewPaymentForm(forms.Form):
-    amount = forms.DecimalField(label='Suma', help_text="Suma")
+    amount = forms.DecimalField(label='Suma')
     
     def __init__(self, *args, **kwargs):
         if 'entity' in kwargs.keys():
@@ -38,6 +36,4 @@ class NewPaymentForm(forms.Form):
 
 
 class NewDocPaymentForm(NewPaymentForm):
-    no = forms.CharField(label='Numar document', help_text="Seria si numarul documentului.")
-    issue_date = forms.DateField(label='Data emiterii', widget=SelectDateWidget, help_text="Data emiterii documentului.")
-    
+    no = forms.CharField(label='Nume')

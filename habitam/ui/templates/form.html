@@ -11,8 +11,8 @@
    {% endif %}
 {% for field in form.visible_fields %}
 	<div class="control-group {% if field.errors %}error{% endif %}">
-		<label class="control-label" for="id_{{ field.html_name }}" >{{ field.label_tag }}</label>
-		<div class="controls" data-toggle="tooltip" data-original-title="{{field.help_text}}">
+		<label class="control-label" for="id_{{ field.html_name }}">{{ field.label_tag }}</label>
+		<div class="controls">
 			{{ field }}
 			{% for error in field.errors %}
 				<span class="help-inline">{{ error }}</span>

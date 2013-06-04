@@ -49,35 +49,14 @@ class Quota(models.Model):
         except Quota.DoesNotExist:
             q = Quota.objects.create(src=src, dest=dest, ratio=ratio)
         q.save()
- 
-      
+    
     
 class OperationDoc(models.Model):
     date = models.DateTimeField()
-    no = models.CharField(max_length=100) # invoice number used for fiscal stuff
+    no = models.CharField(max_length=100)
     src = models.ForeignKey('Account', related_name='doc_src_set')
     billed = models.ForeignKey('Account', related_name='doc_billed_set')
     type = models.CharField(max_length=10)
-
-    UNIT_TYPES = (
-                  ('none', ''),
-                  ('kw','KW'),
-                  ('mc', 'mc'),
-                  ('kwh','KWh')
-                  )
-       
-       
-    vat = models.DecimalField(decimal_places=2, max_digits=4, default=24)
-    issue_date = models.DateField()
-    due_date = models.DateField()
-    
-    document_id = models.CharField(max_length=100, null=True) # some invoices have special id for electronic payment 
-    
-    start_service_date = models.DateField(null=True)
-    end_service_date = models.DateField(null=True)
-    
-    quantity = models.DecimalField(decimal_places=2, max_digits=8, null=True)
-    unit_type = models.CharField(null=True, max_length=15, choices=UNIT_TYPES)
     
     @classmethod
     def delete_doc(cls, op_id):
@@ -201,11 +180,11 @@ class Account(models.Model):
         self.save()
         
     def new_charge(self, amount, date, no, billed, dest_accounts,
-                    charge_type, vat, issue_date, due_date, document_id, start_service_date, end_service_date, quantity, unit_type):
+                    charge_type):
         self.__assert_doc_not_exists(no)
         
         new_charge = OperationDoc.objects.create(date=date, no=no,
-                            billed=billed, src=self, type=charge_type, vat=vat, issue_date=issue_date, due_date=due_date, document_id=document_id, start_service_date=start_service_date, end_service_date=end_service_date, quantity=quantity, unit_type=unit_type)
+                            billed=billed, src=self, type=charge_type)
         
         quotas = Quota.objects.filter(src=self)
         sum_fun = lambda x, q: x + Decimal(q.ratio * amount).quantize(EPS)
