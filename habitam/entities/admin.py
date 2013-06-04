@@ -31,7 +31,7 @@ class ApartmentAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'parent', 'owner', 'no_penalties_since')
     
 class ApartmentConsumptionAdmin(admin.ModelAdmin):
-    list_display = ('apartment', 'timestamp', 'consumed')
+    list_display = ('apartment', 'doc', 'consumed')
 
 class DisplayDateAdmin(admin.ModelAdmin):
     list_display = ('building', 'month', 'timestamp')
@@ -43,7 +43,7 @@ class ServiceAdmin(admin.ModelAdmin):
     list_display = ('name', 'service_type', 'billed', 'quota_type')
     
 class ServiceConsumptionAdmin(admin.ModelAdmin):
-    list_display = ('service', 'timestamp', 'consumed')
+    list_display = ('service', 'doc', 'consumed')
 
 admin.site.register(ApartmentGroup, ApartmentGroupAdmin)
 admin.site.register(Apartment, ApartmentAdmin)

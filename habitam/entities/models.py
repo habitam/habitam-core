@@ -20,14 +20,14 @@ Created on Apr 8, 2013
 
 @author: Stefan Guna
 '''
-from datetime import date, datetime 
+from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models.query_utils import Q
 from django.utils import timezone
-from habitam.financial.models import Account, Quota
+from habitam.financial.models import Account, Quota, OperationDoc
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY, PENALTY_START_DAYS, EPS
 from uuid import uuid1
@@ -330,7 +330,7 @@ class AccountLink(models.Model):
 class Consumption(models.Model):
     consumed = models.DecimalField(null=True, blank=True,
             decimal_places=2, max_digits=4)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    doc = models.ForeignKey(OperationDoc) 
 
 
 class DisplayDate(models.Model):
@@ -614,14 +614,15 @@ class Service(SingleAccountEntity):
             db_ap_consumptions.append(ApartmentConsumption(consumed=v,
                                                            apartment=ap))
             
-        self.account.new_multi_transfer(no, self.billed.default_account, ops,
-                                        date, self.__charge_type())
+        doc = self.account.new_multi_transfer(no, self.billed.default_account,
+                                        ops, date, self.__charge_type())
         
         svc_consumption = ServiceConsumption(consumed=consumption,
-                                             service=self)
+                                             service=self, doc=doc)
         
         svc_consumption.save()
         for ap_consumption in db_ap_consumptions:
+            ap_consumption.doc = doc
             ap_consumption.save()
         
          

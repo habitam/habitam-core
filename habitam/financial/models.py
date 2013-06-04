@@ -178,6 +178,7 @@ class Account(models.Model):
             Operation.objects.create(amount=op[1], doc=doc, dest=op[0],
                                      loss=loss)
         self.save()
+        return doc
         
     def new_charge(self, amount, date, no, billed, dest_accounts,
                     charge_type):
