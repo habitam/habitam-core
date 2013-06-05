@@ -20,24 +20,25 @@ Created on Apr 30, 2013
 @author: Stefan Guna
 '''
 from django.db.models.aggregates import Sum
+from django.db.models.query_utils import Q
 from habitam.entities.models import ApartmentConsumption, ServiceConsumption
 from habitam.financial.models import Quota
 import tempfile
 
 
-def __add_amounts(billed, service_info, service, op_docs):
+def __add_amounts(breakdown, service_info, service, op_docs):
     sname = service.__unicode__()
     si = service_info[sname]
     si['amount'] = 0
     
     for op_doc in op_docs:
         for op in op_doc.operation_set.all():
-            tmp = billed[op.dest.name][sname]['amount']
-            billed[op.dest.name][sname]['amount'] = tmp + op.amount
+            tmp = breakdown[op.dest.name][sname]['amount']
+            breakdown[op.dest.name][sname]['amount'] = tmp + op.amount
             si['amount'] = si['amount'] + op.amount
             
             
-def __add_consumption(billed, service_info, service, op_docs):
+def __add_consumption(breakdown, service_info, service, op_docs):
     sname = service.__unicode__()
     if not service.quota_type == 'consumption':
         return
@@ -47,8 +48,8 @@ def __add_consumption(billed, service_info, service, op_docs):
     for op_doc in op_docs:
         for ac in ApartmentConsumption.objects.filter(doc=op_doc):
             apname = ac.apartment.__unicode__()
-            tmp = billed[apname][sname]['consumed'] 
-            billed[apname][sname]['consumed'] = tmp + ac.consumed
+            tmp = breakdown[apname][sname]['consumed'] 
+            breakdown[apname][sname]['consumed'] = tmp + ac.consumed
             tmp = si['consumed_declared']
             si['consumed_declared'] = tmp + ac.consumed
         
@@ -72,29 +73,57 @@ def __add_quotas(billed, service):
 def download_display_list(building, begin_ts, end_ts):
     services = building.services()
    
-    billed = {}
+    breakdown = {}
     service_info = {}
+    balance = {}
+    penalties_exclude = Q(dest=building.penalties_account)
+    
     for ap in building.apartments():
         apname = ap.__unicode__()
-        billed[apname] = {}
+        breakdown[apname] = {}
+        balance[apname] = {}
+        a = breakdown[apname]
+        b = balance[apname]
         for service in services:
             sname = service.__unicode__()
-            billed[apname][sname] = {}
-            billed[apname][sname]['amount'] = 0
+            a[sname] = {}
+            a[sname]['amount'] = 0
             if service.quota_type == 'consumption':
-                billed[apname][sname]['consumed'] = 0
+                a[sname]['consumed'] = 0
+            
+            b['penalties'] = {}
+            b['penalties']['at_begin'] = ap.penalties(begin_ts) 
+            b['penalties']['at_end'] = ap.penalties(end_ts)
+            
+            b['balance'] = {}
+            b['balance']['at_begin'] = ap.account.balance(begin_ts, penalties_exclude)
+            b['balance']['at_end'] = ap.account.balance(end_ts, penalties_exclude)
         
     for service in services:
         sname = service.__unicode__()
         service_info[sname] = {}
         op_docs = service.account.operation_list(begin_ts, end_ts)
-        __add_amounts(billed, service_info, service, op_docs)
-        __add_consumption(billed, service_info, service, op_docs)
-        __add_quotas(billed, service)
+        __add_amounts(breakdown, service_info, service, op_docs)
+        __add_consumption(breakdown, service_info, service, op_docs)
+        __add_quotas(breakdown, service)
+    
+    staircase_breakdown = {}
+    staircase_balance = {}    
+    for sc in building.apartment_groups():
+        if sc == building:
+            continue
+        scname = sc.__unicode__()
+        staircase_breakdown[scname] = {}
+        staircase_balance[scname] = {}
+        for ap in sc.apartments():
+            apname = ap.__unicode__()
+            staircase_breakdown[scname][apname] = breakdown[apname]
+            staircase_balance[scname][apname] = balance[apname]
     
     temp = tempfile.TemporaryFile()
     temp.write(str(service_info))
-    temp.write(str(billed))
-    # TODO (Ionut) generate PDF
+    temp.write(str(staircase_breakdown))
+    temp.write(str(staircase_balance))
+    # TODO (Ionut) generate PDF from service_info, staircase_breakdown and staircase_balance
     # TODO (Stefan) this file should be persisted and downloaded on subsequent calls
     return temp
