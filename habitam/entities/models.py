@@ -654,6 +654,8 @@ class Service(SingleAccountEntity):
         ops = []
         db_ap_consumptions = []
         declared = sum(ap_consumptions.values())
+        if declared>consumption:
+            raise NameError('Ceva e ciudat cu consumul declarat! E mai mare decat cel de pe document! ;) Declarat de locatari='+str(declared))
         per_unit = amount / consumption
         logger.info('Declared consumption is %f, price per unit is %f' % 
                     (declared, per_unit))
