@@ -21,7 +21,8 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
-
+from django.forms.util import ErrorDict
+from django.forms.forms import NON_FIELD_ERRORS 
    
 class NewPaymentForm(forms.Form):
     amount = forms.DecimalField(label='Suma')
@@ -34,6 +35,12 @@ class NewPaymentForm(forms.Form):
     def spinners(self):
         return ['amount']        
 
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)
 
 class NewDocPaymentForm(NewPaymentForm):
     no = forms.CharField(label='Nume')
