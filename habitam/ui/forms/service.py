@@ -174,9 +174,10 @@ class NewServicePayment(NewDocPaymentForm):
      
         qbilled_direct = Q(service__billed=building)
         qbilled_parent = Q(service__billed__parent=building)
-        qbilled_accounts = Q(~Q(service__service_type='collecting') & 
+        qgeneric_service = Q(~Q(service__service_type='collecting') & 
                              Q(qbilled_direct | qbilled_parent))
+        qnotarchived = Q(~Q(service__archived=True) & qgeneric_service)
         
-        queryset = Account.objects.filter(qbilled_accounts)
+        queryset = Account.objects.filter(qnotarchived)
         self.fields['dest_account'].queryset = queryset
 
