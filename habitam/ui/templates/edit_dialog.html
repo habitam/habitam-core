@@ -38,4 +38,14 @@ $(document).ready(function() {
 		$('#editForm').submit();
 	});
 });
+
+$('#editForm').find(':text,:radio,:checkbox,select,textarea').each(function(){
+    if(!this.readOnly && !this.disabled &&
+                $(this).parentsUntil('form', 'div').css('display') != "none") {
+        this.focus();  //Dom method
+        this.select(); //Dom method
+        return false;
+    }
+});
+
 </script>
