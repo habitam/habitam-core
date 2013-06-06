@@ -23,6 +23,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 from habitam.entities.models import ApartmentGroup
 
 
@@ -59,6 +60,11 @@ class License(models.Model):
         first = crnt - relativedelta(months=self.months_back)
         if month < first:
             raise ValueError('Received a value outside of the licensed range')
+        
+    def valid_timestamp(self, ts):
+        today = timezone.now()
+        limit = today - relativedelta(months=self.months_back)
+        return ts >= limit
     
     
 class Administrator(models.Model):

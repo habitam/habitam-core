@@ -1,4 +1,5 @@
 {% extends 'building.html' %} 
+{% load ui_extras %}
 
 {% block building_body %}
 <table class="table table-hover table-condensed">
@@ -13,7 +14,8 @@
 	</thead>
 	<tbody>
 		{% for service in building.services %}
-		{% if service.service_type == 'collecting' %}
+		{% valid_timestamp service.archive_date user.administrator.license as valid %}
+		{% if service.service_type == 'collecting' and valid %}
 		{% if show_all or not service.archived %}
 			<tr>
 				<td {% if service.archived %}class="archived"{% endif %}>{{ service }}</td>

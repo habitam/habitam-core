@@ -19,6 +19,7 @@ Created on Apr 20, 2013
 
 @author: Stefan Guna
 '''
+from datetime import datetime
 from django import template
 from habitam.entities.models import ApartmentGroup
 from habitam.settings import PENALTY_START_DAYS
@@ -71,3 +72,10 @@ def op_class(doc, service):
 @register.filter
 def penalty_collect(building):
     return building.payment_due_days + PENALTY_START_DAYS
+
+@register.assignment_tag
+def valid_timestamp(timestamp, user_license):
+    if timestamp == None or timestamp == '':
+        return True
+    return user_license.valid_timestamp(timestamp)
+    
