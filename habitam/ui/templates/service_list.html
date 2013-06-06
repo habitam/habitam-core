@@ -17,7 +17,7 @@
 		{% if service.service_type == 'general' and valid %}
 		{% if show_all or not service.archived %}
 			<tr>
-				<td {% if service.archived %}class="archived"{% endif %}>{{ service }} {{valid}}</td>
+				<td {% if service.archived %}class="archived"{% endif %}>{{ service }}</td>
 				<td {% if service.archived %}class="archived"{% endif %}>{{ service.billed }}</td>
 				<td class="{% if service.archived %}archived {% endif %}{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance|floatformat:2 }}</td>
 				<td {% if service.archived %}class="archived"{% endif %}>
