@@ -84,7 +84,11 @@ urlpatterns = patterns('',
     url(r'^buildings/(?P<building_id>\d+)/accounts/(?P<account_id>\d+)/operations/(?P<operationdoc_id>\d+)$',
         views.operation_doc, name='operation_doc'),
     
-    url(r'^buildings/(?P<building_id>\d+)/services$', views.building_tab, {'tab': 'service_list'}, name='service_list'),
+    url(r'^buildings/(?P<building_id>\d+)/services$', views.building_tab, 
+        {'tab': 'service_list'}, name='service_list'),
+    
+    url(r'^buildings/(?P<building_id>\d+)/all_services$', views.building_tab, 
+        {'tab': 'service_list', 'show_all': True}, name='all_service_list'),
     
     url(r'^buildings/(?P<building_id>\d+)/services/new$',
         service_views.new_service, {'service_type': 'general'},
@@ -102,6 +106,10 @@ urlpatterns = patterns('',
     url(r'^buildings/(?P<building_id>\d+)/collecting_funds$',
         views.building_tab, {'tab': 'collecting_fund_list'},
         name='collecting_fund_list'),
+
+    url(r'^buildings/(?P<building_id>\d+)/all_collecting_funds$',
+        views.building_tab, {'tab': 'collecting_fund_list', 'show_all': True},
+        name='all_collecting_fund_list'),
 
     url(r'^buildings/(?P<building_id>\d+)/collecting_funds/new$',
         service_views.new_service, {'service_type': 'collecting'},

@@ -88,10 +88,10 @@ def new_building(request):
 
 @login_required
 @user_passes_test(license_valid)
-def building_tab(request, building_id, tab):
+def building_tab(request, building_id, tab, show_all=False):
     building = ApartmentGroup.objects.get(pk=building_id).building()
-    return render(request, tab + '.html',
-                  {'building': building, 'active_tab': tab})  
+    data = {'building': building, 'active_tab': tab, 'show_all': show_all}
+    return render(request, tab + '.html', data)  
 
 @login_required
 @user_passes_test(license_valid)   

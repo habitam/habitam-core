@@ -13,15 +13,18 @@
 	<tbody>
 		{% for service in building.services %}
 		{% if service.service_type == 'general' %}
+		{% if show_all or not service.archived %}
 			<tr>
-				<td>{{ service }}</td>
-				<td>{{ service.billed }}</td>
-				<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance|floatformat:2 }}</td>
-				<td>
+				<td {% if service.archived %}class="archived"{% endif %}>{{ service }}</td>
+				<td {% if service.archived %}class="archived"{% endif %}>{{ service.billed }}</td>
+				<td class="{% if service.archived %}archived {% endif %}{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance|floatformat:2 }}</td>
+				<td {% if service.archived %}class="archived"{% endif %}>
+					{% if not service.archived %}
 					<div class="btn-group">
 						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' building_id=building.id account_id=service.account.id %}'"><i class="icon-list-alt"></i> Operațiuni</button>
 						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_invoice' entity_id=service.id %}')"><i class="icon-plus-sign icon-white"></i> Factură nouă</button>
 					</div>
+					{% endif %}
 					<div class="btn-group">
 					    {% if service.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_service' entity_id=service.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
 						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_service' entity_id=service.id %}')"><i class="icon-edit"></i> Modifică</button>
@@ -29,11 +32,13 @@
 				</td>
 			</tr>
 		{% endif %}
+		{% endif %}
 		{% endfor %}
 	</tbody>
 </table>
 <div class="container">
 	<div class="pull-right">
+		<a href="{% if show_all %}{% url 'service_list' building.id %}{% else %}{% url 'all_service_list' building.id %}{% endif %}" class="btn{% if show_all %} active{% endif %}">Toate serviciile</a>
 		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_service_general' building.id %}')">Serviciu nou</button>
 	</div>
 </div>

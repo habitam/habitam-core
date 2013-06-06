@@ -42,3 +42,7 @@ body {
 .navbar-inner {
 	padding-top: 5px;
 }
+
+.archived {
+	text-decoration: line-through;
+}
