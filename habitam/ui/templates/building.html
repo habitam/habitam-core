@@ -3,7 +3,7 @@
 
 {% block body %}
 <div class="container">
-	<h1>
+	<legend>
 		{{ building.name }}
 		<span class="btn-group pull-right">
 			<div class="btn-group">
@@ -31,7 +31,7 @@
 				<button class="btn" onclick="editDialog('{% url 'edit_building' entity_id=building.id %}')"><i class="icon-edit"></i></button>
 			</div>
 		</span>	
-	</h1>
+	</legend>
 </div>
 <div class="container">
 	<ul class="nav nav-tabs">
