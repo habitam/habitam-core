@@ -38,10 +38,11 @@ class EditServiceForm(forms.ModelForm):
     billed = forms.ModelChoiceField(label='Clienți', queryset=ApartmentGroup.objects.all())
     quota_type = forms.ChoiceField(label='Distribuie costuri', choices=Service.QUOTA_TYPES)
     cmd = forms.CharField(initial='save', widget=forms.HiddenInput())
+    archived = forms.BooleanField(label='Arhivat', required=False)
 
     class Meta:
         model = Service
-        fields = ('name', 'billed', 'quota_type')
+        fields = ('name', 'billed', 'quota_type', 'archived')
         
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
@@ -53,7 +54,11 @@ class EditServiceForm(forms.ModelForm):
         elif len(kwargs) > 0 and 'instance' in kwargs.keys():
             self.__init_db_quotas__(kwargs['instance'])
         self.fields['billed'].queryset = ApartmentGroup.objects.filter(Q(parent=building) | Q(pk=building.id))
-    
+        
+        if self.instance.pk == None:
+            del self.fields['archived']
+        
+
     def __init_db_quotas__(self, service):
         if service.quota_type != 'manual':
             return
@@ -145,7 +150,7 @@ class NewServiceInvoice(NewDocPaymentForm):
         if self.service.quota_type == 'noquota':
             cleaned_data['amount'], cleaned_data['ap_sums'] = \
                 self.clean_apartments(cleaned_data, 'sum_ap_')
-        if self.service.quota_type=='consumption': 
+        if self.service.quota_type == 'consumption': 
             dummy, cleaned_data['ap_consumptions'] = \
                 self.clean_apartments(cleaned_data, 'consumption_ap_')
         return cleaned_data    

@@ -338,7 +338,7 @@ class DisplayDate(models.Model):
     timestamp = models.DateTimeField()
     month = models.DateField()
     
-    def dbuildingisplay_date(self):
+    def buildingdisplay_date(self):
         ts = self.timestamp
         return date(day=ts.day, month=ts.month, year=ts.year)
     
@@ -552,6 +552,8 @@ class Service(SingleAccountEntity):
         ('collecting', 'colectare'),
     )
     
+    archived = models.BooleanField(default=False)
+    archive_date = models.DateTimeField(null=True, blank=True) 
     billed = models.ForeignKey(ApartmentGroup)
     quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
     service_type = models.CharField(max_length=10, choices=SERVICE_TYPE)
@@ -573,6 +575,7 @@ class Service(SingleAccountEntity):
             self._old_quota_type = self.quota_type
         except:
             self._old_quota_type = None
+        self._old_archived = self.archived
             
     def __change_quotas(self):
         if self.quota_type in ['noquota', 'consumption']:
@@ -637,6 +640,14 @@ class Service(SingleAccountEntity):
     def __unicode__(self):
         return self.name
     
+    def __update_archived(self):
+        if self.archived == False:
+            self.archive_date = None
+            return
+        if self.archived == self._old_archived:
+            return
+        self.archive_date = datetime.now()
+        
     def __update_quotas(self, ap_quotas):
         if ap_quotas != None and self.quota_type == 'manual':
             self.set_manual_quota(ap_quotas)
@@ -688,6 +699,8 @@ class Service(SingleAccountEntity):
         if 'ap_quotas' in kwargs.keys():
             ap_quotas = kwargs['ap_quotas']
             del kwargs['ap_quotas']
+        self.__update_archived()
+            
         
         super(Service, self).save('std', **kwargs)
        

@@ -40,7 +40,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'service_type', 'billed', 'quota_type')
+    list_display = ('name', 'service_type', 'billed', 'quota_type', 'archived', 'archive_date')
     
 class ServiceConsumptionAdmin(admin.ModelAdmin):
     list_display = ('service', 'doc', 'consumed')
