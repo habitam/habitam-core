@@ -125,8 +125,7 @@ class ApartmentGroup(Entity):
                                          owner=owner, no_penalties_since=today)
                 ap_idx = ap_idx + 1
         if user_license != None:
-            user_license.buildings.add(building)
-            user_license.save()
+            user_license.add_entity(building, ApartmentGroup)
         else:
             building.save()
         return building.id
@@ -537,6 +536,17 @@ class ApartmentConsumption(Consumption):
     apartment = models.ForeignKey(Apartment)
 
 
+class Supplier(models.Model):
+    name = models.CharField(max_length=200)
+    
+    @classmethod
+    def use_license(cls):
+        return True
+    
+    def __unicode__(self):
+        return self.name
+   
+    
 class Service(SingleAccountEntity):
     QUOTA_TYPES = (
         ('equally', 'în mod egal'),
@@ -557,6 +567,7 @@ class Service(SingleAccountEntity):
     billed = models.ForeignKey(ApartmentGroup)
     quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
     service_type = models.CharField(max_length=10, choices=SERVICE_TYPE)
+    supplier = models.ForeignKey(Supplier, null=True, blank=True)
     
     @classmethod
     def for_account(cls, account):
@@ -746,3 +757,5 @@ class Service(SingleAccountEntity):
 
 class ServiceConsumption(Consumption):
     service = models.ForeignKey(Service)
+
+

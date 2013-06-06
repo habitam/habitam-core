@@ -19,7 +19,6 @@ Created on Apr 20, 2013
 
 @author: Stefan Guna
 '''
-from datetime import datetime
 from django import template
 from habitam.entities.models import ApartmentGroup
 from habitam.settings import PENALTY_START_DAYS
@@ -39,10 +38,6 @@ def operation_other_party(account, doc):
     if doc.src == account:
         return doc.billed.name
     return doc.src.name
-
-@register.assignment_tag
-def available_buildings():
-    return ApartmentGroup.objects.filter(type='building')
 
 @register.assignment_tag
 def available_list_months(building, user_license):

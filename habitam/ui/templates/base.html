@@ -1,6 +1,5 @@
 {% load staticfiles %}
 {% load ui_extras %}
-{% available_buildings as buildings %}
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -52,16 +51,15 @@
 				        </li>
 		        	</ul>
 		            <ul class="nav">
+				        {% with license=user.administrator.license %}
 			            <li class="dropdown">
 				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clădiri <b class="caret"></b></a>
 				            <ul class="dropdown-menu">
-				            {% with license=user.administrator.license %}
 				            {% if license.apartment_count < license.max_apartments %}
 					            <li><a href="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a> 
 					            <li class="divider"></li>
 					        {% endif %}
-					        {% endwith %}
-								{% for building in buildings %}
+								{% for building in license.available_buildings %}
 									<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
 								{% endfor %}
 				            </ul>
@@ -69,12 +67,16 @@
 			            <li class="dropdown">
 				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Furnizori <b class="caret"></b></a>
 				            <ul class="dropdown-menu">
-				            	<li><a href="#">Furnizor nou</a></li>
+				            	<li><a href="javascript:editDialog('{% url 'new_supplier' %}');">Furnizor nou</a></li>
 				            	<li class="divider"></li>
+				            	{% for supplier in license.available_suppliers %}
+				            		<li><a href="#">{{ supplier.name }}</a>	
+				            	{% endfor %}
 				            </ul>
 				        </li>
 				        <li><a href="#">Instrucțiuni</a></li>
 				        <li><a href="#">Contact</a></li>
+					    {% endwith %}
 		            </ul>
 		        </div>
 	        {% endif %}

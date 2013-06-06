@@ -265,6 +265,26 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
             'building': building, 'title': title + ' ' + entity.name}
     return render(request, 'edit_dialog.html', data)  
 
+@login_required
+@user_passes_test(license_valid)
+def new_simple_entity(request, entity_cls, form_cls, target,
+                      title='Entitate nouă'):
+    if request.method == 'POST':
+        form = form_cls(request.POST)
+        if form.is_valid():
+            if entity_cls.use_license():
+                entity = form.save(commit=False)
+                entity.save()
+                ul = request.user.administrator.license
+                ul.add_entity(entity, entity_cls)
+            else:
+                form.save()
+            return render(request, 'edit_ok.html')
+    else:
+        form = form_cls()
+    
+    data = {'form': form, 'target': target, 'title': title}
+    return render(request, 'edit_dialog.html', data)
 
 @login_required
 @user_passes_test(license_valid)

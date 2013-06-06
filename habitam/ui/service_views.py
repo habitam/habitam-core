@@ -44,6 +44,10 @@ def __save_service(request, form, service_type=None):
 def edit_service(request, entity_id):
     service = Service.objects.get(pk=entity_id)
     building = service.building()
+    if service.service_type == 'general':
+        suppliers = request.user.administrator.license.suppliers.all()
+    else:
+        suppliers = None
     
     if request.method == 'DELETE':
         if service.can_delete():
@@ -54,12 +58,13 @@ def edit_service(request, entity_id):
     
     if request.method == 'POST':
         form = EditServiceForm(request.POST, user=request.user,
-                        building=building, instance=service)
+                        building=building, instance=service,
+                        suppliers=suppliers)
         if form.is_valid() and form.cleaned_data['cmd'] == 'save':
             return __save_service(request, form)
     else:
         form = EditServiceForm(user=request.user, building=building,
-                               instance=service)
+                               instance=service, suppliers=suppliers)
     
     refresh_ids = ['id_quota_type', 'id_billed']
     if service.service_type == 'general':
@@ -76,13 +81,19 @@ def edit_service(request, entity_id):
 @user_passes_test(license_valid)
 def new_service(request, building_id, service_type, save_kwargs=None):
     building = ApartmentGroup.objects.get(pk=building_id).building()
+    if service_type == 'general':
+        suppliers = request.user.administrator.license.suppliers.all()
+    else:
+        suppliers = None
     
     if request.method == 'POST':
-        form = EditServiceForm(request.POST, user=request.user, building=building)
+        form = EditServiceForm(request.POST, user=request.user,
+                               building=building, suppliers=suppliers)
         if form.is_valid() and form.cleaned_data['cmd'] == 'save':
             return __save_service(request, form, service_type)
     else:
-        form = EditServiceForm(user=request.user, building=building)
+        form = EditServiceForm(user=request.user, building=building,
+                               suppliers=suppliers)
     
     refresh_ids = ['id_quota_type', 'id_billed']
     if service_type == 'general':

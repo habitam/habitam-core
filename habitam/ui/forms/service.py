@@ -24,7 +24,7 @@ from decimal import Decimal
 from django import forms
 from django.db.models.query_utils import Q
 from django.forms.fields import DecimalField
-from habitam.entities.models import ApartmentGroup, Service
+from habitam.entities.models import ApartmentGroup, Service, Supplier
 from habitam.financial.models import Quota, Account
 from habitam.ui.forms.generic import NewDocPaymentForm
 import logging
@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 class EditServiceForm(forms.ModelForm):
+    supplier = forms.ModelChoiceField(label='Furnizor', queryset=Supplier.objects.all())
     name = forms.CharField(label='Nume', max_length=100)
     billed = forms.ModelChoiceField(label='Clienți', queryset=ApartmentGroup.objects.all())
     quota_type = forms.ChoiceField(label='Distribuie costuri', choices=Service.QUOTA_TYPES)
@@ -42,18 +43,28 @@ class EditServiceForm(forms.ModelForm):
 
     class Meta:
         model = Service
-        fields = ('name', 'billed', 'quota_type', 'archived')
+        fields = ('supplier', 'name', 'billed', 'quota_type', 'archived')
         
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
+        self.suppliers = kwargs['suppliers']
         del kwargs['building']
         del kwargs['user']
+        del kwargs['suppliers']
+        
         super(EditServiceForm, self).__init__(*args, **kwargs)
+        
         if len(args) > 0:
             self.__init_manual_quotas__(args)
         elif len(kwargs) > 0 and 'instance' in kwargs.keys():
             self.__init_db_quotas__(kwargs['instance'])
+        
         self.fields['billed'].queryset = ApartmentGroup.objects.filter(Q(parent=building) | Q(pk=building.id))
+       
+        if self.suppliers == None or self.instance.pk != None:
+            del self.fields['supplier']
+        else:
+            self.fields['supplier'].queryset = self.suppliers
         
         if self.instance.pk == None:
             del self.fields['archived']
@@ -94,6 +105,9 @@ class EditServiceForm(forms.ModelForm):
         cleaned_data = super(EditServiceForm, self).clean()
         if cleaned_data['quota_type'] == 'manual':
             self.__validate_manual_quota__(cleaned_data)
+        if self.instance.pk == None and self.suppliers != None and \
+            not 'supplier' in cleaned_data.keys():
+            raise forms.ValidationError('No supplier selected')
         return cleaned_data
     
     def manual_quotas(self):

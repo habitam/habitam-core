@@ -20,7 +20,8 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django.conf.urls import patterns, url
-from habitam.entities.models import Apartment, ApartmentGroup, Service, Person
+from habitam.entities.models import Apartment, ApartmentGroup, Service, Person, \
+    Supplier
 from habitam.financial.models import Account
 from habitam.ui import views, service_views
 from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm, \
@@ -28,6 +29,7 @@ from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm, \
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
 from habitam.ui.forms.fund import NewFundTransfer, EditAccountForm
 from habitam.ui.forms.service import NewServicePayment, NewServiceInvoice
+from habitam.ui.forms.supplier import EditSupplierForm
 
 
 urlpatterns = patterns('',
@@ -169,4 +171,9 @@ urlpatterns = patterns('',
     url(r'^owners/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
         {'entity_cls': Person, 'form_cls': EditPersonForm,
          'target': 'edit_owner', 'title': ''}, name='edit_owner'),
+
+    url(r'^suppliers/new$', views.new_simple_entity, 
+        {'entity_cls': Supplier, 'form_cls': EditSupplierForm,
+         'target': 'new_supplier', 'title': 'Furnizor nou'}, 'new_supplier'),
+
 )

@@ -24,7 +24,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-from habitam.entities.models import ApartmentGroup
+from habitam.entities.models import ApartmentGroup, Supplier
 
 
 class License(models.Model):
@@ -32,13 +32,23 @@ class License(models.Model):
         limit_choices_to={'parent': None}, blank=True, null=True)
     max_apartments = models.IntegerField()
     months_back = models.IntegerField()
+    suppliers = models.ManyToManyField(Supplier, blank=True, null=True)
     valid_until = models.DateField()
+    
+    def add_entity(self, entity, entity_cls):
+        entity_collections = {ApartmentGroup: self.buildings,
+                              Supplier: self.suppliers}
+        entity_collections[entity_cls].add(entity)
+        self.save()
     
     def apartment_count(self):
         no = 0
         for b in self.buildings.all():
             no = no + len(b.apartments())
         return no
+    
+    def available_buildings(self):
+        return self.buildings.all()
     
     def available_months(self):
         result = []
@@ -48,6 +58,9 @@ class License(models.Model):
             tmp = crnt - relativedelta(months=i)
             result.append(tmp)
         return result
+    
+    def available_suppliers(self):
+        return self.suppliers.all()
 
     def usage_ratio(self):
         return self.apartment_count() * 100 / self.max_apartments
