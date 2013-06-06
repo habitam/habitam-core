@@ -84,22 +84,27 @@ def download_display_list(building, begin_ts, end_ts):
         balance[apname] = {}
         a = breakdown[apname]
         b = balance[apname]
+        b['penalties'] = {}
+        b['penalties']['at_begin'] = ap.penalties(begin_ts) 
+        b['penalties']['at_end'] = ap.penalties(end_ts)
+        
+        b['balance'] = {}
+        b['balance']['at_begin'] = ap.account.balance(begin_ts, penalties_exclude)
+        b['balance']['at_end'] = ap.account.balance(end_ts, penalties_exclude)
+        
         for service in services:
+            if service.archived:
+                continue
             sname = service.__unicode__()
             a[sname] = {}
             a[sname]['amount'] = 0
             if service.quota_type == 'consumption':
                 a[sname]['consumed'] = 0
             
-            b['penalties'] = {}
-            b['penalties']['at_begin'] = ap.penalties(begin_ts) 
-            b['penalties']['at_end'] = ap.penalties(end_ts)
-            
-            b['balance'] = {}
-            b['balance']['at_begin'] = ap.account.balance(begin_ts, penalties_exclude)
-            b['balance']['at_end'] = ap.account.balance(end_ts, penalties_exclude)
-        
+ 
     for service in services:
+        if service.archived:
+            continue
         sname = service.__unicode__()
         service_info[sname] = {}
         op_docs = service.account.operation_list(begin_ts, end_ts)
