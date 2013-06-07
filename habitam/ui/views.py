@@ -117,12 +117,16 @@ def download_list(request, building_id, month):
 @login_required
 @user_passes_test(license_valid)
 def general_list(request, license_subtype, entity_cls, edit_name, new_name,
-                 title, view_name='home'):
+                 title, view_name, entity_view_name=None, alt_view_name=None,
+                 show_all=False):
     l = request.user.administrator.license
     g = getattr(l, 'available_' + license_subtype)
+    if alt_view_name == None:
+        alt_view_name = view_name
     data = {'entities': g(), 'title': title, 'entity_cls': entity_cls,
-            'edit_name': edit_name, 'new_name': new_name, 
-            'view_name': view_name}
+            'edit_name': edit_name, 'new_name': new_name, 'show_all': show_all,
+            'view_name': view_name, 'alt_view_name': alt_view_name,
+            'entity_view_name': entity_view_name}
     return render(request, 'general_list.html', data)
        
 
@@ -229,6 +233,15 @@ def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='
             'title': title + ' ' + entity.name}
     return render(request, 'edit_dialog.html', data)
 
+
+@login_required
+@user_passes_test(license_valid)
+def entity_view(request, entity_cls, entity_id, edit_name, view_name):
+    entity = entity_cls.objects.get(id=entity_id)
+    data = {'entity': entity, 'entity_cls': entity_cls, 'edit_name': edit_name,
+            'view_name': view_name}
+    return render(request, 'entity_view.html', data)
+       
 
 @login_required
 @user_passes_test(license_valid)

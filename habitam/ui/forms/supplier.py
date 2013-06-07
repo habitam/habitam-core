@@ -24,7 +24,13 @@ from habitam.entities.models import Supplier
 
 class EditSupplierForm(forms.ModelForm):
     name = forms.CharField(label='Nume')
+    archived = forms.BooleanField(label='Arhivat', required=False)
 
     class Meta:
         model = Supplier 
-        fields = ('name',)
+        fields = ('name', 'archived')
+        
+    def __init__(self, *args, **kwargs):
+        super(EditSupplierForm, self).__init__(*args, **kwargs)
+        if self.instance.pk == None or not self.instance.is_archivable():
+            del self.fields['archived']

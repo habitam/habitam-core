@@ -62,11 +62,17 @@ urlpatterns = patterns('',
     
     url(r'^buildings/new$', views.new_building, name='new_building'),
                        
-    url(r'^buildings/all$', views.general_list,
+    url(r'^buildings$', views.general_list,
         {'license_subtype': 'buildings', 'entity_cls' : ApartmentGroup,
          'title': 'Cladiri disponibile', 'edit_name': 'edit_building',
-         'new_name': 'new_building', 'view_name': 'all_buildings'},
-        name='all_buildings'),
+         'new_name': 'new_building', 'view_name': 'buildings',
+         'entity_view_name': 'building_view'},
+        name='buildings'),
+                       
+    url(r'^buildings/(?P<entity_id>\d+)$', views.entity_view,
+        {'entity_cls' : ApartmentGroup, 'edit_name': 'edit_building',
+         'view_name': 'building_view'},
+        name='building_view'),
                        
     url(r'^buildings/(?P<building_id>\d+)/apartments$', views.building_tab, {'tab': 'apartment_list'}, name='apartment_list'),
     
@@ -178,6 +184,7 @@ urlpatterns = patterns('',
         {'entity_cls': Person, 'form_cls': EditPersonForm,
          'target': 'edit_owner', 'title': ''}, name='edit_owner'),
 
+
     url(r'^suppliers/new$', views.new_simple_entity,
         {'entity_cls': Supplier, 'form_cls': EditSupplierForm,
          'target': 'new_supplier', 'title': 'Furnizor nou'}, 'new_supplier'),
@@ -187,9 +194,23 @@ urlpatterns = patterns('',
          'target': 'edit_supplier', 'title': 'Editare furnizor'},
         'edit_supplier'),
                        
+    url(r'^suppliers$', views.general_list,
+        {'license_subtype': 'suppliers', 'entity_cls' : Supplier,
+         'title': 'Furnizori disponibili', 'edit_name': 'edit_supplier',
+         'new_name' :'new_supplier', 'view_name': 'suppliers',
+         'entity_view_name': 'supplier_view', 'alt_view_name': 'all_suppliers'},
+        name='suppliers'),
+
     url(r'^suppliers/all$', views.general_list,
         {'license_subtype': 'suppliers', 'entity_cls' : Supplier,
          'title': 'Furnizori disponibili', 'edit_name': 'edit_supplier',
-         'new_name' :'new_supplier', 'view_name': 'all_suppliers'},
+         'new_name' :'new_supplier', 'view_name': 'all_suppliers',
+         'alt_view_name': 'suppliers', 'entity_view_name': 'supplier_view',
+         'show_all': True},
         name='all_suppliers'),
+                       
+    url(r'^suppliers/(?P<entity_id>\d+)$', views.entity_view,
+        {'entity_cls' : Supplier, 'edit_name': 'edit_supplier',
+         'view_name': 'supplier_view'},
+        name='supplier_view'),
 )

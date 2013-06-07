@@ -46,7 +46,7 @@ class ServiceConsumptionAdmin(admin.ModelAdmin):
     list_display = ('service', 'doc', 'consumed')
     
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'archived', 'archive_date')
 
 admin.site.register(ApartmentGroup, ApartmentGroupAdmin)
 admin.site.register(Apartment, ApartmentAdmin)

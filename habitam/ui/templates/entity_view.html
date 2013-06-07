@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load staticfiles %} 
+{% load ui_extras %}
+
+{% block body %}
+<div class="container">
+	<legend>
+		{{ entity }}
+		<span class="btn-group pull-right">
+			<div class="btn-group">
+				{% if entity.can_delete %}<button class="btn btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url edit_name entity_id=entity.id %}', '{% url view_name entity.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
+				<button class="btn" onclick="editDialog('{% url edit_name entity_id=entity.id %}')"><i class="icon-edit"></i></button>
+			</div>
+		</span>		
+	</legend>
+</div>
+
+<div class="container">
+	<div class="row-fluid">
+		<div class="span8">
+		Mai multe informații despte {{ entity }}.
+		</div>
+		<div class="span4">
+			<img src="{% static 'ui/img/habitam-worker-hires.png' %}">
+		</div>
+	</div>
+</div>
+
+{% endblock %}

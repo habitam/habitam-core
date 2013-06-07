@@ -45,7 +45,8 @@ def edit_service(request, entity_id):
     service = Service.objects.get(pk=entity_id)
     building = service.building()
     if service.service_type == 'general':
-        suppliers = request.user.administrator.license.suppliers.all()
+        user_license = request.user.administrator.license 
+        suppliers = user_license.suppliers.exclude(archived=True)
     else:
         suppliers = None
     
@@ -82,7 +83,8 @@ def edit_service(request, entity_id):
 def new_service(request, building_id, service_type, save_kwargs=None):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     if service_type == 'general':
-        suppliers = request.user.administrator.license.suppliers.all()
+        user_license = request.user.administrator.license 
+        suppliers = user_license.suppliers.exclude(archived=True)
     else:
         suppliers = None
     

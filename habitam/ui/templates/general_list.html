@@ -15,8 +15,9 @@
 			<table class="table table-hover table-condensed">
 				<tbody>
 					{% for entity in entities %}
+					{% if show_all or not entity.archived %}
 					<tr>
-						<td>{{ entity }}</td>
+						<td {% if entity.archived %}class="archived"{% endif %}><a href="{% url entity_view_name entity.id %}">{{ entity }}</a></td>
 						<td>
 							<div class="btn-group">
 					    	{% if entity.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url edit_name entity_id=entity.id %}', '{% url view_name %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
@@ -24,13 +25,14 @@
 							</div>
 						</td>
 					</tr>
+					{% endif %}
 					{% endfor %}
 				</tbody>
 			</table>
 			<div class="pull-right">
 				{% capability entity_cls user.administrator.license 'can_archive' as can_archive %}
 				{% if can_archive %}
-				<a href="{% if show_all %}{% else %}{% endif %}" class="btn{% if show_all %} active{% endif %}">Arată tot</a>
+				<a href="{% url alt_view_name %}" class="btn{% if show_all %} active{% endif %}">Arată tot</a>
 				{% endif %}
 				{% capability entity_cls user.administrator.license 'can_add' as can_add %}
 				{% if can_add %}

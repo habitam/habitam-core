@@ -544,6 +544,8 @@ class ApartmentConsumption(Consumption):
 
 
 class Supplier(models.Model):
+    archived = models.BooleanField(default=False)
+    archive_date = models.DateTimeField(null=True, blank=True) 
     name = models.CharField(max_length=200)
    
     @classmethod
@@ -558,12 +560,31 @@ class Supplier(models.Model):
     def use_license(cls):
         return True
     
+    def __init__(self, *args, **kwargs):
+        super(Supplier, self).__init__(*args, **kwargs)
+        self._old_archived = self.archived
+        
     def __unicode__(self):
         return self.name
     
+    def __update_archived(self):
+        if self.archived == False:
+            self.archive_date = None
+            return
+        if self.archived == self._old_archived:
+            return
+        self.archive_date = datetime.now()
+    
+    def is_archivable(self):
+        return self.service_set.exclude(archived=True).count() == 0
+    
     def can_delete(self):
-        return True
-   
+        return self.service_set.count() == 0
+    
+    def save(self, **kwargs):
+        self.__update_archived()
+        super(Supplier, self).save(**kwargs) 
+    
     
 class Service(SingleAccountEntity):
     QUOTA_TYPES = (
@@ -729,7 +750,6 @@ class Service(SingleAccountEntity):
             ap_quotas = kwargs['ap_quotas']
             del kwargs['ap_quotas']
         self.__update_archived()
-            
         
         super(Service, self).save('std', **kwargs)
        
