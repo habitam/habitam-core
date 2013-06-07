@@ -17,7 +17,7 @@
 		{% if service.service_type == 'general' and valid %}
 		{% if show_all or not service.archived %}
 			<tr>
-				<td {% if service.archived %}class="archived"{% endif %}>{{ service }}</td>
+				<td {% if service.archived %}class="archived"{% endif %}><a href="javascript:editDialog('{% url 'edit_service' entity_id=service.id %}')">{{ service }}</a></td>
 				<td {% if service.archived %}class="archived"{% endif %}>{{ service.billed }}</td>
 				<td class="{% if service.archived %}archived {% endif %}{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance|floatformat:2 }}</td>
 				<td {% if service.archived %}class="archived"{% endif %}>
@@ -29,7 +29,6 @@
 					{% endif %}
 					<div class="btn-group">
 					    {% if service.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_service' entity_id=service.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
-						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_service' entity_id=service.id %}')"><i class="icon-edit"></i> Modifică</button>
 					</div>
 				</td>
 			</tr>

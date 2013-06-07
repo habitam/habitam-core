@@ -38,7 +38,7 @@ class EditAccountForm(forms.ModelForm):
             del kwargs['building']
             del kwargs['user']
         else:
-            self.set_building = None
+            self._building = None
         super(EditAccountForm, self).__init__(*args, **kwargs)
         
     def save(self, commit=True):

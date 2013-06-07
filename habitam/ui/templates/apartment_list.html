@@ -21,21 +21,18 @@
 		{% for sc in building.apartmentgroup_set.all %}
 			<tr>
 				<td>&nbsp;</td>
-				<th colspan="9">Scara {{ sc.name }}</th>
+				<th colspan="9"><a href="javascript:editDialog('{% url 'edit_staircase' entity_id=sc.id %}')">Scara {{ sc.name }}</a></th>
 				<td>
-					<div class="btn-group">
-					    {% if sc.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_staircase' entity_id=sc.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
-						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'edit_staircase' entity_id=sc.id %}')"><i class="icon-edit"></i> Modifică</button>
-					</div>
+					{% if sc.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_staircase' entity_id=sc.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
 				</td>
 			</tr>
 			{% for ap in sc.apartment_set.all %}
 			<tr>
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
-				<td>{{ ap.name }}</td>
+				<td><a href="javascript:editDialog('{% url 'edit_apartment' entity_id=ap.id %}')">{{ ap }}</a></td>
 				<td>{{ ap.floor }}</td>
-				<td>{{ ap.owner }}</td>
+				<td><a href="javascript:editDialog('{% url 'edit_owner' entity_id=ap.owner.id %}')">{{ ap.owner }}</a></td>
 				<td>{{ ap.rooms }}</td>
 				<td>{{ ap.inhabitance }}</td>
 				<td>{{ ap.area }}</td>
@@ -49,15 +46,6 @@
 						</div>
 						<div class="btn-group">
 						    {% if ap.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_apartment' entity_id=ap.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
-							<a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">
-		   				 		<i class="icon-edit"></i>
-		   				 		Modifică
-		    					<span class="caret"></span>
-		  					</a>
-		  					<ul class="dropdown-menu">
-			  					<li><a href="javascript:editDialog('{% url 'edit_apartment' entity_id=ap.id %}')">apartament</a></li>
-			  					<li><a href="javascript:editDialog('{% url 'edit_owner' entity_id=ap.owner.id %}')">proprietar</a></li>
-		  					</ul>
 						</div>
 					</div>
 				</td>
