@@ -23,6 +23,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.query_utils import Q
 from django.utils import timezone
 from habitam.entities.models import ApartmentGroup, Supplier
 
@@ -34,6 +35,11 @@ class License(models.Model):
     months_back = models.IntegerField()
     suppliers = models.ManyToManyField(Supplier, blank=True, null=True)
     valid_until = models.DateField()
+    
+    def __latest(self):
+        today = date.today()
+        crnt = date(day=1, month=today.month, year=today.year)
+        return crnt - relativedelta(months=self.months_back)
     
     def add_entity(self, entity, entity_cls):
         entity_collections = {ApartmentGroup: self.buildings,
@@ -60,7 +66,8 @@ class License(models.Model):
         return result
     
     def available_suppliers(self):
-        return self.suppliers.all()
+        q = Q(~Q(archived=True) | Q(archive_date__gt=self.__latest()))
+        return self.suppliers.filter(q)
 
     def usage_ratio(self):
         return self.apartment_count() * 100 / self.max_apartments
