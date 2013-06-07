@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load staticfiles %} 
+{% load ui_extras %}
+
+{% block body %}
+<div class="container">
+	<legend>
+		{{ title }}	
+	</legend>
+</div>
+
+<div class="container">
+	<div class="row-fluid">
+		<div class="span8">
+			<table class="table table-hover table-condensed">
+				<tbody>
+					{% for entity in entities %}
+					<tr>
+						<td>{{ entity }}</td>
+						<td>
+							<div class="btn-group">
+					    	{% if entity.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url edit_name entity_id=entity.id %}', '{% url view_name %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
+							<button class="btn btn-mini" type="button" onclick="editDialog('{% url edit_name entity_id=entity.id %}')"><i class="icon-edit"></i> Modifică</button>
+							</div>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<div class="pull-right">
+				{% capability entity_cls user.administrator.license 'can_archive' as can_archive %}
+				{% if can_archive %}
+				<a href="{% if show_all %}{% else %}{% endif %}" class="btn{% if show_all %} active{% endif %}">Arată tot</a>
+				{% endif %}
+				{% capability entity_cls user.administrator.license 'can_add' as can_add %}
+				{% if can_add %}
+				<button class="btn btn-info" type="button" onclick="javascript:editDialog('{% url new_name %}');">Adaugă</button>
+				{% endif %}
+			</div>
+		</div>
+		<div class="span4">
+			<img src="{% static 'ui/img/habitam-worker-hires.png' %}">
+		</div>
+	</div>
+</div>
+
+{% endblock %}

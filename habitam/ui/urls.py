@@ -61,7 +61,13 @@ urlpatterns = patterns('',
     url(r'^$', views.home, name='home'),
     
     url(r'^buildings/new$', views.new_building, name='new_building'),
-    
+                       
+    url(r'^buildings/all$', views.general_list,
+        {'license_subtype': 'buildings', 'entity_cls' : ApartmentGroup,
+         'title': 'Cladiri disponibile', 'edit_name': 'edit_building',
+         'new_name': 'new_building', 'view_name': 'all_buildings'},
+        name='all_buildings'),
+                       
     url(r'^buildings/(?P<building_id>\d+)/apartments$', views.building_tab, {'tab': 'apartment_list'}, name='apartment_list'),
     
     url(r'^buildings/(?P<building_id>\d+)/apartments/new$',
@@ -121,7 +127,7 @@ urlpatterns = patterns('',
         service_views.new_service, {'service_type': 'collecting'},
         name='new_service_collecting'),
 
-    url(r'^building/(?P<building_id>\d+)/list/(?P<month>\d{4}-\d{2})?$',
+    url(r'^buildings/(?P<building_id>\d+)/list/(?P<month>\d{4}-\d{2})?$',
         views.download_list, name='download_list'),
     
     url(r'^collecting_funds/(?P<entity_id>\d+)/collection/new$',
@@ -172,8 +178,18 @@ urlpatterns = patterns('',
         {'entity_cls': Person, 'form_cls': EditPersonForm,
          'target': 'edit_owner', 'title': ''}, name='edit_owner'),
 
-    url(r'^suppliers/new$', views.new_simple_entity, 
+    url(r'^suppliers/new$', views.new_simple_entity,
         {'entity_cls': Supplier, 'form_cls': EditSupplierForm,
          'target': 'new_supplier', 'title': 'Furnizor nou'}, 'new_supplier'),
-
+                       
+    url(r'^suppliers/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
+        {'entity_cls': Supplier, 'form_cls': EditSupplierForm,
+         'target': 'edit_supplier', 'title': 'Editare furnizor'},
+        'edit_supplier'),
+                       
+    url(r'^suppliers/all$', views.general_list,
+        {'license_subtype': 'suppliers', 'entity_cls' : Supplier,
+         'title': 'Furnizori disponibili', 'edit_name': 'edit_supplier',
+         'new_name' :'new_supplier', 'view_name': 'all_suppliers'},
+        name='all_suppliers'),
 )

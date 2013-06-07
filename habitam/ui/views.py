@@ -113,7 +113,18 @@ def download_list(request, building_id, month):
     response['Content-Length'] = temp.tell()
     temp.seek(0)
     return response
-   
+
+@login_required
+@user_passes_test(license_valid)
+def general_list(request, license_subtype, entity_cls, edit_name, new_name,
+                 title, view_name='home'):
+    l = request.user.administrator.license
+    g = getattr(l, 'available_' + license_subtype)
+    data = {'entities': g(), 'title': title, 'entity_cls': entity_cls,
+            'edit_name': edit_name, 'new_name': new_name, 
+            'view_name': view_name}
+    return render(request, 'general_list.html', data)
+       
 
 @login_required
 @user_passes_test(license_valid)   

@@ -57,8 +57,9 @@
 				            <ul class="dropdown-menu">
 				            {% if license.apartment_count < license.max_apartments %}
 					            <li><a href="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a> 
-					            <li class="divider"></li>
 					        {% endif %}
+					        	<li><a href="{% url 'all_buildings' %}">Toate clădirile</a></li>
+					            <li class="divider"></li>
 								{% for building in license.available_buildings %}
 									<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
 								{% endfor %}
@@ -68,6 +69,7 @@
 				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Furnizori <b class="caret"></b></a>
 				            <ul class="dropdown-menu">
 				            	<li><a href="javascript:editDialog('{% url 'new_supplier' %}');">Furnizor nou</a></li>
+					        	<li><a href="{% url 'all_suppliers' %}">Toți furnizorii</a></li>
 				            	<li class="divider"></li>
 				            	{% for supplier in license.available_suppliers %}
 				            		<li><a href="#">{{ supplier.name }}</a>	

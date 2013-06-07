@@ -153,7 +153,14 @@ class ApartmentGroup(Entity):
         
         return building
     
+    @classmethod
+    def can_add(cls, user_license):
+        return user_license.apartment_count() < user_license.max_apartments
     
+    @classmethod
+    def can_archive(cls, user_license):
+        return False
+     
     @classmethod
     def staircase_create(cls, name, parent, daily_penalty=None, close_day=None,
                         payment_due_days=None):
@@ -538,6 +545,14 @@ class ApartmentConsumption(Consumption):
 
 class Supplier(models.Model):
     name = models.CharField(max_length=200)
+   
+    @classmethod
+    def can_add(cls, user_license):
+        return True 
+    
+    @classmethod
+    def can_archive(cls, user_license):
+        return True
     
     @classmethod
     def use_license(cls):
@@ -545,6 +560,9 @@ class Supplier(models.Model):
     
     def __unicode__(self):
         return self.name
+    
+    def can_delete(self):
+        return True
    
     
 class Service(SingleAccountEntity):

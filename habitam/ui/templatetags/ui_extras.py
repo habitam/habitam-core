@@ -20,10 +20,14 @@ Created on Apr 20, 2013
 @author: Stefan Guna
 '''
 from django import template
-from habitam.entities.models import ApartmentGroup
 from habitam.settings import PENALTY_START_DAYS
 
 register = template.Library()
+
+@register.assignment_tag
+def capability(entity_cls, user_license, cn):
+    m = getattr(entity_cls, cn)
+    return m(user_license)
 
 @register.assignment_tag
 def operation_amount(account, doc, service):
