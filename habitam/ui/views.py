@@ -108,8 +108,8 @@ def download_list(request, building_id, month):
     temp = download_display_list(building, begin_ts, end_ts)
     
     wrapper = FileWrapper(temp)
-    response = HttpResponse(wrapper, content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename=lista' + building.name + '_' + month + '.txt'
+    response = HttpResponse(wrapper, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=lista' + building.name + '_' + month + '.pdf'
     response['Content-Length'] = temp.tell()
     temp.seek(0)
     return response
