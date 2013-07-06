@@ -7,11 +7,11 @@ body {
 	color: rgb(180, 180, 180);
 }
 
-.negative_balance {
+.negative_balance,.negative_balance a {
 	color: rgb(200, 0, 0);
 }
 
-.positive_balance {
+.positive_balance,.positive_balance a {
 	color: rgb(0, 0, 200);
 }
 

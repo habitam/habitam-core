@@ -13,7 +13,7 @@
 		{% for account in building.funds %}
 			<tr>
 				<td><a href="javascript: editDialog('{% url 'edit_fund' entity_id=account.id %}')">{{ account }}</a></td>
-				<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ account.balance|floatformat:2 }}</td>
+				<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=account.id %}">{{ account.balance|floatformat:2 }}</a></td>
 				<td>
 					<div class="btn-group">
 						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' building_id=building.id account_id=account.id %}'"><i class="icon-list-alt"></i> Operațiuni</button>

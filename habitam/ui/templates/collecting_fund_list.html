@@ -20,8 +20,8 @@
 			<tr>
 				<td {% if service.archived %}class="archived"{% endif %}><a href="javascript:editDialog('{% url 'edit_service' entity_id=service.id %}')">{{ service }}</a></td>
 				<td {% if service.archived %}class="archived"{% endif %}>{{ service.billed }}</td>
-				<td class="{% if service.archived %}archived {% endif %}{% if service.to_collect > 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.to_collect|floatformat:2 }}</td>
-				<td class="{% if service.archived %}archived {% endif %}{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">{{ service.balance|floatformat:2 }}</td>
+				<td class="{% if service.archived %}archived {% endif %}{% if service.to_collect > 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=service.account.id %}">{{ service.to_collect|floatformat:2 }}</a></td>
+				<td class="{% if service.archived %}archived {% endif %}{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=service.account.id %}">{{ service.balance|floatformat:2 }}</a></td>
 				<td>
 					{% if not service.archived %}
 					<div class="btn-group">
