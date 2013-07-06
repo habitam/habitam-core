@@ -17,10 +17,10 @@ $(document).ready(function() {
 	$("#editTitle").text("{{ title }}");
 
 	{% for s in form.spinners %}
-	$("#id_{{s}}").spinner();
+	$("#id_{{s}}").filter(":visible").spinner();
 	{% endfor %}
 	
-	{% for s in refresh_ids %}
+	{% for s in form.refresh_ids %}
 	$('#{{ s }}').change(function() {
 		refresh_values();
 	});

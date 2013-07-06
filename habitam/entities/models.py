@@ -654,8 +654,8 @@ class Service(SingleAccountEntity):
         ops = []
         db_ap_consumptions = []
         declared = sum(ap_consumptions.values())
-        if declared>consumption:
-            raise NameError('Ceva e ciudat cu consumul declarat! E mai mare decat cel de pe document! ;) Declarat de locatari='+str(declared))
+        if declared > consumption:
+            raise NameError('Ceva e ciudat cu consumul declarat! E mai mare decat cel de pe document! ;) Declarat de locatari=' + str(declared))
         per_unit = amount / consumption
         logger.info('Declared consumption is %f, price per unit is %f' % 
                     (declared, per_unit))
@@ -727,10 +727,10 @@ class Service(SingleAccountEntity):
                         date=timezone.now()):
         logger.info('new inbound op for %s amount=%f no=%s ap_sums=%s ap_consumptions=%s consumption=%s date=%s' % 
                     (self, amount, no, ap_sums, ap_consumptions, consumption, date))
-        if self.quota_type == 'consumption':
+        if ap_consumptions != None:
             self.__new_charge_with_consumptions(amount, no, ap_consumptions,
                                                 consumption, date)
-        elif self.quota_type == 'noquota': 
+        elif ap_sums != None: 
             self.__new_charge_without_quotas(ap_sums, no, date)
         else:
             self.__new_charge_with_quotas(amount, no, date)

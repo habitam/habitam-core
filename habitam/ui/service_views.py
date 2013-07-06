@@ -23,7 +23,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from habitam.entities.models import ApartmentGroup, Service
-from habitam.ui.forms.service import EditServiceForm
+from habitam.ui.forms.service_edit_form import EditServiceForm
 from habitam.ui.views import license_valid
 
 
@@ -67,14 +67,12 @@ def edit_service(request, entity_id):
         form = EditServiceForm(user=request.user, building=building,
                                instance=service, suppliers=suppliers)
     
-    refresh_ids = ['id_quota_type', 'id_billed']
     if service.service_type == 'general':
         title = 'Serviciu '
     else:
         title = 'Fond '
     data = {'form': form, 'target': 'edit_service', 'entity_id': entity_id,
-            'building': building, 'title': title + service.name,
-            'refresh_ids': refresh_ids}
+            'building': building, 'title': title + service.name}
     return render(request, 'edit_dialog.html', data)
 
 
@@ -97,12 +95,10 @@ def new_service(request, building_id, service_type, save_kwargs=None):
         form = EditServiceForm(user=request.user, building=building,
                                suppliers=suppliers)
     
-    refresh_ids = ['id_quota_type', 'id_billed']
     if service_type == 'general':
         title = 'Serviciu nou'
     else:
         title = 'Fond nou'
     data = {'form': form, 'target': 'new_service_' + service_type,
-            'parent_id': building_id, 'building': building,
-            'title': title, 'refresh_ids': refresh_ids }
+            'parent_id': building_id, 'building': building, 'title': title}
     return render(request, 'edit_dialog.html', data)

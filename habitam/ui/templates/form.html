@@ -1,22 +1,31 @@
 {% csrf_token %} 
 {% for hidden in form.hidden_fields %}
    {{ hidden }}
-   {% endfor %}
-   {% if form.non_field_errors %}
+{% endfor %}
+{% if form.non_field_errors %}
    	<div class="alert alert-error">
 	    {% for error in form.non_field_errors %}
 			<span class="help-inline">{{ error }}</span>
     	{% endfor %}
    	</div>
-   {% endif %}
+{% endif %}
 {% for field in form.visible_fields %}
 	<div class="control-group {% if field.errors %}error{% endif %}">
-		<label class="control-label" for="id_{{ field.html_name }}">{{ field.label_tag }}</label>
-		<div class="controls">
-			{{ field }}
-			{% for error in field.errors %}
-				<span class="help-inline">{{ error }}</span>
-			{% endfor %}
-		</div>
+		{% if 'checkbox' in field.as_widget %}
+			<label class="controls checkbox">
+				{{ field }} {{ field.label_tag }}
+				{% for error in field.errors %}
+					<span class="help-inline">{{ error }}</span>
+				{% endfor %}
+			</label>
+		{% else %}
+			<label class="control-label" for="id_{{ field.html_name }}">{{ field.label_tag }}</label>
+			<div class="controls">
+				{{ field }}
+				{% for error in field.errors %}
+					<span class="help-inline">{{ error }}</span>
+				{% endfor %}
+			</div>
+		{% endif %}
 	</div>
 {% endfor %}

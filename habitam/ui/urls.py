@@ -28,7 +28,8 @@ from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm, \
     NewApartmentPayment
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
 from habitam.ui.forms.fund import NewFundTransfer, EditAccountForm
-from habitam.ui.forms.service import NewServicePayment, NewServiceInvoice
+from habitam.ui.forms.service_new_invoice import NewServiceInvoice
+from habitam.ui.forms.service_new_payment import NewServicePayment
 from habitam.ui.forms.supplier import EditSupplierForm
 
 
