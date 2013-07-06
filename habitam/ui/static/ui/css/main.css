@@ -46,3 +46,7 @@ body {
 .archived {
 	text-decoration: line-through;
 }
+
+.stick-to-next {
+	margin-bottom: 0 !important;
+}

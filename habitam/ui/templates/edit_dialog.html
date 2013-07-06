@@ -37,6 +37,13 @@ $(document).ready(function() {
 		$('#id_cmd').val('save');
 		$('#editForm').submit();
 	});
+	
+	{% for ap in form.consumption_ids %}
+	$('#id_consumption_ap_{{ ap }}').prop('disabled', $('#id_consumption_undeclared_ap_{{ ap }}').is(':checked'));
+	$('#id_consumption_undeclared_ap_{{ ap }}').click(function() {
+		$('#id_consumption_ap_{{ ap }}').prop('disabled', $(this).is(':checked'));
+	});
+	{% endfor %}
 });
 
 $('#editForm').find(':text,:radio,:checkbox,select,textarea').each(function(){

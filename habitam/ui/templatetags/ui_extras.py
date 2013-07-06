@@ -47,6 +47,13 @@ def operation_other_party(account, doc):
 def available_list_months(building, user_license):
     return building.available_list_months(user_license.months_back)        
 
+@register.simple_tag
+def field_class(field):
+    css_class = ''
+    if field.name.startswith('consumption_undeclared_ap_'):
+        css_class = css_class + 'stick-to-next '
+    return css_class
+
 @register.assignment_tag
 def list_downloaded(building, month):
     return building.list_downloaded(month) 

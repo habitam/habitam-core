@@ -20,8 +20,9 @@ Created on July 6, 2013
 
 @author: Stefan Guna
 '''
+from decimal import Decimal
 from django import forms
-from django.forms.fields import DecimalField
+from django.forms.fields import DecimalField, BooleanField
 from habitam.ui.forms.generic import NewDocPaymentForm
 import logging
 
@@ -29,31 +30,76 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _drop_undeclared_checkboxes(cleaned_data):    
+    for k in cleaned_data.keys():
+        if not k.startswith('consumption_undeclared_ap_'):
+            continue
+        del cleaned_data[k]
+ 
+def _process_undeclared(cleaned_data):
+    to_drop = [] 
+    for k, v in cleaned_data.iteritems():
+        if not k.startswith('consumption_undeclared_ap_') or not v:
+            continue
+        to_drop.append(int(k[len('consumption_undeclared_ap_'):])) 
+    if not to_drop or not cleaned_data['ap_consumptions'] or not cleaned_data['consumption']:
+        return
+    for pk in to_drop:
+        if pk in cleaned_data['ap_consumptions']:
+            del cleaned_data['ap_consumptions'][pk]
+    declared = sum(cleaned_data['ap_consumptions'].values())
+    share = (Decimal(cleaned_data['consumption']) - declared) / len(to_drop)
+    for pk in to_drop:
+        cleaned_data['ap_consumptions'][pk] = share
+   
+ 
+def _required(args, ap):
+    label = 'consumption_undeclared_ap_' + str(ap.pk)
+    return not (args and label in args[0])
+
+
 class NewServiceInvoice(NewDocPaymentForm):
-    manual_costs = forms.BooleanField(label='Distribuie costurile manual', required=False)
+    manual_costs = BooleanField(label='Distribuie costurile manual', required=False)
    
     def __init__(self, *args, **kwargs):
         self.service = kwargs['entity']
         super(NewServiceInvoice, self).__init__(*args, **kwargs)
-       
-         
+        
         if self.__manual_costs():
             self.fields['amount'] = forms.DecimalField(label='Suma',
                                                     widget=forms.HiddenInput())
-            self.__add_apartments('Suma ', 'sum_ap_')
-        
         if self.service.quota_type == 'consumption':
             self.fields['consumption'] = forms.DecimalField(label='Cantitate')
-            self.__add_apartments('Cantitate pentru ', 'consumption_ap_')
+        if self.__manual_costs() or self.service.quota_type == 'consumption':
+            self.consumption_ids = []
+            self.__add_apartments(args)
     
-    def __add_apartments(self, label, var_name):
+    def __add_apartments(self, args):
         aps = self.service.billed.apartments()
         for ap in aps:
-            self.fields[var_name + str(ap.pk)] = \
-                DecimalField(label=label + str(ap))
+            if self.__manual_costs():
+                self.fields['sum_ap_' + str(ap.pk)] = \
+                    DecimalField(label='Suma ' + str(ap))
+            if self.service.quota_type == 'consumption':
+                self.fields['consumption_undeclared_ap_' + str(ap.pk)] = \
+                    BooleanField(label='Consum nedeclarat',
+                                 required=False)
+                self.fields['consumption_ap_' + str(ap.pk)] = \
+                    DecimalField(label='Consum ' + str(ap),
+                                 required=_required(args, ap))
+                
+                self.consumption_ids.append(ap.pk)
+ 
     
     def __manual_costs(self):
         return 'manual_costs' in self.data or self.service.quota_type == 'no_quota'
+    
+    def __mark_unrequired(self):
+        for k in self.data:
+            if not k.startswith('consumption_undeclared_ap_'):
+                continue
+            ap = k[len('consumption_undeclared_ap_'):]
+            self.fields['consumption_ap_' + ap].required = False
                 
     def clean_apartments(self, cleaned_data, label):
         all_data = {}
@@ -62,6 +108,8 @@ class NewServiceInvoice(NewDocPaymentForm):
             if not k.startswith(label):
                 continue
             all_data[int(k[len(label):])] = v
+            if not v:
+                continue
             all_sum = all_sum + v
             
         for k in all_data.keys():
@@ -79,8 +127,10 @@ class NewServiceInvoice(NewDocPaymentForm):
         if self.service.quota_type == 'consumption': 
             dummy, cleaned_data['ap_consumptions'] = \
                 self.clean_apartments(cleaned_data, 'consumption_ap_')
+            _process_undeclared(cleaned_data)
         if 'manual_costs' in cleaned_data:
             del cleaned_data['manual_costs']
+        _drop_undeclared_checkboxes(cleaned_data)
         return cleaned_data    
     
     def spinners(self):

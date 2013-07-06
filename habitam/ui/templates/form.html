@@ -1,4 +1,5 @@
-{% csrf_token %} 
+{% csrf_token %}
+{% load ui_extras %} 
 {% for hidden in form.hidden_fields %}
    {{ hidden }}
 {% endfor %}
@@ -10,7 +11,7 @@
    	</div>
 {% endif %}
 {% for field in form.visible_fields %}
-	<div class="control-group {% if field.errors %}error{% endif %}">
+	<div class="{% field_class field %} control-group {% if field.errors %}error{% endif %}">
 		{% if 'checkbox' in field.as_widget %}
 			<label class="controls checkbox">
 				{{ field }} {{ field.label_tag }}
