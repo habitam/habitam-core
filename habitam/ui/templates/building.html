@@ -17,7 +17,7 @@
 				{% for m in alm %}
 				{% list_downloaded building m as ld %}
 					<li>
-					<a {% if not ld %}class="confirmListDownload"{% endif %} href="{% url 'download_list' building_id=building.id month=m|date:"Y-m" %}">
+					<a {% if not ld %}class="confirmListDownload"{% endif %} href="{% url 'download_list' building_id=building.id month=m|date:"Y-m" %}" month="{{ m|date:"Y-m" }}">
 					<i class="icon-check" {% if not ld %}style="visibility: hidden"{% endif %}></i>
 					{{ m|date:"F Y" }}
 					</a>
@@ -58,6 +58,8 @@
 		{{building|penalty_collect}} zile, altfel vom începe 
 		aplicarea de penalități.</p>
 		{% endif %}
+		
+		<span class="services-without-invoice"></span>
 	</div>
 
 	<div class="modal-footer">
@@ -67,15 +69,44 @@
 </div>
 
 <script type="text/javascript">
+var services_without_invoice = {
+{% with license=user.administrator.license %}
+{% available_list_months building user.administrator.license as alm %}
+{% for m in alm %}
+	'{{ m|date:"Y-m" }}': [
+	{% services_without_invoice building m as services %}
+	{% for service in services %}
+		'{{ service.name }}', 
+	{% endfor %}
+	], 
+{% endfor %}
+{% endwith %}
+};
+
 $(".confirmListDownload").click(function(e) {
 	e.preventDefault();
 	var targetUrl = $(this).attr('href');
 	var icon = $(this).children('i');
+	var month = $(this).attr('month');
+	var services = services_without_invoice[month];
+    var html = '';
     
+    if (services.length == 1)
+    	html = '<p>Atenție, serviciul ' + services[0] + ' nu are factură pentru această lună. Puteți introduce una <a href="{% url 'service_list' building.id %}">aici</a>.</p>';
+    if (services.length > 1) {
+    	html = '<p>Atenție, serviciile: <ul>';
+    	for (i = 0; i < services.length; i++)
+    		html += '<li>' + services[i] + '</li>';
+    	html += '</ul>nu au factură pentru această lună. Puteți introduce una <a href="{% url 'service_list' building.id %}">aici</a>.</p>';
+    }
+    
+    $('.services-without-invoice').html(html);
+
 	$('#downloadListButton').click(function () {
 		icon.css('visibility', 'visible');
 		$('#listDownloadDialog').modal('hide');
-		window.location.href = targetUrl;
+		
+		window.location.href = targetUrl;	
     });
 	
 	$('#listDownloadDialog').modal();

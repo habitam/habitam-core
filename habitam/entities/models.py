@@ -318,6 +318,12 @@ class ApartmentGroup(Entity):
             result.extend(ag.services())
         return result
     
+    
+    def services_without_invoice(self, month):
+        begin = date(day=self.close_day, month=month.month, year=month.year)
+        end = begin + relativedelta(months=1)
+        return filter(lambda x: x.without_invoice(begin, end), self.services())
+    
        
     def update_quotas(self):
         for svc in self.service_set.all():
@@ -793,6 +799,10 @@ class Service(SingleAccountEntity):
         charged = self.account.charged()
         received = self.account.received()
         return charged - received
+    
+    def without_invoice(self, begin, end):
+        return self.service_type == 'general' and \
+            self.account.count_src_operations(begin, end) == 0
 
 
 class ServiceConsumption(Consumption):

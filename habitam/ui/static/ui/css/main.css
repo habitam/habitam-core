@@ -50,3 +50,7 @@ body {
 .stick-to-next {
 	margin-bottom: 0 !important;
 }
+
+.services-without-invoice {
+	color: red;
+}

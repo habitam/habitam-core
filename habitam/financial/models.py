@@ -154,6 +154,9 @@ class Account(models.Model):
     def charged(self, month=None):
         query = Q(Q(doc__type='invoice') | Q(doc__type='collection'))
         return self.__source_amount(query, month)
+    
+    def count_src_operations(self, begin, end):
+        return self.doc_src_set.filter(Q(date__gt=begin) & Q(date__lt=end)).count()
      
     def has_quotas(self):
         return Quota.objects.filter(Q(dest=self) | Q(src=self)).count() > 0
