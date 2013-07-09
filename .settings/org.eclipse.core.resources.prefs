@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//habitam/entities/models.py=utf-8
+encoding//habitam/entities/penalties.py=utf-8
 encoding//habitam/financial/models.py=utf-8
 encoding//habitam/ui/forms/apartment.py=utf-8
 encoding//habitam/ui/forms/building.py=utf-8

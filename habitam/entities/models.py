@@ -27,9 +27,10 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models.query_utils import Q
 from django.utils import timezone
+from habitam.entities.penalties import penalties
 from habitam.financial.models import Account, Quota, OperationDoc
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
-    MAX_PENALTY_PER_DAY, PENALTY_START_DAYS, EPS
+    MAX_PENALTY_PER_DAY
 from uuid import uuid1
 import logging
 
@@ -429,77 +430,12 @@ class Apartment(SingleAccountEntity):
         return {'amount' :-1 * amount}
         
     
-    def __monthly_penalties(self, cp, dd, day):
-        building = self.building()
-        
-        begin = date(day=building.close_day, month=dd.month.month,
-                     year=dd.month.year)
-        end = begin + relativedelta(months=1)
-        
-        begin_balance = self.account.balance(begin)
-        end_balance = self.account.balance(end)
-        monthly_debt = end_balance - begin_balance
-        next_day = day + relativedelta(days=1)
-        payments = self.account.payments(end, next_day,
-                                         building.penalties_account)
-        balance = monthly_debt + payments - cp
 
-        logger.debug('%s -> %s' % (begin_balance, end_balance))
-        if balance >= 0:
-            logger.debug('No debts at %s %f' % (end, balance))
-            return 0, payments
-        
-        count_since = end + relativedelta(days=building.payment_due_days)
-        count_since = count_since + relativedelta(days=PENALTY_START_DAYS)
-        days = (day - count_since).days
-        
-        if days < 0:
-            logger.debug('Not enough time (%d) for penalties at %s %f' % 
-                         (days, day, balance))
-            return 0, payments
-        
-        penalties = days * building.daily_penalty * balance * -1 / 100 
-        
-        logger.debug('Penalties %s -> %s are %f for debts are %f in %d days, the monthly debt is %f' % 
-                     (begin, end, penalties, balance, days, monthly_debt))
-        
-        return penalties, payments
      
     
     # TODO test this as per https://trello.com/c/djqGiRgQ 
     def penalties(self, day=date.today()):
-        logger.debug('Computing penalties for %s at %s' % (self, day))
-        building = self.building()
-        if building.daily_penalty == None or building.daily_penalty == 0:
-            return None
-        
-        until = day - relativedelta(days=building.payment_due_days)
-        until = until - relativedelta(days=PENALTY_START_DAYS)
-       
-        nps = start = None 
-        p, cp = 0, 0
-        penalties_found = False
-        for dd in building.display_dates(self.no_penalties_since, until):
-            print '++++++', dd.month 
-            m, cp = self.__monthly_penalties(cp, dd, day)
-            p = p + m
-            
-            if m > 0:
-                penalties_found = True
-            if nps == None or not penalties_found:
-                nps = dd.month
-            
-        if nps != start:
-            logger.info('Increment nps for %s(pk=%d) from %s to %s' % 
-                        (self, self.pk, start, nps))
-            self.no_penalties_since = nps
-            self.save()
-        
-        logger.debug('Penalties for %s at %s are %f' % (self, day, p))    
-        p = Decimal(p).quantize(EPS) * -1
-        if p == 0:
-            return None
-        return p
+        penalties(self, day)
     
     
     def weight(self, quota_type='equally'):
