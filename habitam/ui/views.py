@@ -22,17 +22,19 @@ Created on Apr 12, 2013
 '''
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.decorators import login_required
 from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from django.db.models.query_utils import Q
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
+from django.utils.decorators import decorator_from_middleware
 from habitam.downloads.display_list import download_display_list
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink
 from habitam.financial.models import Account, OperationDoc
 from habitam.ui.forms.building import NewBuildingForm
+from habitam.ui.license_filter import LicenseFilter
 import logging
 
 
@@ -58,19 +60,16 @@ def __find_building(account):
     return None
 
 
-def license_valid(user):
-    l = user.administrator.license
-    return date.today() < l.valid_until
 
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def home(request):
     return render(request, 'home.html')
 
 
 @login_required
-@user_passes_test(license_valid)   
+@decorator_from_middleware(LicenseFilter)
 def new_building(request):
     if request.method == 'POST':
         form = NewBuildingForm(request.user, request.POST)
@@ -87,14 +86,14 @@ def new_building(request):
 
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def building_tab(request, building_id, tab, show_all=False):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     data = {'building': building, 'active_tab': tab, 'show_all': show_all}
     return render(request, tab + '.html', data)  
 
 @login_required
-@user_passes_test(license_valid)   
+@decorator_from_middleware(LicenseFilter)
 def download_list(request, building_id, month):
     building = ApartmentGroup.objects.get(pk=building_id)
     begin_ts = datetime.strptime(month + '-%02d' % building.close_day,
@@ -115,7 +114,7 @@ def download_list(request, building_id, month):
     return response
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def general_list(request, license_subtype, entity_cls, edit_name, new_name,
                  title, view_name, entity_view_name=None, alt_view_name=None,
                  show_all=False):
@@ -131,7 +130,7 @@ def general_list(request, license_subtype, entity_cls, edit_name, new_name,
        
 
 @login_required
-@user_passes_test(license_valid)   
+@decorator_from_middleware(LicenseFilter)
 def operation_list(request, building_id, account_id, month=None):
     building = ApartmentGroup.objects.get(pk=building_id)
     if month == None:
@@ -175,7 +174,7 @@ def operation_list(request, building_id, account_id, month=None):
 
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def operation_doc(request, building_id, account_id, operationdoc_id):
     OperationDoc.delete_doc(operationdoc_id)
     return redirect('operation_list', building_id=building_id,
@@ -183,7 +182,7 @@ def operation_doc(request, building_id, account_id, operationdoc_id):
 
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'):
     entity = entity_cls.objects.get(pk=entity_id)
     building = entity.building()
@@ -210,7 +209,7 @@ def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'
 
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'):
     entity = entity_cls.objects.get(pk=entity_id)
     
@@ -235,7 +234,7 @@ def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='
 
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def entity_view(request, entity_cls, entity_id, edit_name, view_name):
     entity = entity_cls.objects.get(id=entity_id)
     data = {'entity': entity, 'entity_cls': entity_cls, 'edit_name': edit_name,
@@ -244,7 +243,7 @@ def entity_view(request, entity_cls, entity_id, edit_name, view_name):
        
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def new_building_entity(request, building_id, form_cls, target,
                         title='New Entity', save_kwargs=None,
                         commit_directly=False):
@@ -271,7 +270,7 @@ def new_building_entity(request, building_id, form_cls, target,
 
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
                         title):
     entity = entity_cls.objects.get(pk=entity_id)
@@ -296,7 +295,7 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
     return render(request, 'edit_dialog.html', data)  
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def new_simple_entity(request, entity_cls, form_cls, target,
                       title='Entitate nouă'):
     if request.method == 'POST':
@@ -317,7 +316,7 @@ def new_simple_entity(request, entity_cls, form_cls, target,
     return render(request, 'edit_dialog.html', data)
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
     src_account = Account.objects.get(pk=account_id)
     try:

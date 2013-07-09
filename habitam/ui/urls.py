@@ -20,6 +20,7 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django.conf.urls import patterns, url
+from django.views.generic.base import TemplateView
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person, \
     Supplier
 from habitam.financial.models import Account
@@ -58,6 +59,9 @@ urlpatterns = patterns('',
         'django.contrib.auth.views.password_reset_complete',
         {'template_name': 'password_reset_complete.html'},
         name='password_reset_complete'),
+    url(r'^users/license_expired/$',
+        TemplateView.as_view(template_name='license_expired.html'),
+        name='license_expired'),
     
     url(r'^$', views.home, name='home'),
     

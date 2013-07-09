@@ -19,12 +19,13 @@ Created on May 19, 2013
 
 @author: Stefan Guna
 '''
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
+from django.utils.decorators import decorator_from_middleware
 from habitam.entities.models import ApartmentGroup, Service
 from habitam.ui.forms.service_edit_form import EditServiceForm
-from habitam.ui.views import license_valid
+from habitam.ui.license_filter import LicenseFilter
 
 
 def __save_service(request, form, service_type=None):
@@ -40,7 +41,7 @@ def __save_service(request, form, service_type=None):
 
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def edit_service(request, entity_id):
     service = Service.objects.get(pk=entity_id)
     building = service.building()
@@ -77,7 +78,7 @@ def edit_service(request, entity_id):
 
 
 @login_required
-@user_passes_test(license_valid)
+@decorator_from_middleware(LicenseFilter)
 def new_service(request, building_id, service_type, save_kwargs=None):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     if service_type == 'general':
