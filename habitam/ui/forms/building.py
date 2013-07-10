@@ -32,6 +32,11 @@ class EditBuildingForm(forms.ModelForm):
     class Meta:
         model = ApartmentGroup
         fields = ('name',)
+        
+    def __init__(self, *args, **kwargs):
+        if 'user' in kwargs.keys():
+            del kwargs['user']
+        super(EditBuildingForm, self).__init__(*args, **kwargs)
 
 class EditStaircaseForm(forms.ModelForm):
     name = forms.CharField(label='Nume')
@@ -63,7 +68,7 @@ class EditStaircaseForm(forms.ModelForm):
         
          
 class NewBuildingForm(forms.Form):
-    apartments = forms.IntegerField(label='Număr apartamente', min_value=1,
+    apartments = forms.IntegerField(label='Număr apartamente', initial=1, min_value=1,
                                     max_value=1000)
     apartment_offset = forms.IntegerField(label='Primul apartament',
                                     initial=1, min_value=1, max_value=1000)
@@ -88,10 +93,11 @@ class NewBuildingForm(forms.Form):
                                 'payment_due_days', 'daily_penalty']
         
     def clean(self):
-        l = self.user.administrator.license
-        a = l.max_apartments - l.apartment_count()
-        if a < self.cleaned_data['apartments']:
-            raise forms.ValidationError('Prea multe apartamente')
+        if 'apartments' in self.cleaned_data:
+            l = self.user.administrator.license
+            a = l.max_apartments - l.apartment_count()
+            if a < self.cleaned_data['apartments']:
+                raise forms.ValidationError('Prea multe apartamente')
         return self.cleaned_data
 
     def spinners(self):

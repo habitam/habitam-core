@@ -221,12 +221,12 @@ def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='
             return HttpResponseBadRequest()
     
     if request.method == 'POST':
-        form = form_cls(request.POST, instance=entity)
+        form = form_cls(request.POST, instance=entity, user=request.user)
         if form.is_valid():
             form.save()
             return render(request, 'edit_ok.html')
     else:
-        form = form_cls(instance=entity)
+        form = form_cls(instance=entity, user=request.user)
     
     data = {'form': form, 'target': target, 'entity_id': entity_id,
             'title': title + ' ' + entity.name}
@@ -299,7 +299,7 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
 def new_simple_entity(request, entity_cls, form_cls, target,
                       title='Entitate nouă'):
     if request.method == 'POST':
-        form = form_cls(request.POST)
+        form = form_cls(request.POST, user=request.user)
         if form.is_valid():
             if entity_cls.use_license():
                 entity = form.save(commit=False)
@@ -310,7 +310,7 @@ def new_simple_entity(request, entity_cls, form_cls, target,
                 form.save()
             return render(request, 'edit_ok.html')
     else:
-        form = form_cls()
+        form = form_cls(user=request.user)
     
     data = {'form': form, 'target': target, 'title': title}
     return render(request, 'edit_dialog.html', data)

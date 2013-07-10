@@ -64,7 +64,11 @@ class EditApartmentForm(forms.ModelForm):
 class EditPersonForm(forms.ModelForm):
     class Meta:
         model = Person 
-
+        
+    def __init__(self, *args, **kwargs):
+        if 'user' in kwargs.keys():
+            del kwargs['user']
+        super(EditPersonForm, self).__init__(*args, **kwargs)
 
 class NewApartmentPayment(NewPaymentForm):
     dest_account = forms.ModelChoiceField(label='Cont',

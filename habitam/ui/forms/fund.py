@@ -36,9 +36,9 @@ class EditAccountForm(forms.ModelForm):
         if 'building' in kwargs.keys():
             self._building = kwargs['building']
             del kwargs['building']
-            del kwargs['user']
         else:
             self._building = None
+        del kwargs['user']
         super(EditAccountForm, self).__init__(*args, **kwargs)
         
     def save(self, commit=True):

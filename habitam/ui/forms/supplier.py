@@ -31,6 +31,23 @@ class EditSupplierForm(forms.ModelForm):
         fields = ('name', 'archived')
         
     def __init__(self, *args, **kwargs):
+        if 'user' in kwargs.keys():
+            self._user = kwargs['user']
+            del kwargs['user']
+        else:
+            self._user = None  
         super(EditSupplierForm, self).__init__(*args, **kwargs)
+     
         if self.instance.pk == None or not self.instance.is_archivable():
             del self.fields['archived']
+            
+    def clean(self):
+        if self._user is None:
+            return self.cleaned_data
+        if 'name' in self.cleaned_data:
+            slist=self._user.administrator.license.suppliers
+            n=self.cleaned_data['name']
+            for ss in slist.all():
+                if ss.name==n:
+                    raise forms.ValidationError('Numele %s mai exista in lista de furnizori'%(n))
+        return self.cleaned_data
