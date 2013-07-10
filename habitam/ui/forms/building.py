@@ -21,6 +21,8 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
+from django.forms.util import ErrorDict
+from django.forms.forms import NON_FIELD_ERRORS 
 from habitam.entities.models import ApartmentGroup
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY
@@ -37,6 +39,14 @@ class EditBuildingForm(forms.ModelForm):
         if 'user' in kwargs.keys():
             del kwargs['user']
         super(EditBuildingForm, self).__init__(*args, **kwargs)
+        
+    
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)
 
 class EditStaircaseForm(forms.ModelForm):
     name = forms.CharField(label='Nume')
@@ -65,6 +75,14 @@ class EditStaircaseForm(forms.ModelForm):
         print kwargs
         super(EditStaircaseForm, self).__init__(*args, **kwargs)
         print self.fields
+        
+    
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)
         
          
 class NewBuildingForm(forms.Form):
@@ -103,3 +121,11 @@ class NewBuildingForm(forms.Form):
     def spinners(self):
         return ['staircases', 'apartments', 'apartment_offset', 'close_day',
                 'payment_due_days', 'daily_penalty']
+
+    
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)

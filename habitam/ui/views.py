@@ -74,11 +74,17 @@ def new_building(request):
     if request.method == 'POST':
         form = NewBuildingForm(request.user, request.POST)
         if form.is_valid():
-            building_id = ApartmentGroup.bootstrap_building(
-                    request.user.administrator.license, **form.cleaned_data)
-            url = reverse('apartment_list', args=[building_id])
-            data = {'location': url}
-            return render(request, 'edit_redirect.html', data)
+            try:
+                building_id = ApartmentGroup.bootstrap_building(
+                                                                request.user.administrator.license, **form.cleaned_data)
+                url = reverse('apartment_list', args=[building_id])
+                data = {'location': url}
+                return render(request, 'edit_redirect.html', data)
+            # TODO @iia catch by different exceptions
+            except Exception as e:
+                data = {'form': form, 'target': 'new_building', 'title': 'Cladire noua'}  
+                form.add_form_error(e)
+                return render(request, 'edit_dialog.html', data)
     else:
         form = NewBuildingForm(request.user) 
     data = {'form': form, 'target': 'new_building', 'title': 'Cladire noua'}
@@ -198,8 +204,17 @@ def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'
         form = form_cls(request.POST, user=request.user, building=building,
                         instance=entity)
         if form.is_valid():
-            form.save()
-            return render(request, 'edit_ok.html')
+            try:
+                form.save()
+                return render(request, 'edit_ok.html')
+            # TODO @iia catch by different exceptions
+            except Exception as e:
+                data = {'form': form, 'target': target, 'entity_id': entity_id,
+                            'building': building, 'title': title + ' ' + entity.name} 
+                form.add_form_error(e)
+
+                return render(request, 'edit_dialog.html', data)
+
     else:
         form = form_cls(user=request.user, building=building, instance=entity)
     
@@ -223,8 +238,16 @@ def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='
     if request.method == 'POST':
         form = form_cls(request.POST, instance=entity, user=request.user)
         if form.is_valid():
-            form.save()
-            return render(request, 'edit_ok.html')
+            try:
+                form.save()
+                return render(request, 'edit_ok.html')
+            # TODO @iia catch by different exceptions
+            except Exception as e:
+                data = {'form': form, 'target': target, 'entity_id': entity_id,
+                        'title': title + ' ' + entity.name}
+                form.add_form_error(e)
+
+                return render(request, 'edit_dialog.html', data)
     else:
         form = form_cls(instance=entity, user=request.user)
     
@@ -252,16 +275,24 @@ def new_building_entity(request, building_id, form_cls, target,
     if request.method == 'POST':
         form = form_cls(request.POST, user=request.user, building=building)
         if form.is_valid():
-            if commit_directly:
-                form.save()
-            else: 
-                entity = form.save(commit=False)
-                if save_kwargs != None:
-                    save_kwargs['building'] = building
-                    entity.save(**save_kwargs)
-                else:
-                    entity.save()
-            return render(request, 'edit_ok.html')
+            try:
+                if commit_directly:
+                    form.save()
+                else: 
+                    entity = form.save(commit=False)
+                    if save_kwargs != None:
+                        save_kwargs['building'] = building
+                        entity.save(**save_kwargs)
+                    else:
+                        entity.save()
+                return render(request, 'edit_ok.html')
+            # TODO @iia catch by different exceptions
+            except Exception as e:
+                data = {'form': form, 'target': target, 'parent_id': building_id,
+                        'building': building, 'title': title}
+                form.add_form_error(e)
+
+                return render(request, 'edit_dialog.html', data)
     else:
         form = form_cls(user=request.user, building=building)
     data = {'form': form, 'target': target, 'parent_id': building_id,
@@ -281,7 +312,7 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
         if form.is_valid():
             try:
                 entity.new_inbound_operation(**form.cleaned_data)
-            except NameError as e:
+            except Exception as e:
                 data = {'form': form, 'target': target, 'parent_id': entity_id,
                         'building': building, 'title': title + ' ' + entity.name}
                 form.add_form_error(e)
@@ -300,15 +331,21 @@ def new_simple_entity(request, entity_cls, form_cls, target,
                       title='Entitate nouă'):
     if request.method == 'POST':
         form = form_cls(request.POST, user=request.user)
-        if form.is_valid():
-            if entity_cls.use_license():
-                entity = form.save(commit=False)
-                entity.save()
-                ul = request.user.administrator.license
-                ul.add_entity(entity, entity_cls)
-            else:
-                form.save()
-            return render(request, 'edit_ok.html')
+        if form.is_valid():  
+            try:
+                if entity_cls.use_license():
+                    entity = form.save(commit=False)
+                    entity.save()
+                    ul = request.user.administrator.license
+                    ul.add_entity(entity, entity_cls)
+                else:
+                    form.save()
+                return render(request, 'edit_ok.html')
+            # TODO @iia catch by different exceptions
+            except Exception as e:
+                data = {'form': form, 'target': target, 'title': title}
+                form.add_form_error(e)
+                return render(request, 'edit_dialog.html', data)
     else:
         form = form_cls(user=request.user)
     
@@ -330,8 +367,16 @@ def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
         form = form_cls(request.POST, account=src_account,
                                user=request.user, building=building)
         if form.is_valid():
-            src_account.new_transfer(**form.cleaned_data)
-            return render(request, 'edit_ok.html')
+            try:
+                src_account.new_transfer(**form.cleaned_data)
+                return render(request, 'edit_ok.html')
+            # TODO @iia catch by different exceptions
+            except Exception as e:
+                data = {'form' : form, 'target': target, 'entity_id': account_id,
+                        'building': building,
+                        'title': title + ' ' + src_account.name}
+                form.add_form_error(e)
+                return render(request, 'edit_dialog.html', data)
     else:
         form = form_cls(account=src_account, user=request.user,
                         building=building)

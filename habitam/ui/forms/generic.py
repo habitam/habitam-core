@@ -33,7 +33,14 @@ class NewPaymentForm(forms.Form):
         super(NewPaymentForm, self).__init__(*args, **kwargs)
         
     def spinners(self):
-        return ['amount']        
+        return ['amount'] 
+    
+    def clean(self):
+        if 'amount' in self.cleaned_data:
+            s=self.cleaned_data['amount']
+            if s <=0:
+                raise forms.ValidationError('Te rog sa introduci o suma mai mare decat zero')   
+        return self.cleaned_data    
 
     def add_form_error(self, error_message):
         if not self._errors:

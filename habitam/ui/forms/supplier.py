@@ -21,6 +21,8 @@ Created on Jun 6, 2013
 '''
 from django import forms
 from habitam.entities.models import Supplier
+from django.forms.util import ErrorDict
+from django.forms.forms import NON_FIELD_ERRORS 
 
 class EditSupplierForm(forms.ModelForm):
     name = forms.CharField(label='Nume')
@@ -51,3 +53,10 @@ class EditSupplierForm(forms.ModelForm):
                 if ss.name==n:
                     raise forms.ValidationError('Numele %s mai exista in lista de furnizori'%(n))
         return self.cleaned_data
+    
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)

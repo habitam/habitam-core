@@ -21,6 +21,8 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
+from django.forms.util import ErrorDict
+from django.forms.forms import NON_FIELD_ERRORS 
 from django.db.models.query_utils import Q
 from habitam.entities.models import ApartmentGroup, Apartment, Person
 from habitam.financial.models import Account
@@ -59,7 +61,13 @@ class EditApartmentForm(forms.ModelForm):
         if self.instance.id == None and a < 1:
             raise forms.ValidationError('Prea multe apartamente')
         return self.cleaned_data
-
+    
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)
 
 class EditPersonForm(forms.ModelForm):
     class Meta:
@@ -69,6 +77,13 @@ class EditPersonForm(forms.ModelForm):
         if 'user' in kwargs.keys():
             del kwargs['user']
         super(EditPersonForm, self).__init__(*args, **kwargs)
+   
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)
 
 class NewApartmentPayment(NewPaymentForm):
     dest_account = forms.ModelChoiceField(label='Cont',

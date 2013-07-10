@@ -26,6 +26,9 @@ from django.db.models.query_utils import Q
 from django.forms.fields import DecimalField
 from habitam.entities.models import ApartmentGroup, Service, Supplier
 from habitam.financial.models import Quota
+from django.forms.util import ErrorDict
+from django.forms.forms import NON_FIELD_ERRORS 
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -120,4 +123,11 @@ class EditServiceForm(forms.ModelForm):
     
     def refresh_ids(self):
         return ['id_quota_type', 'id_billed']
+    
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)
     

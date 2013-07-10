@@ -25,7 +25,8 @@ from django.db.models.query_utils import Q
 from habitam.entities.models import AccountLink
 from habitam.financial.models import Account
 from habitam.ui.forms.generic import NewDocPaymentForm
-
+from django.forms.util import ErrorDict
+from django.forms.forms import NON_FIELD_ERRORS 
 
 class EditAccountForm(forms.ModelForm):
     class Meta:
@@ -51,6 +52,13 @@ class EditAccountForm(forms.ModelForm):
                 al.save()
         
         return instance
+    
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)
 
 
 class NewFundTransfer(NewDocPaymentForm):
