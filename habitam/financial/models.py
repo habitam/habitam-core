@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 This file is part of Habitam.
 
@@ -76,11 +77,18 @@ class Operation(models.Model):
 
 
 class Account(models.Model):
+    MONEY_TYPES = (
+        ('cash', 'bani lichizi'),
+        ('bank', 'bancă'),
+        ('3rd party', 'terță parte')
+    )
     TYPES = (
         ('apart', 'apartment'),
         ('std', 'standard'),
         ('penalties', 'penalties')
     )
+    money_type = models.CharField(default='cash', max_length=10,
+                                  choices=MONEY_TYPES)
     name = models.CharField(max_length=100)
     type = models.CharField(default='std', max_length=10, choices=TYPES) 
     

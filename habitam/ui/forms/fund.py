@@ -28,10 +28,18 @@ from habitam.ui.forms.generic import NewDocPaymentForm
 from django.forms.util import ErrorDict
 from django.forms.forms import NON_FIELD_ERRORS 
 
+
+MONEY_TYPES = (
+    ('cash', 'bani lichizi'),
+    ('bank', 'bancă')
+)
+
 class EditAccountForm(forms.ModelForm):
+    money_type = forms.ChoiceField(label='Tip bani', choices=MONEY_TYPES)
+    
     class Meta:
         model = Account
-        fields = ('name',)
+        fields = ('name', 'money_type')
     
     def __init__(self, *args, **kwargs):
         if 'building' in kwargs.keys():
@@ -79,7 +87,7 @@ class NewFundTransfer(NewDocPaymentForm):
         
         qbilled_direct = Q(service__billed=building)
         qbilled_parent = Q(service__billed__parent=building)
-        qcollecting= Q(Q(service__service_type='collecting') & 
+        qcollecting = Q(Q(service__service_type='collecting') & 
                              Q(qbilled_direct | qbilled_parent))
         qnotarchived = Q(~Q(service__archived=True) & qcollecting)
         

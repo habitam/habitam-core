@@ -50,10 +50,11 @@ class Entity(models.Model):
 class SingleAccountEntity(Entity):   
     account = models.ForeignKey(Account)
     
-    def __init__(self, account_type, *args, **kwargs):
+    def __init__(self, account_type, money_type, *args, **kwargs):
         if 'name' in kwargs.keys():
             account = Account.objects.create(name=kwargs['name'],
-                                             type=account_type)
+                                             type=account_type,
+                                             money_type=money_type)
             kwargs.setdefault('account', account)
         super(SingleAccountEntity, self).__init__(*args, **kwargs)
 
@@ -63,13 +64,14 @@ class SingleAccountEntity(Entity):
     class Meta:
         abstract = True
         
-    def save(self, account_type, **kwargs):
+    def save(self, account_type, money_type, **kwargs):
         try:
             self.account.name = self.__unicode__()
             self.account.save()
         except Account.DoesNotExist:
             self.account = Account.objects.create(name=self.__unicode__(),
-                                                  type=account_type)
+                                                  type=account_type,
+                                                  money_type=money_type)
         
         self.account.name = self.name     
         super(SingleAccountEntity, self).save(**kwargs)
@@ -395,7 +397,7 @@ class Apartment(SingleAccountEntity):
             return None
 
     def __init__(self, *args, **kwargs):       
-        super(Apartment, self).__init__('apart', *args, **kwargs) 
+        super(Apartment, self).__init__('apart', '3rd party', *args, **kwargs)
         self._old_name = self.name
         self._old_parent = self.parent
         
@@ -471,7 +473,7 @@ class Apartment(SingleAccountEntity):
         if self.no_penalties_since == None:
             self.no_penalties_since = date.today() 
         
-        super(Apartment, self).save('apart', **kwargs)
+        super(Apartment, self).save('apart', '3rd party', **kwargs)
         
         if self._old_parent != self.parent: 
             logger.info('Moving apartment %s from %s to %s, updating quotas',
@@ -558,7 +560,7 @@ class Service(SingleAccountEntity):
             return None        
    
     def __init__(self, *args, **kwargs): 
-        super(Service, self).__init__('std', *args, **kwargs) 
+        super(Service, self).__init__('std', '3rd party', *args, **kwargs) 
         try:
             self._old_billed = self.billed
         except:

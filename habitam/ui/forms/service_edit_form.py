@@ -24,15 +24,15 @@ from decimal import Decimal
 from django import forms
 from django.db.models.query_utils import Q
 from django.forms.fields import DecimalField
+from django.forms.forms import NON_FIELD_ERRORS
+from django.forms.util import ErrorDict
 from habitam.entities.models import ApartmentGroup, Service, Supplier
 from habitam.financial.models import Quota
-from django.forms.util import ErrorDict
-from django.forms.forms import NON_FIELD_ERRORS 
-
+from habitam.ui.forms.fund import MONEY_TYPES
 import logging
 
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 class EditServiceForm(forms.ModelForm):
     supplier = forms.ModelChoiceField(label='Furnizor', queryset=Supplier.objects.all())
@@ -48,10 +48,12 @@ class EditServiceForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
+        self.service_type = kwargs['service_type']
         self.suppliers = kwargs['suppliers']
         del kwargs['building']
         del kwargs['user']
         del kwargs['suppliers']
+        del kwargs['service_type']
         
         super(EditServiceForm, self).__init__(*args, **kwargs)
         
@@ -66,6 +68,10 @@ class EditServiceForm(forms.ModelForm):
             del self.fields['supplier']
         else:
             self.fields['supplier'].queryset = self.suppliers
+        
+        if self.service_type == 'collecting':
+            self.fields['money_type'] = forms.ChoiceField(label='Tip bani',
+                                                choices=MONEY_TYPES)
         
         if self.instance.pk == None:
             del self.fields['archived']

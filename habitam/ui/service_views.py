@@ -28,14 +28,16 @@ from habitam.ui.forms.service_edit_form import EditServiceForm
 from habitam.ui.license_filter import LicenseFilter
 
 
-def __save_service(request, form, service_type=None):
+def __save_service(request, form, service_type):
     service = form.save(commit=False)
     ap_quotas = form.manual_quotas()
     kwargs = {}
     if ap_quotas != None:
         kwargs['ap_quotas'] = ap_quotas
-    if service_type != None:
-        service.service_type = service_type
+    service.service_type = service_type
+    kwargs['money_type'] = '3rd party'
+    if service_type == 'collecting':
+        kwargs['money_type'] = form.cleaned_data['money_type']
     service.save(**kwargs)
     return render(request, 'edit_ok.html')
 
@@ -61,12 +63,13 @@ def edit_service(request, entity_id):
     if request.method == 'POST':
         form = EditServiceForm(request.POST, user=request.user,
                         building=building, instance=service,
-                        suppliers=suppliers)
+                        suppliers=suppliers, service_type=service.service_type)
         if form.is_valid() and form.cleaned_data['cmd'] == 'save':
-            return __save_service(request, form)
+            return __save_service(request, form, service.service_type)
     else:
         form = EditServiceForm(user=request.user, building=building,
-                               instance=service, suppliers=suppliers)
+                               instance=service, suppliers=suppliers,
+                               service_type=service.service_type)
     
     if service.service_type == 'general':
         title = 'Serviciu '
@@ -89,12 +92,13 @@ def new_service(request, building_id, service_type, save_kwargs=None):
     
     if request.method == 'POST':
         form = EditServiceForm(request.POST, user=request.user,
-                               building=building, suppliers=suppliers)
+                               building=building, suppliers=suppliers,
+                               service_type=service_type)
         if form.is_valid() and form.cleaned_data['cmd'] == 'save':
             return __save_service(request, form, service_type)
     else:
         form = EditServiceForm(user=request.user, building=building,
-                               suppliers=suppliers)
+                               suppliers=suppliers, service_type=service_type)
     
     if service_type == 'general':
         title = 'Serviciu nou'
