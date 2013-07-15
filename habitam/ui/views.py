@@ -30,7 +30,7 @@ from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.utils.decorators import decorator_from_middleware
 from habitam.downloads.display_list import download_display_list
-from habitam.entities.accessor import entity_for_account
+from habitam.entities.accessor import entity_for_account, building_for_account
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
     AccountLink, CollectingFund
 from habitam.financial.models import Account, OperationDoc
@@ -40,27 +40,6 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-
-         
-def __find_building(account): 
-    try:
-        service = Service.objects.get(account=account)
-        return service.billed.building()
-    except Service.DoesNotExist:
-        pass
-    try:
-        apartment = Apartment.objects.get(account=account)
-        return apartment.building()
-    except Apartment.DoesNotExist:
-        pass
-    try:
-        account_link = AccountLink.objects.get(account=account)
-        return account_link.holder.building()
-    except AccountLink.DoesNotExist:
-        pass
-    return None
-
-
 
 
 @login_required
@@ -176,7 +155,7 @@ def operation_list(request, building_id, account_id, month=None):
             'initial_balance': initial, 'initial_penalties': initial_penalties,
             'final_balance': final, 'final_penalties': final_penalties,
             'month': month, 'month_end': month_end, 'service': service,
-            'building': __find_building(account)}
+            'building': building_for_account(account)}
     return render(request, 'operation_list.html', data)
 
 
