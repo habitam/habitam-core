@@ -22,59 +22,20 @@ Created on Apr 8, 2013
 '''
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
-from decimal import Decimal
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models.query_utils import Q
 from django.utils import timezone
+from habitam.entities.base import Entity, SingleAccountEntity
+from habitam.entities.billable import Billable
 from habitam.entities.penalties import penalties
-from habitam.financial.models import Account, Quota, OperationDoc
+from habitam.financial.models import Account, OperationDoc
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY
 from uuid import uuid1
 import logging
 
 logger = logging.getLogger(__name__)
-
-    
-class Entity(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        abstract = True 
-
-
-class SingleAccountEntity(Entity):   
-    account = models.ForeignKey(Account)
-    
-    def __init__(self, account_type, money_type, *args, **kwargs):
-        if 'name' in kwargs.keys():
-            account = Account.objects.create(name=kwargs['name'],
-                                             type=account_type,
-                                             money_type=money_type)
-            kwargs.setdefault('account', account)
-        super(SingleAccountEntity, self).__init__(*args, **kwargs)
-
-    def balance(self):
-        return self.account.balance()
-
-    class Meta:
-        abstract = True
-        
-    def save(self, account_type, money_type, **kwargs):
-        try:
-            self.account.name = self.__unicode__()
-            self.account.save()
-        except Account.DoesNotExist:
-            self.account = Account.objects.create(name=self.__unicode__(),
-                                                  type=account_type,
-                                                  money_type=money_type)
-        
-        self.account.name = self.name     
-        super(SingleAccountEntity, self).save(**kwargs)
 
 
 class ApartmentGroup(Entity):
@@ -176,6 +137,14 @@ class ApartmentGroup(Entity):
         return staircase
     
     
+    def __billable(self, billable_type):
+        result = []
+        result.extend(billable_type.objects.filter(billed=self))
+        for ag in self.apartmentgroup_set.all():
+            result.extend(ag.__billable(billable_type))
+        return result
+        
+    
     def __init__(self, *args, **kwargs):       
         super(ApartmentGroup, self).__init__(*args, **kwargs) 
         self._old_unicode = self.__unicode__()
@@ -254,6 +223,10 @@ class ApartmentGroup(Entity):
         service.save()
     
     
+    def collecting_funds(self):
+        return self.__billable(CollectingFund)
+    
+        
     def display_dates(self, since, until):
         q = self.displaydate_set.filter(Q(timestamp__gt=since) & 
                                         Q(timestamp__lt=until))
@@ -312,16 +285,12 @@ class ApartmentGroup(Entity):
             del kwargs['type'] 
         super(ApartmentGroup, self).save(**kwargs)
         self._old_unicode = self.__unicode__()
-        
+    
     
     def services(self):
-        result = []
-        result.extend(self.service_set.all())
-        for ag in self.apartmentgroup_set.all():
-            result.extend(ag.services())
-        return result
+        return self.__billable(Service)
     
-    
+
     def services_without_invoice(self, month):
         begin = date(day=self.close_day, month=month.month, year=month.year)
         end = begin + relativedelta(months=1)
@@ -387,14 +356,6 @@ class Apartment(SingleAccountEntity):
     rented_to = models.ForeignKey(Person, related_name='rented_to',
                                   null=True, blank=True)
     rooms = models.SmallIntegerField(default=1)
-    
-    @classmethod
-    def for_account(cls, account):
-        logger.debug('Searching apartment for %s' % account)
-        try:
-            return Apartment.objects.get(account=account)
-        except Apartment.DoesNotExist:
-            return None
 
     def __init__(self, *args, **kwargs):       
         super(Apartment, self).__init__('apart', '3rd party', *args, **kwargs)
@@ -430,11 +391,7 @@ class Apartment(SingleAccountEntity):
         if penalties != None:
             amount = amount + penalties
         return {'amount' :-1 * amount}
-        
-    
-
      
-    
     # TODO test this as per https://trello.com/c/djqGiRgQ 
     def penalties(self, day=date.today()):
         penalties(self, day)
@@ -528,220 +485,30 @@ class Supplier(models.Model):
     def save(self, **kwargs):
         self.__update_archived()
         super(Supplier, self).save(**kwargs) 
+       
+
+class CollectingFund(Billable):
+    def charge_type(self):    
+        return 'collection'
     
-    
-class Service(SingleAccountEntity):
-    QUOTA_TYPES = (
-        ('equally', 'în mod egal'),
-        ('inhabitance', 'după număr persoane'),
-        ('area', 'după suprafață'),
-        ('rooms', 'după număr camere'),
-        ('consumption', 'după consum'),
-        ('manual', 'cotă indiviză'),
-        ('noquota', 'la fiecare introducere'),
-    )
-    SERVICE_TYPE = (
-        ('general', 'serviciu'),
-        ('collecting', 'colectare'),
-    )
-    
-    archived = models.BooleanField(default=False)
-    archive_date = models.DateTimeField(null=True, blank=True) 
-    billed = models.ForeignKey(ApartmentGroup)
-    quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)
-    service_type = models.CharField(max_length=10, choices=SERVICE_TYPE)
-    supplier = models.ForeignKey(Supplier, null=True, blank=True)
-    
-    @classmethod
-    def for_account(cls, account):
-        try:
-            return Service.objects.get(account=account)
-        except Service.DoesNotExist:
-            return None        
-   
-    def __init__(self, *args, **kwargs): 
-        super(Service, self).__init__('std', '3rd party', *args, **kwargs) 
-        try:
-            self._old_billed = self.billed
-        except:
-            self._old_billed = None
-        try:
-            self._old_quota_type = self.quota_type
-        except:
-            self._old_quota_type = None
-        self._old_archived = self.archived
-            
-    def __change_quotas(self):
-        if self.quota_type in ['noquota', 'consumption']:
-            return False
-        return self.quota_type == 'manual' or self._old_billed != self.billed \
-            or self._old_quota_type != self.quota_type
-    
-    def __change_billed(self):
-        return self._old_billed != self.billed and self._old_billed != None
-    
-    def __charge_type(self):
-        charge_type = 'invoice'
-        if self.service_type == 'collecting':
-            charge_type = 'collection'
-        return charge_type
-    
-    def __new_charge_with_quotas(self, amount, no, date):
-        accounts = [] 
-        for ap in self.billed.apartments():
-            accounts.append(ap.account)
-        self.account.new_charge(amount, date, no, self.billed.default_account,
-                                 accounts, self.__charge_type())
-        
-    def __new_charge_with_consumptions(self, amount, no, ap_consumptions,
-                                       consumption, date):
-        ops = []
-        db_ap_consumptions = []
-        declared = sum(ap_consumptions.values())
-        if declared > consumption:
-            raise NameError('Ceva e ciudat cu consumul declarat! E mai mare decat cel de pe document! ;) Declarat de locatari=' + str(declared))
-        per_unit = amount / consumption
-        logger.info('Declared consumption is %f, price per unit is %f' % 
-                    (declared, per_unit))
-        for k, v in ap_consumptions.items():
-            ap = Apartment.objects.get(pk=k)
-            total_ap = Decimal(v) / declared * amount
-            loss = total_ap - v * per_unit
-            logger.info('Consumption for %s is %f, total to pay %f, lost %f' % 
-                        (ap, v, total_ap, loss))
-            ops.append((ap.account, total_ap, loss))
-            db_ap_consumptions.append(ApartmentConsumption(consumed=v,
-                                                           apartment=ap))
-            
-        doc = self.account.new_multi_transfer(no, self.billed.default_account,
-                                        ops, date, self.__charge_type())
-        
-        svc_consumption = ServiceConsumption(consumed=consumption,
-                                             service=self, doc=doc)
-        
-        svc_consumption.save()
-        for ap_consumption in db_ap_consumptions:
-            ap_consumption.doc = doc
-            ap_consumption.save()
-        
-         
-    def __new_charge_without_quotas(self, ap_sums, no, date):
-        ops = []
-        for k, v in ap_sums.items():
-            ap = Apartment.objects.get(pk=k)
-            ops.append((ap.account, v))
-        self.account.new_multi_transfer(no, self.billed.default_account, ops,
-                                        date, self.__charge_type())
-        
-    def __unicode__(self):
-        return self.name
-    
-    def __update_archived(self):
-        if self.archived == False:
-            self.archive_date = None
-            return
-        if self.archived == self._old_archived:
-            return
-        self.archive_date = datetime.now()
-        
-    def __update_quotas(self, ap_quotas):
-        if ap_quotas != None and self.quota_type == 'manual':
-            self.set_manual_quota(ap_quotas)
-            return
-        self.set_quota()
-        
     def balance(self):
-        if self.service_type == 'general':
-            return super(Service, self).balance()
         received = self.account.received()
         transferred = self.account.transferred()
-        return received - transferred
-        
-    def building(self):
-        return self.billed.building() 
+        return received - transferred  
     
-    def can_delete(self):
-        return self.account.can_delete()
+     
+class Service(Billable):
+    supplier = models.ForeignKey('Supplier', null=True, blank=True) 
     
-    def initial_operation(self):
-        return {'amount': 0}
+    def charge_type(self):
+        return 'invoice'
     
-    def new_inbound_operation(self, amount, no, ap_sums=None,
-                        ap_consumptions=None, consumption=None,
-                        date=timezone.now()):
-        logger.info('new inbound op for %s amount=%f no=%s ap_sums=%s ap_consumptions=%s consumption=%s date=%s' % 
-                    (self, amount, no, ap_sums, ap_consumptions, consumption, date))
-        if ap_consumptions != None:
-            self.__new_charge_with_consumptions(amount, no, ap_consumptions,
-                                                consumption, date)
-        elif ap_sums != None: 
-            self.__new_charge_without_quotas(ap_sums, no, date)
-        else:
-            self.__new_charge_with_quotas(amount, no, date)
+    def balance(self):
+        return super(Billable, self).balance()
 
-    def delete(self):
-        if not self.can_delete():
-            raise ValueError('Cannot delete this service')
-        Quota.del_quota(self.account)
-        self.account.delete()
-        super(Service, self).delete()
-
-    def drop_quota(self):
-        logger.info('Pruning all quotas on %s', self)
-        Quota.del_quota(self.account)
-
-    def save(self, **kwargs):
-        ap_quotas = None
-        if 'ap_quotas' in kwargs.keys():
-            ap_quotas = kwargs['ap_quotas']
-            del kwargs['ap_quotas']
-        self.__update_archived()
-        
-        super(Service, self).save('std', **kwargs)
-       
-        if self.__change_billed() or self.__change_quotas() or \
-            self.quota_type in ['noquota', 'consumption']:
-            self.drop_quota()
-        if self.__change_quotas():
-            self.__update_quotas(ap_quotas)
-    
-    def set_manual_quota(self, ap_quotas):            
-        logger.info('Setting quota %s (%s) on %s', self.quota_type, ap_quotas,
-                     self)
-        if self.quota_type != 'manual':
-            logger.error('Quota type %s is invalid', self.quota_type)
-            raise NameError('Invalid quota type')
-        
-        for k, v in ap_quotas.items():
-            a = Apartment.objects.get(pk=k)
-            Quota.set_quota(self.account, a.account, v)
-    
-    def set_quota(self):
-        logger.info('Setting quota %s on %s', self.quota_type, self)
-        found = False
-        for qt in Service.QUOTA_TYPES:
-            if qt[0] == self.quota_type:
-                found = True
-        if self.quota_type == 'manual' or not found:
-            logger.error('Quota type %s is invalid', self.quota_type)
-            raise NameError('Invalid quota type')
-        
-        apartments = self.billed.apartments()
-        total = reduce(lambda t, a: t + a.weight(self.quota_type), apartments,
-                       0)
-        for a in apartments:
-            Quota.set_quota(self.account, a.account,
-                        Decimal(a.weight(self.quota_type)) / Decimal(total))
-
-    def to_collect(self):
-        charged = self.account.charged()
-        received = self.account.received()
-        return charged - received
-    
     def without_invoice(self, begin, end):
-        return self.service_type == 'general' and \
-            self.account.count_src_operations(begin, end) == 0
-
+        return self.account.count_src_operations(begin, end) == 0     
+     
 
 class ServiceConsumption(Consumption):
     service = models.ForeignKey(Service)

@@ -26,7 +26,8 @@ from django.db.models.query_utils import Q
 from django.forms.fields import DecimalField
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
-from habitam.entities.models import ApartmentGroup, Service, Supplier
+from habitam.entities.models import ApartmentGroup, Service, Supplier, \
+    CollectingFund
 from habitam.financial.models import Quota
 from habitam.ui.forms.fund import MONEY_TYPES
 import logging
@@ -34,28 +35,20 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class EditServiceForm(forms.ModelForm):
-    supplier = forms.ModelChoiceField(label='Furnizor', queryset=Supplier.objects.all())
+class EditBillableForm(forms.ModelForm):
     name = forms.CharField(label='Nume', max_length=100)
     billed = forms.ModelChoiceField(label='Clienți', queryset=ApartmentGroup.objects.all())
     quota_type = forms.ChoiceField(label='Distribuie costuri', choices=Service.QUOTA_TYPES)
     cmd = forms.CharField(initial='save', widget=forms.HiddenInput())
     archived = forms.BooleanField(label='Arhivat', required=False)
-
-    class Meta:
-        model = Service
-        fields = ('supplier', 'name', 'billed', 'quota_type', 'archived')
         
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
-        self.service_type = kwargs['service_type']
-        self.suppliers = kwargs['suppliers']
         del kwargs['building']
         del kwargs['user']
-        del kwargs['suppliers']
-        del kwargs['service_type']
+        del kwargs['user_license']
         
-        super(EditServiceForm, self).__init__(*args, **kwargs)
+        super(EditBillableForm, self).__init__(*args, **kwargs)
         
         if len(args) > 0:
             self.__init_manual_quotas__(args)
@@ -63,20 +56,10 @@ class EditServiceForm(forms.ModelForm):
             self.__init_db_quotas__(kwargs['instance'])
         
         self.fields['billed'].queryset = ApartmentGroup.objects.filter(Q(parent=building) | Q(pk=building.id))
-       
-        if self.suppliers == None or self.instance.pk != None:
-            del self.fields['supplier']
-        else:
-            self.fields['supplier'].queryset = self.suppliers
-        
-        if self.service_type == 'collecting':
-            self.fields['money_type'] = forms.ChoiceField(label='Tip bani',
-                                                choices=MONEY_TYPES)
         
         if self.instance.pk == None:
             del self.fields['archived']
         
-
     def __init_db_quotas__(self, service):
         if service.quota_type != 'manual':
             return
@@ -109,12 +92,9 @@ class EditServiceForm(forms.ModelForm):
             raise forms.ValidationError('Quotas do not sum to 1')
     
     def clean(self):
-        cleaned_data = super(EditServiceForm, self).clean()
+        cleaned_data = super(EditBillableForm, self).clean()
         if cleaned_data['quota_type'] == 'manual':
             self.__validate_manual_quota__(cleaned_data)
-        if self.instance.pk == None and self.suppliers != None and \
-            not 'supplier' in cleaned_data.keys():
-            raise forms.ValidationError('No supplier selected')
         return cleaned_data
     
     def manual_quotas(self):
@@ -136,4 +116,60 @@ class EditServiceForm(forms.ModelForm):
         if not NON_FIELD_ERRORS in self._errors:
             self._errors[NON_FIELD_ERRORS] = self.error_class()
         self._errors[NON_FIELD_ERRORS].append(error_message)
+
+
+class EditCollectingFundForm(EditBillableForm):
+    money_type = forms.ChoiceField(label='Tip bani', choices=MONEY_TYPES)
+    class Meta:
+        model = CollectingFund
+        fields = ('money_type', 'name', 'billed', 'quota_type', 'archived')    
     
+    @classmethod
+    def new_title(cls):
+        return 'Fond nou'
+    
+    @classmethod
+    def target(cls):
+        return 'collecting'
+    
+    @classmethod
+    def title(cls):
+        return 'Fond'
+    
+    
+class EditServiceForm(EditBillableForm):
+    supplier = forms.ModelChoiceField(label='Furnizor', queryset=Supplier.objects.all())
+
+    class Meta:
+        model = Service
+        fields = ('supplier', 'name', 'billed', 'quota_type', 'archived')
+        
+    def __init__(self, *args, **kwargs):
+        user_license = kwargs['user_license']
+        self.suppliers = user_license.suppliers.exclude(archived=True)
+        
+        super(EditServiceForm, self).__init__(*args, **kwargs)
+               
+        if self.suppliers == None or self.instance.pk != None:
+            del self.fields['supplier']
+        else:
+            self.fields['supplier'].queryset = self.suppliers 
+            
+    def clean(self):
+        cleaned_data = super(EditServiceForm, self).clean()
+        if self.instance.pk == None and not 'supplier' in cleaned_data.keys():
+            raise forms.ValidationError('No supplier selected')
+        cleaned_data['money_type'] = '3rd party'
+        return cleaned_data
+    
+    @classmethod
+    def new_title(cls):
+        return 'Serviciu nou'
+
+    @classmethod
+    def target(cls):
+        return 'general'
+    
+    @classmethod
+    def title(cls):
+        return 'Title'

@@ -22,7 +22,7 @@ Created on Apr 13, 2013
 
 from django.contrib import admin
 from habitam.entities.models import ApartmentGroup, Apartment, Person, Service, \
-    ServiceConsumption, ApartmentConsumption, DisplayDate, Supplier
+    ServiceConsumption, ApartmentConsumption, DisplayDate, Supplier, CollectingFund
 
 class ApartmentGroupAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'type', 'parent')
@@ -33,6 +33,9 @@ class ApartmentAdmin(admin.ModelAdmin):
 class ApartmentConsumptionAdmin(admin.ModelAdmin):
     list_display = ('apartment', 'doc', 'consumed')
 
+class CollectingFundAdmin(admin.ModelAdmin):
+    list_display = ('name', 'billed', 'quota_type', 'archived', 'archive_date')
+    
 class DisplayDateAdmin(admin.ModelAdmin):
     list_display = ('building', 'month', 'timestamp')
      
@@ -40,7 +43,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'service_type', 'billed', 'quota_type', 'archived', 'archive_date')
+    list_display = ('name', 'billed', 'quota_type', 'archived', 'archive_date')
     
 class ServiceConsumptionAdmin(admin.ModelAdmin):
     list_display = ('service', 'doc', 'consumed')
@@ -51,6 +54,7 @@ class SupplierAdmin(admin.ModelAdmin):
 admin.site.register(ApartmentGroup, ApartmentGroupAdmin)
 admin.site.register(Apartment, ApartmentAdmin)
 admin.site.register(ApartmentConsumption, ApartmentConsumptionAdmin)
+admin.site.register(CollectingFund, CollectingFundAdmin)
 admin.site.register(DisplayDate, DisplayDateAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Service, ServiceAdmin)

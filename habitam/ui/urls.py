@@ -22,11 +22,13 @@ Created on Apr 12, 2013
 from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person, \
-    Supplier
+    Supplier, CollectingFund
 from habitam.financial.models import Account
-from habitam.ui import views, service_views
+from habitam.ui import views, billable_views
 from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm, \
     NewApartmentPayment
+from habitam.ui.forms.billable_edit_form import EditServiceForm, \
+    EditCollectingFundForm
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
 from habitam.ui.forms.fund import NewFundTransfer, EditAccountForm
 from habitam.ui.forms.service_new_invoice import NewServiceInvoice
@@ -114,8 +116,8 @@ urlpatterns = patterns('',
         {'tab': 'service_list', 'show_all': True}, name='all_service_list'),
     
     url(r'^buildings/(?P<building_id>\d+)/services/new$',
-        service_views.new_service, {'service_type': 'general'},
-        name='new_service_general'),
+        billable_views.new_billable, {'form_class': EditServiceForm},
+        name='new_billable_general'),
     
     url(r'^buildings/(?P<building_id>\d+)/funds$', views.building_tab, {'tab': 'fund_list'}, name='fund_list'),
 
@@ -135,20 +137,25 @@ urlpatterns = patterns('',
         name='all_collecting_fund_list'),
 
     url(r'^buildings/(?P<building_id>\d+)/collecting_funds/new$',
-        service_views.new_service, {'service_type': 'collecting'},
-        name='new_service_collecting'),
+        billable_views.new_billable, {'form_class': EditCollectingFundForm},
+        name='new_billable_collecting'),
+                       
+    url(r'^collecting_funds/(?P<entity_id>\d+)/edit$',
+        billable_views.edit_billable, {'form_class': EditCollectingFundForm},
+        name='edit_billable_collecting'),
 
     url(r'^buildings/(?P<building_id>\d+)/list/(?P<month>\d{4}-\d{2})?$',
         views.download_list, name='download_list'),
     
     url(r'^collecting_funds/(?P<entity_id>\d+)/collection/new$',
         views.new_inbound_operation,
-        {'entity_cls': Service, 'form_cls': NewServiceInvoice,
-         'target': 'new_invoice', 'title': 'Colectare pentru'},
+        {'entity_cls': CollectingFund, 'form_cls': NewServiceInvoice,
+         'target': 'new_collection', 'title': 'Colectare pentru'},
         name='new_collection'),
 
-    url(r'^services/(?P<entity_id>\d+)/edit$', service_views.edit_service,
-        name='edit_service'),
+    url(r'^services/(?P<entity_id>\d+)/edit$', 
+        billable_views.edit_billable, {'form_class': EditServiceForm},
+        name='edit_billable_general'),
     
     url(r'^services/(?P<entity_id>\d+)/invoices/new$',
         views.new_inbound_operation,

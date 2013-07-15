@@ -14,10 +14,10 @@
 	<tbody>
 		{% for service in building.services %}
 		{% valid_timestamp service.archive_date user.administrator.license as valid %}
-		{% if service.service_type == 'general' and valid %}
+		{% if valid %}
 		{% if show_all or not service.archived %}
 			<tr>
-				<td {% if service.archived %}class="archived"{% endif %}><a href="javascript:editDialog('{% url 'edit_service' entity_id=service.id %}')">{{ service }}</a></td>
+				<td {% if service.archived %}class="archived"{% endif %}><a href="javascript:editDialog('{% url 'edit_billable_general' entity_id=service.id %}')">{{ service }}</a></td>
 				<td {% if service.archived %}class="archived"{% endif %}>{{ service.billed }}</td>
 				<td class="{% if service.archived %}archived {% endif %}{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=service.account.id %}">{{ service.balance|floatformat:2 }}</a></td>
 				<td {% if service.archived %}class="archived"{% endif %}>
@@ -28,7 +28,7 @@
 					</div>
 					{% endif %}
 					<div class="btn-group">
-					    {% if service.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_service' entity_id=service.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
+					    {% if service.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_billable_general' entity_id=service.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
 					</div>
 				</td>
 			</tr>
@@ -42,7 +42,7 @@
 		<a href="{% if show_all %}{% url 'service_list' building.id %}{% else %}{% url 'all_service_list' building.id %}{% endif %}" class="btn{% if show_all %} active{% endif %}">Toate serviciile</a>
 		{% with license=user.administrator.license %}
 		{% if license.available_suppliers %}
-		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_service_general' building.id %}')">Serviciu nou</button>
+		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_billable_general' building.id %}')">Serviciu nou</button>
 		{% endif %}
 		{% endwith %}
 	</div>

@@ -30,8 +30,9 @@ from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.utils.decorators import decorator_from_middleware
 from habitam.downloads.display_list import download_display_list
+from habitam.entities.accessor import entity_for_account
 from habitam.entities.models import ApartmentGroup, Apartment, Service, \
-    AccountLink
+    AccountLink, CollectingFund
 from habitam.financial.models import Account, OperationDoc
 from habitam.ui.forms.building import NewBuildingForm
 from habitam.ui.license_filter import LicenseFilter
@@ -157,15 +158,15 @@ def operation_list(request, building_id, account_id, month=None):
     initial_penalties, final_penalties = None, None
     src_exclude = None
     
-    apartment = Apartment.for_account(account)
+    apartment = entity_for_account(Apartment, account)
     # TODO(Stefan) there's logic put in the view, this is uncool
     if apartment != None:
         initial_penalties = apartment.penalties(month)
         final_penalties = apartment.penalties(month_end)
         src_exclude = Q(dest=apartment.building().penalties_account)
         
-    service = Service.for_account(account)
-    if service != None and service.service_type == 'collecting':
+    service = entity_for_account(CollectingFund, account)
+    if service != None:
         src_exclude = Q(doc__type='collection')
         
     initial = account.balance(month, src_exclude)

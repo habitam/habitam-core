@@ -85,11 +85,10 @@ class NewFundTransfer(NewDocPaymentForm):
         qparent = Q(accountlink__holder__parent=building)
         qbuilding_accounts = Q(qdirect | qparent)
         
-        qbilled_direct = Q(service__billed=building)
-        qbilled_parent = Q(service__billed__parent=building)
-        qcollecting = Q(Q(service__service_type='collecting') & 
-                             Q(qbilled_direct | qbilled_parent))
-        qnotarchived = Q(~Q(service__archived=True) & qcollecting)
+        qbilled_direct = Q(collectingfund__billed=building)
+        qbilled_parent = Q(collectingfund__billed__parent=building)
+        qbilled = Q(qbilled_direct | qbilled_parent)
+        qnotarchived = Q(~Q(service__archived=True) & qbilled)
         
         queryset = Account.objects.filter(Q(qbuilding_accounts | qnotarchived))
         queryset = queryset.exclude(pk=account.id)
