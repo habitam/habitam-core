@@ -85,7 +85,10 @@ class Account(models.Model):
     TYPES = (
         ('apart', 'apartment'),
         ('std', 'standard'),
-        ('penalties', 'penalties')
+        ('penalties', 'penalties'),
+        ('repairs', 'repairs'),
+        ('rulment', 'rulment'),
+        ('special', 'special'),
     )
     money_type = models.CharField(default='cash', max_length=10,
                                   choices=MONEY_TYPES)
@@ -100,8 +103,11 @@ class Account(models.Model):
             pass
         
     def __unicode__(self):
-        if self.type == 'penalties':
-            return self.name + ' (penalitati)'
+        if self.type in ['apart', 'std']:
+            return self.name
+        for t in Account.TYPES:
+            if t[0] == self.type:
+                return self.name + ' (' + t[1] + ')'
         return self.name
     
     def __source_amount(self, query, month):

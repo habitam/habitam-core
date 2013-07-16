@@ -28,13 +28,14 @@ from habitam.ui.license_filter import LicenseFilter
 
 
 def __save_service(request, form):
-    service = form.save(commit=False)
+    billable = form.save(commit=False)
     ap_quotas = form.manual_quotas()
     kwargs = {}
     if ap_quotas != None:
         kwargs['ap_quotas'] = ap_quotas
     kwargs['money_type'] = form.cleaned_data['money_type']
-    service.save(**kwargs)
+    kwargs['account_type'] = form.cleaned_data['account_type']
+    billable.save(**kwargs)
     return render(request, 'edit_ok.html')
 
 

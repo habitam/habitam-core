@@ -63,6 +63,9 @@ class SingleAccountEntity(Entity):
                                                   type=account_type,
                                                   money_type=money_type)
         
-        self.account.name = self.name     
+        self.account.name = self.name
+        self.account.type = account_type
+        self.account.money_type = money_type
+        self.account.save(**kwargs)   
         super(SingleAccountEntity, self).save(**kwargs)
 

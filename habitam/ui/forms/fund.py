@@ -33,13 +33,20 @@ MONEY_TYPES = (
     ('cash', 'bani lichizi'),
     ('bank', 'bancă')
 )
+TYPES = (
+    ('std', 'standard'),
+    ('repairs', 'repairs'),
+    ('rulment', 'rulment'),
+    ('special', 'special'),
+)
 
 class EditAccountForm(forms.ModelForm):
     money_type = forms.ChoiceField(label='Tip bani', choices=MONEY_TYPES)
+    type = forms.ChoiceField(label='Tip', choices=TYPES)
     
     class Meta:
         model = Account
-        fields = ('name', 'money_type')
+        fields = ('name', 'type', 'money_type')
     
     def __init__(self, *args, **kwargs):
         if 'building' in kwargs.keys():

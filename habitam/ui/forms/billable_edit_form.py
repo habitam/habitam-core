@@ -29,7 +29,7 @@ from django.forms.util import ErrorDict
 from habitam.entities.models import ApartmentGroup, Service, Supplier, \
     CollectingFund
 from habitam.financial.models import Quota
-from habitam.ui.forms.fund import MONEY_TYPES
+from habitam.ui.forms.fund import MONEY_TYPES, TYPES
 import logging
 
 
@@ -120,9 +120,11 @@ class EditBillableForm(forms.ModelForm):
 
 class EditCollectingFundForm(EditBillableForm):
     money_type = forms.ChoiceField(label='Tip bani', choices=MONEY_TYPES)
+    account_type = forms.ChoiceField(label='Tip', choices=TYPES)
+    
     class Meta:
         model = CollectingFund
-        fields = ('money_type', 'name', 'billed', 'quota_type', 'archived')    
+        fields = ('name', 'account_type', 'money_type', 'billed', 'quota_type', 'archived')    
     
     @classmethod
     def new_title(cls):
@@ -136,6 +138,10 @@ class EditCollectingFundForm(EditBillableForm):
     def title(cls):
         return 'Fond'
     
+    def __init__(self, *args, **kwargs):
+        super(EditCollectingFundForm, self).__init__(*args, **kwargs)
+        self.fields['money_type'].initial = self.instance.account.money_type
+        self.fields['account_type'].initial = self.instance.account.type
     
 class EditServiceForm(EditBillableForm):
     supplier = forms.ModelChoiceField(label='Furnizor', queryset=Supplier.objects.all())
@@ -160,6 +166,7 @@ class EditServiceForm(EditBillableForm):
         if self.instance.pk == None and not 'supplier' in cleaned_data.keys():
             raise forms.ValidationError('No supplier selected')
         cleaned_data['money_type'] = '3rd party'
+        cleaned_data['account_type'] = 'std'
         return cleaned_data
     
     @classmethod

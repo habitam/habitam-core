@@ -171,7 +171,7 @@ class Billable(SingleAccountEntity):
             del kwargs['ap_quotas']
         self.__update_archived()
         
-        super(Billable, self).save('std', **kwargs)
+        super(Billable, self).save(**kwargs)
        
         if self.__change_billed() or self.__change_quotas() or \
             self.quota_type in ['noquota', 'consumption']:

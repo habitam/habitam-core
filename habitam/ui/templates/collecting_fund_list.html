@@ -6,6 +6,8 @@
 	<thead>
 		<tr>
 			<th>Nume</th>
+			<th>Tip</th>
+			<th>Tip bani</th>			
 			<th>Colectare de la</th>
 			<th>De colectat</th>
 			<th>Balanță</th>
@@ -19,6 +21,8 @@
 		{% if show_all or not service.archived %}
 			<tr>
 				<td {% if service.archived %}class="archived"{% endif %}><a href="javascript:editDialog('{% url 'edit_billable_collecting' entity_id=service.id %}')">{{ service }}</a></td>
+				<td {% if service.archived %}class="archived"{% endif %}>{{ service.account.type }}</td>				
+				<td {% if service.archived %}class="archived"{% endif %}>{{ service.account.money_type }}</td>
 				<td {% if service.archived %}class="archived"{% endif %}>{{ service.billed }}</td>
 				<td class="{% if service.archived %}archived {% endif %}{% if service.to_collect > 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=service.account.id %}">{{ service.to_collect|floatformat:2 }}</a></td>
 				<td class="{% if service.archived %}archived {% endif %}{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=service.account.id %}">{{ service.balance|floatformat:2 }}</a></td>
