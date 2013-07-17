@@ -57,6 +57,8 @@ class SingleAccountEntity(Entity):
     def save(self, account_type, money_type, **kwargs):
         try:
             self.account.name = self.__unicode__()
+            self.account.type = account_type
+            self.account.money_type = money_type
             self.account.save()
         except Account.DoesNotExist:
             self.account = Account.objects.create(name=self.__unicode__(),
@@ -65,7 +67,6 @@ class SingleAccountEntity(Entity):
         
         self.account.name = self.name
         self.account.type = account_type
-        self.account.money_type = money_type
-        self.account.save(**kwargs)   
+        self.account.money_type = money_type        
         super(SingleAccountEntity, self).save(**kwargs)
 
