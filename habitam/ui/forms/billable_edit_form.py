@@ -140,8 +140,11 @@ class EditCollectingFundForm(EditBillableForm):
     
     def __init__(self, *args, **kwargs):
         super(EditCollectingFundForm, self).__init__(*args, **kwargs)
-        self.fields['money_type'].initial = self.instance.account.money_type
-        self.fields['account_type'].initial = self.instance.account.type
+        try:
+            self.fields['money_type'].initial = self.instance.account.money_type
+            self.fields['account_type'].initial = self.instance.account.type
+        except:
+            pass
     
 class EditServiceForm(EditBillableForm):
     supplier = forms.ModelChoiceField(label='Furnizor', queryset=Supplier.objects.all())

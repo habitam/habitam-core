@@ -47,7 +47,10 @@ class Billable(SingleAccountEntity):
     archive_date = models.DateTimeField(null=True, blank=True) 
     billed = models.ForeignKey('ApartmentGroup')
     quota_type = models.CharField(max_length=15, choices=QUOTA_TYPES)    
-   
+    
+    class Meta:
+        abstract = True
+        
     def __init__(self, *args, **kwargs): 
         super(Billable, self).__init__('std', '3rd party', *args, **kwargs) 
         try:

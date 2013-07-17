@@ -346,8 +346,8 @@ def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
         account_link = AccountLink.objects.get(account=src_account)
         building = account_link.holder.building()
     except AccountLink.DoesNotExist:
-        service = Service.objects.get(account=src_account)
-        building = service.building()
+        collecting_fund = CollectingFund.objects.get(account=src_account)
+        building = collecting_fund.building()
     
     if request.method == 'POST':
         form = form_cls(request.POST, account=src_account,
