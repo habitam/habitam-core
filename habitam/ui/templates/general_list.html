@@ -8,6 +8,7 @@
 <table class="table table-hover table-condensed">
 	<tbody>
 		{% for entity in entities %}
+		{% if not entity.show_all %}
 		{% if show_all or not entity.archived %}
 		<tr>
 			<td {% if entity.archived %}class="archived"{% endif %}><a href="{% url entity_view_name entity.id %}">{{ entity }}</a></td>
@@ -18,6 +19,7 @@
 				</div>
 			</td>
 		</tr>
+		{% endif %}
 		{% endif %}
 		{% endfor %}
 	</tbody>

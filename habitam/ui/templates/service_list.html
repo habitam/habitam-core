@@ -16,6 +16,7 @@
 		{% valid_timestamp service.archive_date user.administrator.license as valid %}
 		{% if valid %}
 		{% if show_all or not service.archived %}
+		{% if not service.one_time %}
 			<tr>
 				<td {% if service.archived %}class="archived"{% endif %}><a href="javascript:editDialog('{% url 'edit_billable_general' entity_id=service.id %}')">{{ service }}</a></td>
 				<td {% if service.archived %}class="archived"{% endif %}>{{ service.billed }}</td>
@@ -32,6 +33,7 @@
 					</div>
 				</td>
 			</tr>
+		{% endif %}
 		{% endif %}
 		{% endif %}
 		{% endfor %}

@@ -155,7 +155,7 @@ class EditServiceForm(EditBillableForm):
         
     def __init__(self, *args, **kwargs):
         user_license = kwargs['user_license']
-        self.suppliers = user_license.suppliers.exclude(archived=True)
+        self.suppliers = user_license.suppliers.exclude(archived=True).exclude(one_time=True)
         
         super(EditServiceForm, self).__init__(*args, **kwargs)
                

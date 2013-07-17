@@ -30,6 +30,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class NewOtherServicePayment(NewDocPaymentForm):
+    supplier = forms.CharField(label='Furnizor')
+    service = forms.CharField(label='Serviciu', max_length=100)
+    
+    def __init__(self, *args, **kwargs):
+        del kwargs['building']
+        del kwargs['account']
+        del kwargs['user']
+        super(NewOtherServicePayment, self).__init__(*args, **kwargs)
+        
+        
 class NewServicePayment(NewDocPaymentForm):
     dest_account = forms.ModelChoiceField(label='Serviciu',
                             queryset=Account.objects.all())
@@ -45,7 +56,7 @@ class NewServicePayment(NewDocPaymentForm):
         qbilled_parent = Q(service__billed__parent=building)
         qgeneric_service = Q(Q(qbilled_direct | qbilled_parent))
         qnotarchived = Q(~Q(service__archived=True) & qgeneric_service)
+        qnotonetime = Q(~Q(service__one_time=True) & qnotarchived)
         
-        queryset = Account.objects.filter(qnotarchived)
+        queryset = Account.objects.filter(qnotonetime)
         self.fields['dest_account'].queryset = queryset
-

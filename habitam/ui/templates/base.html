@@ -72,7 +72,7 @@
 					        	<li><a href="{% url 'suppliers' %}">Toți furnizorii</a></li>
 				            	<li class="divider"></li>
 				            	{% for supplier in license.available_suppliers %}
-				            	{% if not supplier.archived %}
+				            	{% if not supplier.archived and not supplier.one_time %}
 				            		<li><a href="{% url 'supplier_view' supplier.id %}">{{ supplier.name }}</a>
 				            	{% endif %}	
 				            	{% endfor %}

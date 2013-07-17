@@ -32,7 +32,8 @@ from habitam.ui.forms.billable_edit_form import EditServiceForm, \
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
 from habitam.ui.forms.fund import NewFundTransfer, EditAccountForm
 from habitam.ui.forms.service_new_invoice import NewServiceInvoice
-from habitam.ui.forms.service_new_payment import NewServicePayment
+from habitam.ui.forms.service_new_payment import NewServicePayment, \
+    NewOtherServicePayment
 from habitam.ui.forms.supplier import EditSupplierForm
 
 
@@ -182,14 +183,21 @@ urlpatterns = patterns('',
                        
     url(r'^accounts/(?P<account_id>\d+)/operations/pay_service$',
         views.new_transfer,
-        {'form_cls': NewServicePayment, 'form_dest_key': 'service',
-         'target': 'new_service_payment', 'title': 'Plateste de la'},
+        {'form_cls': NewServicePayment, 'target': 'new_service_payment',
+         'title': 'Plateste de la'},
         name='new_service_payment'),
+
+    url(r'^accounts/(?P<account_id>\d+)/operations/pay_other_service$',
+        views.new_transfer,
+        {'form_cls': NewOtherServicePayment,
+         'target': 'new_other_service_payment',
+         'title': 'Plateste tert de la'},
+        name='new_other_service_payment'),                       
     
     url(r'^accounts/(?P<account_id>\d+)/operations/transfer$',
         views.new_transfer,
-        {'form_cls': NewFundTransfer, 'form_dest_key': 'dest_link',
-         'target': 'new_fund_transfer', 'title': 'Transfer de la'},
+        {'form_cls': NewFundTransfer, 'target': 'new_fund_transfer',
+         'title': 'Transfer de la'},
         name='new_fund_transfer'),
                        
     url(r'^owners/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,

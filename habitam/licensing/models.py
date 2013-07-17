@@ -67,6 +67,7 @@ class License(models.Model):
     
     def available_suppliers(self):
         q = Q(~Q(archived=True) | Q(archive_date__gt=self.__latest()))
+        q = Q(q & ~Q(one_time=True))
         return self.suppliers.filter(q)
 
     def usage_ratio(self):

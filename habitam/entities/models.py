@@ -448,6 +448,7 @@ class Supplier(models.Model):
     archived = models.BooleanField(default=False)
     archive_date = models.DateTimeField(null=True, blank=True) 
     name = models.CharField(max_length=200)
+    one_time = models.BooleanField(default=False)
    
     @classmethod
     def can_add(cls, user_license):
@@ -499,6 +500,7 @@ class CollectingFund(Billable):
      
 class Service(Billable):
     supplier = models.ForeignKey('Supplier', null=True, blank=True) 
+    one_time = models.BooleanField(default=False)
     
     def charge_type(self):
         return 'invoice'

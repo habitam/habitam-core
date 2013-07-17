@@ -31,16 +31,32 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import decorator_from_middleware
 from habitam.downloads.display_list import download_display_list
 from habitam.entities.accessor import entity_for_account, building_for_account
-from habitam.entities.models import ApartmentGroup, Apartment, Service, \
-    AccountLink, CollectingFund
+from habitam.entities.models import ApartmentGroup, Apartment, AccountLink, \
+    CollectingFund, Supplier, Service
 from habitam.financial.models import Account, OperationDoc
 from habitam.ui.forms.building import NewBuildingForm
+from habitam.ui.forms.service_new_payment import NewServicePayment
 from habitam.ui.license_filter import LicenseFilter
 import logging
 
 
 logger = logging.getLogger(__name__)
 
+
+# TODO stef: there's business logic here
+def __transfer_data(building, form):
+    if type(form) == NewServicePayment:
+        form.cleaned_data
+    supplier = Supplier.objects.create(name=form.cleaned_data['supplier'],
+                                       one_time=True)
+    service = Service(name=form.cleaned_data['service'], billed=building,
+                      supplier=supplier, one_time=True,)
+    service.save(account_type='std', money_type='3rd party')
+    del form.cleaned_data['supplier']
+    del form.cleaned_data['service']
+    form.cleaned_data['dest_account'] = service.account
+    return form.cleaned_data
+    
 
 @login_required
 @decorator_from_middleware(LicenseFilter)
@@ -340,7 +356,7 @@ def new_simple_entity(request, entity_cls, form_cls, target,
 
 @login_required
 @decorator_from_middleware(LicenseFilter)
-def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
+def new_transfer(request, account_id, form_cls, target, title):
     src_account = Account.objects.get(pk=account_id)
     try:
         account_link = AccountLink.objects.get(account=src_account)
@@ -354,7 +370,8 @@ def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
                                user=request.user, building=building)
         if form.is_valid():
             try:
-                src_account.new_transfer(**form.cleaned_data)
+                data = __transfer_data(building, form)
+                src_account.new_transfer(**data)
                 return render(request, 'edit_ok.html')
             # TODO @iia catch by different exceptions
             except Exception as e:
