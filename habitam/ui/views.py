@@ -62,7 +62,8 @@ def new_building(request):
                 return render(request, 'edit_redirect.html', data)
             # TODO @iia catch by different exceptions
             except Exception as e:
-                data = {'form': form, 'target': 'new_building', 'title': 'Cladire noua'}  
+                data = {'form': form, 'target': 'new_building', 'title': 'Cladire noua'}
+                logger.exception('Cannot save new building')  
                 form.add_form_error(e)
                 return render(request, 'edit_dialog.html', data)
     else:
@@ -191,6 +192,7 @@ def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'
             except Exception as e:
                 data = {'form': form, 'target': target, 'entity_id': entity_id,
                             'building': building, 'title': title + ' ' + entity.name} 
+                logger.exception('Cannot save entity')
                 form.add_form_error(e)
 
                 return render(request, 'edit_dialog.html', data)
@@ -225,6 +227,7 @@ def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='
             except Exception as e:
                 data = {'form': form, 'target': target, 'entity_id': entity_id,
                         'title': title + ' ' + entity.name}
+                logger.exception('Cannot save entity')
                 form.add_form_error(e)
 
                 return render(request, 'edit_dialog.html', data)
@@ -270,6 +273,7 @@ def new_building_entity(request, building_id, form_cls, target,
             except Exception as e:
                 data = {'form': form, 'target': target, 'parent_id': building_id,
                         'building': building, 'title': title}
+                logger.exception('Cannot save building entity')
                 form.add_form_error(e)
 
                 return render(request, 'edit_dialog.html', data)
@@ -295,6 +299,7 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
             except Exception as e:
                 data = {'form': form, 'target': target, 'parent_id': entity_id,
                         'building': building, 'title': title + ' ' + entity.name}
+                logger.exception('Cannot save inbound operation')
                 form.add_form_error(e)
                 return render(request, 'edit_dialog.html', data)
             return render(request, 'edit_ok.html')
@@ -324,6 +329,7 @@ def new_simple_entity(request, entity_cls, form_cls, target,
             # TODO @iia catch by different exceptions
             except Exception as e:
                 data = {'form': form, 'target': target, 'title': title}
+                logger.exception('Cannot save entity')
                 form.add_form_error(e)
                 return render(request, 'edit_dialog.html', data)
     else:
@@ -355,6 +361,7 @@ def new_transfer(request, account_id, form_cls, form_dest_key, target, title):
                 data = {'form' : form, 'target': target, 'entity_id': account_id,
                         'building': building,
                         'title': title + ' ' + src_account.name}
+                logger.exception('Cannot save transfer')
                 form.add_form_error(e)
                 return render(request, 'edit_dialog.html', data)
     else:
