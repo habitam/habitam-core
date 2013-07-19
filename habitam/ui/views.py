@@ -29,6 +29,7 @@ from django.db.models.query_utils import Q
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.utils.decorators import decorator_from_middleware
+from habitam.downloads import register
 from habitam.downloads.display_list import download_display_list
 from habitam.entities.accessor import entity_for_account, building_for_account
 from habitam.entities.models import ApartmentGroup, Apartment, AccountLink, \
@@ -37,10 +38,21 @@ from habitam.financial.models import Account, OperationDoc
 from habitam.ui.forms.building import NewBuildingForm
 from habitam.ui.forms.service_new_payment import NewServicePayment
 from habitam.ui.license_filter import LicenseFilter
+import calendar
 import logging
 
 
 logger = logging.getLogger(__name__)
+
+
+def __pdf_response(building, month, name, f):
+    wrapper = FileWrapper(f)
+    response = HttpResponse(wrapper, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=' + name + building.name + '_' + month + '.pdf'
+    response['Content-Length'] = f.tell()
+    f.seek(0)
+    
+    return response
 
 
 # TODO stef: there's business logic here
@@ -95,6 +107,7 @@ def building_tab(request, building_id, tab, show_all=False):
     data = {'building': building, 'active_tab': tab, 'show_all': show_all}
     return render(request, tab + '.html', data)  
 
+
 @login_required
 @decorator_from_middleware(LicenseFilter)
 def download_list(request, building_id, month):
@@ -108,13 +121,26 @@ def download_list(request, building_id, month):
     building.mark_display(begin_ts) 
 
     temp = download_display_list(building, begin_ts, end_ts)
+    return __pdf_response(building, month, 'lista', temp)
+
+
+@login_required
+@decorator_from_middleware(LicenseFilter)
+def download_register(request, building_id, month):
+    building = ApartmentGroup.objects.get(pk=building_id)
+    if month == None:
+        day = date.today()
+    else:
+        day = datetime.strptime(month + '-01', '%Y-%m-%d').date()
+        last = calendar.monthrange(day.year, day.month)[1]
+        day = date(year=day.year, month=day.month, day=last)
+   
+    l = request.user.administrator.license
+    l.validate_month(building, day)
     
-    wrapper = FileWrapper(temp)
-    response = HttpResponse(wrapper, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename=lista' + building.name + '_' + month + '.pdf'
-    response['Content-Length'] = temp.tell()
-    temp.seek(0)
-    return response
+    temp = register.download_register(building, day)
+    return __pdf_response(building, month, 'registru', temp)
+
 
 @login_required
 @decorator_from_middleware(LicenseFilter)

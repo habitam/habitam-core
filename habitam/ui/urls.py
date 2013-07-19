@@ -147,7 +147,10 @@ urlpatterns = patterns('',
 
     url(r'^buildings/(?P<building_id>\d+)/list/(?P<month>\d{4}-\d{2})?$',
         views.download_list, name='download_list'),
-    
+
+    url(r'^buildings/(?P<building_id>\d+)/register/(?P<month>\d{4}-\d{2})?$',
+        views.download_register, name='download_register'),
+                           
     url(r'^collecting_funds/(?P<entity_id>\d+)/collection/new$',
         views.new_inbound_operation,
         {'entity_cls': CollectingFund, 'form_cls': NewServiceInvoice,

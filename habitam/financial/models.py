@@ -62,6 +62,9 @@ class OperationDoc(models.Model):
     @classmethod
     def delete_doc(cls, op_id):
         OperationDoc.objects.get(pk=op_id).delete()
+        
+    def __unicode__(self):
+        return self.no
     
     def penalties(self):
         penalty_ops = self.operation_set.filter(dest__type='penalties').aggregate(total_amount=Sum('amount'))
