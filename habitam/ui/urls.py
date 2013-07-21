@@ -21,6 +21,7 @@ Created on Apr 12, 2013
 '''
 from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
+from habitam.downloads import register
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person, \
     Supplier, CollectingFund
 from habitam.financial.models import Account
@@ -149,7 +150,9 @@ urlpatterns = patterns('',
         views.download_list, name='download_list'),
 
     url(r'^buildings/(?P<building_id>\d+)/register/(?P<month>\d{4}-\d{2})?$',
-        views.download_register, name='download_register'),
+        views.download_report,
+        {'name': 'registru', 'generator': register.download_register},
+        name='download_register'),
                            
     url(r'^collecting_funds/(?P<entity_id>\d+)/collection/new$',
         views.new_inbound_operation,
@@ -157,7 +160,7 @@ urlpatterns = patterns('',
          'target': 'new_collection', 'title': 'Colectare pentru'},
         name='new_collection'),
 
-    url(r'^services/(?P<entity_id>\d+)/edit$', 
+    url(r'^services/(?P<entity_id>\d+)/edit$',
         billable_views.edit_billable, {'form_class': EditServiceForm},
         name='edit_billable_general'),
     
@@ -195,7 +198,7 @@ urlpatterns = patterns('',
         {'form_cls': NewOtherServicePayment,
          'target': 'new_other_service_payment',
          'title': 'Plateste tert de la'},
-        name='new_other_service_payment'),                       
+        name='new_other_service_payment'),
     
     url(r'^accounts/(?P<account_id>\d+)/operations/transfer$',
         views.new_transfer,

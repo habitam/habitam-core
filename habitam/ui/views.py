@@ -29,7 +29,6 @@ from django.db.models.query_utils import Q
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.utils.decorators import decorator_from_middleware
-from habitam.downloads import register
 from habitam.downloads.display_list import download_display_list
 from habitam.entities.accessor import entity_for_account, building_for_account
 from habitam.entities.models import ApartmentGroup, Apartment, AccountLink, \
@@ -126,7 +125,7 @@ def download_list(request, building_id, month):
 
 @login_required
 @decorator_from_middleware(LicenseFilter)
-def download_register(request, building_id, month):
+def download_report(request, generator, name, building_id, month):
     building = ApartmentGroup.objects.get(pk=building_id)
     if month == None:
         day = date.today()
@@ -138,8 +137,8 @@ def download_register(request, building_id, month):
     l = request.user.administrator.license
     l.validate_month(building, day)
     
-    temp = register.download_register(building, day)
-    return __pdf_response(building, month, 'registru', temp)
+    temp = generator(building, day)
+    return __pdf_response(building, month, name, temp)
 
 
 @login_required
