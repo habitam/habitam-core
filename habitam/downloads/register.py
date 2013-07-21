@@ -59,11 +59,10 @@ def __register(building, d, initial_balance):
 
 def download_register(building, day):
     d = date(day.year, day.month, 1)
-    logger.debug('Downloading register %s - %s' % (d, day))
     
     day_before = d - relativedelta(days=1)
     initial_balance = __balance(building, day_before)
-    data = {}
+    data = {'day': day}
     while d <= day:
         data[d], initial_balance = __register(building, d, initial_balance)
         d = d + relativedelta(days=1)
