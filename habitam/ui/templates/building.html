@@ -9,6 +9,15 @@
 			{% with license=user.administrator.license %}
 			{% available_list_months building user.administrator.license as alm %}
 			<div class="btn-group">
+				<a class="btn" href="{% url 'download_balance' building_id=building.id %}">Sold</a>
+				<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+  				<ul class="dropdown-menu">
+				{% for m in alm %}
+					<li><a href="{% url 'download_balance' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
+				{% endfor %}
+  				</ul>
+			</div>
+			<div class="btn-group">
 				<a class="btn" href="{% url 'download_register' building_id=building.id %}">Registru</a>
 				<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
   				<ul class="dropdown-menu">

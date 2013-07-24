@@ -21,7 +21,7 @@ Created on Apr 12, 2013
 '''
 from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
-from habitam.downloads import register
+from habitam.downloads import register, balance
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person, \
     Supplier, CollectingFund
 from habitam.financial.models import Account
@@ -145,6 +145,11 @@ urlpatterns = patterns('',
     url(r'^collecting_funds/(?P<entity_id>\d+)/edit$',
         billable_views.edit_billable, {'form_class': EditCollectingFundForm},
         name='edit_billable_collecting'),
+
+    url(r'^buildings/(?P<building_id>\d+)/balance/(?P<month>\d{4}-\d{2})?$',
+        views.download_report,
+        {'name': 'solduri', 'generator': balance.download_balance},
+        name='download_balance'),
 
     url(r'^buildings/(?P<building_id>\d+)/list/(?P<month>\d{4}-\d{2})?$',
         views.download_list, name='download_list'),

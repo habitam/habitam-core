@@ -168,13 +168,24 @@ class ApartmentGroup(Entity):
         return result
     
     
-    def balance(self):
+    def balance(self, month=None):
         links = self.accountlink_set.all()
-        mine = reduce(lambda s, l: s + l.account.balance(), links, 0)
+        mine = reduce(lambda s, l: s + l.account.balance(month), links, 0)
         ags = self.apartmentgroup_set.all()
         if ags == None:
             return mine
-        return reduce(lambda s, ag: s + ag.balance(), ags, mine)
+        return reduce(lambda s, ag: s + ag.balance(month), ags, mine)
+    
+    
+    def balance_by_type(self, account_selector, month):
+        accounts = filter(account_selector, self.funds())
+        balance = reduce(lambda s, ac: s + ac.balance(month), accounts, 0)
+        
+        collecting_accounts = map(lambda cf: cf.account, self.collecting_funds())
+        collecting_funds = filter(account_selector, collecting_accounts)
+        balance = reduce(lambda s, ac: s + ac.balance(month), collecting_funds, balance)
+        
+        return balance
     
     
     def building(self):
@@ -367,9 +378,9 @@ class Apartment(SingleAccountEntity):
         return 'Apartament ' + self.name
 
 
-    def balance(self):
+    def balance(self, month=None):
         penalties_account = self.building().penalties_account
-        return self.account.balance(src_exclude=Q(dest=penalties_account))
+        return self.account.balance(month, Q(dest=penalties_account))
         
         
     def building(self):
@@ -492,9 +503,9 @@ class CollectingFund(Billable):
     def charge_type(self):    
         return 'collection'
     
-    def balance(self):
-        received = self.account.received()
-        transferred = self.account.transferred()
+    def balance(self, month=None):
+        received = self.account.received(month)
+        transferred = self.account.transferred(month)
         return received - transferred  
     
      
@@ -505,8 +516,8 @@ class Service(Billable):
     def charge_type(self):
         return 'invoice'
     
-    def balance(self):
-        return super(Billable, self).balance()
+    def balance(self, month):
+        return super(Billable, self).balance(month)
 
     def without_invoice(self, begin, end):
         return self.account.count_src_operations(begin, end) == 0     
