@@ -318,7 +318,7 @@ class AccountLink(models.Model):
     
 class Consumption(models.Model):
     consumed = models.DecimalField(null=True, blank=True,
-            decimal_places=2, max_digits=4)
+            decimal_places=2, max_digits=6)
     doc = models.ForeignKey(OperationDoc) 
 
 
