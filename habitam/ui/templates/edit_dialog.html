@@ -44,6 +44,8 @@ $(document).ready(function() {
 		$('#id_consumption_ap_{{ ap }}').prop('disabled', $(this).is(':checked'));
 	});
 	{% endfor %}
+	
+	$('.datepicker').datepicker();
 });
 
 $('#editForm').find(':text,:radio,:checkbox,select,textarea').each(function(){
