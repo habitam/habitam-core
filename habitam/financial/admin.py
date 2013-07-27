@@ -27,7 +27,7 @@ class QuotaAdmin(admin.ModelAdmin):
     list_display = ('src', 'dest', 'ratio')
 
 class OperationDocAdmin(admin.ModelAdmin):
-    list_display = ('date', 'no', 'src', 'billed', 'type')
+    list_display = ('date', 'no', 'src', 'billed', 'type', 'created')
 
 class OperationAdmin(admin.ModelAdmin):
     list_display = ('doc', 'dest', 'amount', 'loss')

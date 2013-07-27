@@ -21,10 +21,14 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
+from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
-from django.forms.forms import NON_FIELD_ERRORS 
+from habitam.ui.widgets.bootstrap_date import BootstrapDateInput
+import datetime
    
 class NewPaymentForm(forms.Form):
+    date = forms.DateField(label='Data', initial=datetime.date.today,
+                        widget=BootstrapDateInput(input_format='yyyy-mm-dd'))
     amount = forms.DecimalField(label='Suma')
     
     def __init__(self, *args, **kwargs):
@@ -37,8 +41,8 @@ class NewPaymentForm(forms.Form):
     
     def clean(self):
         if 'amount' in self.cleaned_data:
-            s=self.cleaned_data['amount']
-            if s <=0:
+            s = self.cleaned_data['amount']
+            if s <= 0:
                 raise forms.ValidationError('Te rog sa introduci o suma mai mare decat zero')   
         return self.cleaned_data    
 

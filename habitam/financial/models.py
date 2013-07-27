@@ -53,7 +53,8 @@ class Quota(models.Model):
     
     
 class OperationDoc(models.Model):
-    date = models.DateTimeField()
+    created = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     no = models.CharField(max_length=100)
     src = models.ForeignKey('Account', related_name='doc_src_set')
     billed = models.ForeignKey('Account', related_name='doc_billed_set')
