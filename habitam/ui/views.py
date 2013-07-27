@@ -35,7 +35,7 @@ from habitam.entities.models import ApartmentGroup, Apartment, AccountLink, \
     CollectingFund, Supplier, Service
 from habitam.financial.models import Account, OperationDoc
 from habitam.ui.forms.building import NewBuildingForm
-from habitam.ui.forms.service_new_payment import NewServicePayment
+from habitam.ui.forms.service_new_payment import NewOtherServicePayment
 from habitam.ui.license_filter import LicenseFilter
 import calendar
 import logging
@@ -56,8 +56,9 @@ def __pdf_response(building, month, name, f):
 
 # TODO stef: there's business logic here
 def __transfer_data(building, form):
-    if type(form) == NewServicePayment:
-        form.cleaned_data
+    if type(form) != NewOtherServicePayment:
+        return form.cleaned_data
+    
     supplier = Supplier.objects.create(name=form.cleaned_data['supplier'],
                                        one_time=True)
     service = Service(name=form.cleaned_data['service'], billed=building,
