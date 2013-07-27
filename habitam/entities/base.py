@@ -48,8 +48,8 @@ class SingleAccountEntity(Entity):
             kwargs.setdefault('account', account)
         super(SingleAccountEntity, self).__init__(*args, **kwargs)
 
-    def balance(self):
-        return self.account.balance()
+    def balance(self, month):
+        return self.account.balance(month)
 
     class Meta:
         abstract = True

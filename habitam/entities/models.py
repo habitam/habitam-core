@@ -516,7 +516,7 @@ class Service(Billable):
     def charge_type(self):
         return 'invoice'
     
-    def balance(self, month):
+    def balance(self, month=None):
         return super(Billable, self).balance(month)
 
     def without_invoice(self, begin, end):
