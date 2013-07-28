@@ -145,23 +145,23 @@ def download_display_list(building, begin_ts, end_ts):
 
 def to_pdf(tempFile, data, building):
     # response = HttpResponse(mimetype='application/pdf')
-    #response['Content-Disposition'] = 'attachment; filename=somefilename.pdf'
+    # response['Content-Disposition'] = 'attachment; filename=somefilename.pdf'
 
     elements = []
 
-    doc = SimpleDocTemplate(tempFile, rightMargin=0.5 *cm, leftMargin=0.5 * cm, topMargin=0.3 * cm, bottomMargin=0, pagesize=landscape(A4))
+    doc = SimpleDocTemplate(tempFile, rightMargin=0.5 * cm, leftMargin=0.5 * cm, topMargin=0.3 * cm, bottomMargin=0, pagesize=landscape(A4))
 
-    table = Table(data )
-    table.setStyle(TableStyle([('VALIGN',(0,0),(0,-1),'TOP'),
-                       ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                       ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+    table = Table(data)
+    table.setStyle(TableStyle([('VALIGN', (0, 0), (0, -1), 'TOP'),
+                       ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+                       ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
                        ]))
     # TODO Ionut: fix image load
 
-    #I = Image('ui/img/habitam-logo-header.jpg')
-    #I.drawHeight = 1.25*cm*I.drawHeight / I.drawWidth
-    #I.drawWidth = 1.25*cm
-    #elements.append(I)
+    # I = Image('ui/img/habitam-logo-header.jpg')
+    # I.drawHeight = 1.25*cm*I.drawHeight / I.drawWidth
+    # I.drawWidth = 1.25*cm
+    # elements.append(I)
     
     styleSheet = getSampleStyleSheet()
     P0 = Paragraph('''
@@ -171,7 +171,7 @@ def to_pdf(tempFile, data, building):
     styleSheet["BodyText"])
     P1 = Paragraph('''
     <para align=right spaceb=3><b>
-    <font color=black>Bloc '''+building.name+'''</font></b>
+    <font color=black>Bloc ''' + building.name + '''</font></b>
     </para>''',
     styleSheet["BodyText"])
     
@@ -179,32 +179,32 @@ def to_pdf(tempFile, data, building):
     elements.append(P1)
     elements.append(table)
     doc.build(elements) 
-    #return response
+    # return response
 
 
 def to_data(building, d_billed):
     services = building.services()
-    data=[] 
-    header=[]
+    data = [] 
+    header = []
     header.append('Ap')
     data.append(header)
-    firstTime=True
+    firstTime = True
     for ap in building.apartments():
         apname = ap.__unicode__()
-        row=[]
+        row = []
         row.append(apname)
         for service in services:
-            sname=service.__unicode__()
+            sname = service.__unicode__()
             if firstTime is True:
-                header.append(sname+' cost')
+                header.append(sname + ' cost')
             row.append(str(d_billed[apname][sname]['amount']))
             if firstTime is True:
-                header.append(sname+' consum')
-            consValue='-'
+                header.append(sname + ' consum')
+            consValue = '-'
             logger.info('[toData] - ap=%s service=%s cost=%s' % (apname, sname, d_billed[apname][sname]['amount']))
             if service.quota_type == 'consumption':
-                consValue=str(d_billed[apname][sname]['consumed'])
+                consValue = str(d_billed[apname][sname]['consumed'])
             row.append(consValue)
         data.append(row)
-        firstTime=False
+        firstTime = False
     return data
