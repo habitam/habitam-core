@@ -1,5 +1,6 @@
 # Django settings for habitam project.
 from decimal import Decimal
+from django.conf import global_settings
 import os
 
 DEBUG = True
@@ -134,7 +135,7 @@ INSTALLED_APPS = (
 )
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL ='home'
+LOGIN_REDIRECT_URL = 'home'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -172,6 +173,13 @@ LOGGING = {
         },
     }
 }
+
+TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+    "habitam.ui.context_processors.google_analytics",
+)
+
+GA_ACCOUNT_ID = ''
+GA_URL = ''
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
