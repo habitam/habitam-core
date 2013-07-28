@@ -29,7 +29,6 @@
 				<td>
 					{% if not service.archived %}
 					<div class="btn-group">
-						<button class="btn btn-mini" type="button" onclick="window.location='{% url 'operation_list' building_id=building.id account_id=service.account.id %}'"><i class="icon-list-alt"></i> Operațiuni</button>
 						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_collection' entity_id=service.id %}')"><i class="icon-plus-sign icon-white"></i> Colectare nouă</button>
 						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_service_payment' account_id=service.account.id %}')"><i class="icon-share-alt icon-white"></i> Plată serviciu</button>
 						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_other_service_payment' account_id=service.account.id %}')"><i class="icon-share-alt icon-white"></i> Plată terț</button>
