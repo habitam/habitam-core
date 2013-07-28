@@ -411,7 +411,7 @@ class Apartment(SingleAccountEntity):
     def new_inbound_operation(self, amount, dest_account, date=timezone.now()):
         no = uuid1()
         building = self.building()
-        penalties = self.penalties()
+        penalties = self.penalties(date)
         if penalties != None:
             penalties = penalties * -1
         else:
