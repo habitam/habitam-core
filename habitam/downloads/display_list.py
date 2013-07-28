@@ -62,7 +62,11 @@ def __add_consumption(breakdown, service_info, service, op_docs):
         q = ServiceConsumption.objects.filter(doc=op_doc, service=service)
         tmp = q.aggregate(Sum('consumed'))
         si['consumed_invoiced'] = tmp['consumed__sum']
+        if si['consumed_invoiced'] == None:
+            si['consumed_invoiced'] = 0
         si['consumed_loss'] = si['consumed_invoiced'] - si['consumed_declared']
+        if si['amount'] == None:
+            si['amount'] = 0
         si['price_per_unit'] = si['amount'] / si['consumed_declared']
        
         
