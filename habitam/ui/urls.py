@@ -31,14 +31,24 @@ from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm, \
 from habitam.ui.forms.billable_edit_form import EditServiceForm, \
     EditCollectingFundForm
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
+from habitam.ui.forms.contact import ContactForm
 from habitam.ui.forms.fund import NewFundTransfer, EditAccountForm
 from habitam.ui.forms.service_new_invoice import NewServiceInvoice
 from habitam.ui.forms.service_new_payment import NewServicePayment, \
     NewOtherServicePayment
 from habitam.ui.forms.supplier import EditSupplierForm
+from habitam.ui.views import form_view
 
 
 urlpatterns = patterns('',
+    url(r'^contact/$', form_view,
+        {'view_name':'contact', 'form_class':ContactForm,
+         'template_name':'contact.html', 'success_view':'contact_thanks'},
+        'contact'),
+    url(r'^contact_thanks/$',
+        TemplateView.as_view(template_name='contact_thanks.html'),
+        name='contact_thanks'),
+    
     url(r'^users/login/$', 'django.contrib.auth.views.login',
         {'template_name': 'login.html'}, 'login'),
     url(r'^users/logout/$', 'django.contrib.auth.views.logout',

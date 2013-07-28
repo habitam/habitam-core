@@ -144,6 +144,27 @@ def download_report(request, generator, name, building_id, month):
 
 @login_required
 @decorator_from_middleware(LicenseFilter)
+def form_view(request, view_name, form_class, template_name, success_view):
+    if request.method == 'POST':
+        form = form_class(request.user, request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                return redirect(success_view)
+            # TODO @iia catch by different exceptions
+            except Exception as e:
+                data = {'form': form, 'target': view_name}  
+                form.add_form_error(e)
+                return render(request, template_name, data)
+    else:
+        form = form_class(request.user) 
+
+    data = {'form': form, 'target': view_name}
+    return render(request, template_name, data)
+
+
+@login_required
+@decorator_from_middleware(LicenseFilter)
 def general_list(request, license_subtype, entity_cls, edit_name, new_name,
                  title, view_name, entity_view_name=None, alt_view_name=None,
                  show_all=False):
