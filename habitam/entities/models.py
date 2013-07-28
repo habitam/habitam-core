@@ -236,13 +236,7 @@ class ApartmentGroup(Entity):
     
     def collecting_funds(self):
         return self.__billable(CollectingFund)
-    
-        
-    def display_dates(self, since, until):
-        q = self.displaydate_set.filter(Q(timestamp__gt=since) & 
-                                        Q(timestamp__lt=until))
-        print '####', since, until
-        return q.order_by('month') 
+
     
     def list_downloaded(self, month):
         month = date(day=self.close_day, month=month.month, year=month.year)
@@ -404,8 +398,8 @@ class Apartment(SingleAccountEntity):
         return {'amount' :-1 * amount}
      
     # TODO test this as per https://trello.com/c/djqGiRgQ 
-    def penalties(self, day=date.today()):
-        penalties(self, day)
+    def penalties(self, when=date.today()):
+        return penalties(self, when)
     
     
     def weight(self, quota_type='equally'):
