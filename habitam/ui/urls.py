@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 This file is part of Habitam.
 
@@ -83,7 +84,7 @@ urlpatterns = patterns('',
                        
     url(r'^buildings$', views.general_list,
         {'license_subtype': 'buildings', 'entity_cls' : ApartmentGroup,
-         'title': 'Cladiri disponibile', 'edit_name': 'edit_building',
+         'title': u'Clădiri disponibile', 'edit_name': 'edit_building',
          'new_name': 'new_building', 'view_name': 'buildings',
          'entity_view_name': 'building_view'},
         name='buildings'),
@@ -108,7 +109,7 @@ urlpatterns = patterns('',
     url(r'^buildings/(?P<building_id>\d+)/staircases/new$',
         views.new_building_entity,
         {'form_cls': EditStaircaseForm, 'target': 'new_staircase',
-         'title': 'Scara noua', 'save_kwargs': {'type': 'stair'}},
+         'title': u'Scară nouă', 'save_kwargs': {'type': 'stair'}},
         name='new_staircase'),
 
     url(r'^staircases/(?P<entity_id>\d+)/edit$', views.edit_entity,
@@ -182,7 +183,7 @@ urlpatterns = patterns('',
     url(r'^services/(?P<entity_id>\d+)/invoices/new$',
         views.new_inbound_operation,
         {'entity_cls': Service, 'form_cls': NewServiceInvoice,
-         'target': 'new_invoice', 'title': 'Factura pentru'},
+         'target': 'new_invoice', 'title': u'Factură pentru'},
         name='new_invoice'),
     
     url(r'^apartments/(?P<entity_id>\d+)/edit$', views.edit_entity,
@@ -193,7 +194,7 @@ urlpatterns = patterns('',
     url(r'^apartments/(?P<entity_id>\d+)/payments/new$',
         views.new_inbound_operation,
         {'entity_cls': Apartment, 'form_cls': NewApartmentPayment,
-         'target': 'new_payment', 'title': 'Incasare de la'},
+         'target': 'new_payment', 'title': u'Încasare de la'},
         name='new_payment'),
     
     url(r'^accounts/(?P<entity_id>\d+)/edit$',
@@ -205,14 +206,14 @@ urlpatterns = patterns('',
     url(r'^accounts/(?P<account_id>\d+)/operations/pay_service$',
         views.new_transfer,
         {'form_cls': NewServicePayment, 'target': 'new_service_payment',
-         'title': 'Plateste de la'},
+         'title': u'Plătește de la'},
         name='new_service_payment'),
 
     url(r'^accounts/(?P<account_id>\d+)/operations/pay_other_service$',
         views.new_transfer,
         {'form_cls': NewOtherServicePayment,
          'target': 'new_other_service_payment',
-         'title': 'Plateste tert de la'},
+         'title': u'Plătește terț de la'},
         name='new_other_service_payment'),
     
     url(r'^accounts/(?P<account_id>\d+)/operations/transfer$',

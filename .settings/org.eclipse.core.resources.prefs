@@ -36,4 +36,5 @@ encoding//habitam/ui/templates/password_reset_email.txt=UTF-8
 encoding//habitam/ui/templates/password_reset_subject.txt=UTF-8
 encoding//habitam/ui/templates/service_list.html=UTF-8
 encoding//habitam/ui/templates/user_popup.html=UTF-8
+encoding//habitam/ui/urls.py=utf-8
 encoding//habitam/ui/views.py=utf-8

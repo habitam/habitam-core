@@ -90,13 +90,14 @@ def new_building(request):
                 return render(request, 'edit_redirect.html', data)
             # TODO @iia catch by different exceptions
             except Exception as e:
-                data = {'form': form, 'target': 'new_building', 'title': 'Cladire noua'}
+                data = {'form': form, 'target': 'new_building',
+                        'title': u'Clădire nouă'}
                 logger.exception('Cannot save new building')  
                 form.add_form_error(e)
                 return render(request, 'edit_dialog.html', data)
     else:
         form = NewBuildingForm(request.user) 
-    data = {'form': form, 'target': 'new_building', 'title': 'Cladire noua'}
+    data = {'form': form, 'target': 'new_building', 'title': u'Clădire nouă'}
     return render(request, 'edit_dialog.html', data)
 
 
