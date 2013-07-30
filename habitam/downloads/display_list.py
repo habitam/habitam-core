@@ -21,16 +21,22 @@ Created on Apr 30, 2013
 '''
 from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
+from django.conf import settings
 from habitam.entities.models import ApartmentConsumption, ServiceConsumption
 from habitam.financial.models import Quota
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, cm, landscape
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, Paragraph
+from reportlab.platypus.flowables import PageBreak
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, Paragraph, KeepInFrame
 from reportlab.lib.styles import getSampleStyleSheet
 import logging
 import tempfile
 
 logger = logging.getLogger(__name__)
+
+MARGIN_SIZE = 0.2 * cm
+PAGE_SIZE = A4
+
 
 def __add_amounts(breakdown, service_info, service, op_docs):
     sname = service.__unicode__()
@@ -138,62 +144,70 @@ def download_display_list(building, begin_ts, end_ts):
     
     temp = tempfile.NamedTemporaryFile()
 
-    to_pdf(temp, to_data(building, breakdown), building)
+    to_pdf(temp, breakdown, building, begin_ts, end_ts)
 
     # TODO (Stefan) this file should be persisted and downloaded on subsequent calls
     return temp
 
-def to_pdf(tempFile, data, building):
-    # response = HttpResponse(mimetype='application/pdf')
-    # response['Content-Disposition'] = 'attachment; filename=somefilename.pdf'
+
+def to_pdf(tempFile, breakdown, building, begin_ts, end_ts):
 
     elements = []
-
-    doc = SimpleDocTemplate(tempFile, rightMargin=0.5 * cm, leftMargin=0.5 * cm, topMargin=0.3 * cm, bottomMargin=0, pagesize=landscape(A4))
-
-    table = Table(data)
-    table.setStyle(TableStyle([('VALIGN', (0, 0), (0, -1), 'TOP'),
+   
+    doc = SimpleDocTemplate(tempFile, rightMargin=MARGIN_SIZE, leftMargin=MARGIN_SIZE, topMargin=MARGIN_SIZE, bottomMargin=0, pagesize=landscape(PAGE_SIZE))
+        
+    for sc in building.apartment_groups():
+        if sc == building:
+            continue
+        data = to_data(sc, breakdown, building.services())
+    
+        table = Table(data, repeatRows=1)
+        table.setStyle(TableStyle([('VALIGN', (0, 0), (0, -1), 'TOP'),
                        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
                        ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
                        ]))
-    # TODO Ionut: fix image load
+        
+        # TODO Ionut: fix image load. I don't like it
+        header_logo_path=settings.BASE_DIR+'/habitam/ui/static/ui/img/habitam-logo-header.jpg'
+        I = Image(header_logo_path)
+        I.hAlign ='LEFT'
+        styleSheet = getSampleStyleSheet()
+        P0 = Paragraph('''
+            <para align=right spaceb=3><b>
+            <font color=green>Raport Habitam '''+begin_ts.strftime('%d/%m/%Y')+'''-'''+end_ts.strftime('%d/%m/%Y')+'''</font></b>
+            </para>''',
+            styleSheet["BodyText"])
+        P1 = Paragraph('''
+            <para align=right spaceb=3><b>
+            <font color=black>Asociatia proprietari ''' + building.name + ''' Scara ''' + sc.name + ''' </font></b>
+            </para>''',
+            styleSheet["BodyText"])
+        
+        headerTableData=[(I, P0),('http://www.habitam.ro',P1)]  
+        headerTable=Table(headerTableData, colWidths=(landscape(PAGE_SIZE)[0]-2*MARGIN_SIZE)/2)
+        
+        main_frame = KeepInFrame(maxWidth=landscape(PAGE_SIZE)[0] - 2 * MARGIN_SIZE, maxHeight=landscape(PAGE_SIZE)[1] - 2 * MARGIN_SIZE, content=[headerTable, table], mode='shrink', name='main_frame')
 
-    # I = Image('ui/img/habitam-logo-header.jpg')
-    # I.drawHeight = 1.25*cm*I.drawHeight / I.drawWidth
-    # I.drawWidth = 1.25*cm
-    # elements.append(I)
+        elements.append(main_frame)
+        elements.append(PageBreak())
     
-    styleSheet = getSampleStyleSheet()
-    P0 = Paragraph('''
-    <para align=right spaceb=3><b>
-    <font color=green>Raport Habitam</font></b>
-    </para>''',
-    styleSheet["BodyText"])
-    P1 = Paragraph('''
-    <para align=right spaceb=3><b>
-    <font color=black>Bloc ''' + building.name + '''</font></b>
-    </para>''',
-    styleSheet["BodyText"])
     
-    elements.append(P0)
-    elements.append(P1)
-    elements.append(table)
     doc.build(elements) 
     # return response
 
 
-def to_data(building, d_billed):
-    services = building.services()
+def to_data(ap_group, d_billed, building_services):
     data = [] 
     header = []
     header.append('Ap')
     data.append(header)
     firstTime = True
-    for ap in building.apartments():
+    for ap in ap_group.apartments():
         apname = ap.__unicode__()
+        
         row = []
         row.append(apname)
-        for service in services:
+        for service in building_services:
             sname = service.__unicode__()
             if firstTime is True:
                 header.append(sname + ' cost')
@@ -208,3 +222,4 @@ def to_data(building, d_billed):
         data.append(row)
         firstTime = False
     return data
+
