@@ -23,7 +23,7 @@ from django import forms
 from django.core.mail.message import EmailMessage
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
-from habitam.settings import CONTACT_EMAIL
+from habitam.settings import CONTACT_EMAIL, SENDER
 import logging
 
 
@@ -49,11 +49,12 @@ class ContactForm(forms.Form):
     def save(self, fail_silently=False):
         cc = [self._user.email] if self.cleaned_data['cc_myself'] else None
         subject = 'CONTACT: ' + self.cleaned_data['subject']
-        body = 'Mesaj de la: %s (%s)\n------\n\n%s' % \
-            (self._user.email, self._user.pk, self.cleaned_data['message'])
+        body = self.cleaned_data['message']
             
-        email = EmailMessage(subject=subject, body=body, to=[CONTACT_EMAIL],
-                             cc=cc, headers={'Reply-To': self._user.email})
+        email = EmailMessage(from_email=self._user.email, subject=subject,
+                             body=body, to=[CONTACT_EMAIL], cc=cc,
+                             headers={'Reply-To': self._user.email,
+                                'Sender': SENDER})
         
         email.send(fail_silently=fail_silently)
         logger.info('Send mail to %s from %s' % 

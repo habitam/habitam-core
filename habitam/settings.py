@@ -183,8 +183,8 @@ GA_URL = ''
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-DEFAULT_FROM_EMAIL = '"Habitam" <fake@email.com>'
 DEFAULT_FROM_EMAIL = '"Habitam.ro" <office@habitam.ro>'
+SENDER = 'office@habitam.ro'
 
 CONTACT_EMAIL = 'office@habitam.ro'
 
