@@ -157,7 +157,7 @@ function delete_click(path, success) {
 }
 
 function editDialog(path) {
-	ga('send', 'pageview', path);
+	_gaq.push(['_trackPageview', path]);
 	$('#modalBody').load(path);
 	$('#editModal').modal();
 }
