@@ -76,8 +76,10 @@ class Billable(SingleAccountEntity):
         accounts = [] 
         for ap in self.billed.apartments():
             accounts.append(ap.account)
-        self.account.new_charge(amount, date, no, self.billed.default_account,
-                                 accounts, self.charge_type())
+        mine = self.billed.default_account
+        account = mine if mine != None else self.building().default_account
+        self.account.new_charge(amount, date, no, account, accounts,
+                                self.charge_type())
         
     def __new_charge_with_consumptions(self, amount, no, ap_consumptions,
                                        consumption, date):
