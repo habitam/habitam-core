@@ -52,6 +52,8 @@ def __operations(entity, d):
     ops = entity.account.operation_list(d, next_day)
     for op in ops:
         op.total_amount = op.total_amount * -1
+        p = op.penalties()
+        op.total_amount = op.total_amount + p if p != None else op.total_amount
     return ops
 
 
@@ -72,51 +74,51 @@ def to_data(building, d_list, day):
     d = date(day.year, day.month, 1)
     data = [] 
     header = []
-    header.append('Nr.Crt.')
-    header.append('Nr.Act.Casa')
-    header.append('Nr.Anexa')
+    header.append('Nr. Crt.')
+    header.append('Nr. Act. Casa')
+    header.append('Nr. Anexa')
     header.append('Explicatii')
     header.append('Incasari')
     header.append('Plati')
     header.append('Simbol cont')
     data.append(header)
-    while d<=day:
+    while d <= day:
 
-        if d_list[d]['operations'] is not None and len(d_list[d]['operations'])>0:
+        if d_list[d]['operations'] is not None and len(d_list[d]['operations']) > 0:
 
-            initial_balance=d_list[d]['initial_balance'];
-            end_balance=d_list[d]['end_balance'];
+            initial_balance = d_list[d]['initial_balance'];
+            end_balance = d_list[d]['end_balance'];
             
             first_row = []
             first_row.append('')
             first_row.append('')
             first_row.append('')
-            first_row.append('Sold initial la %s' %d)
+            first_row.append('Sold initial la %s' % d)
             first_row.append(initial_balance)
             first_row.append('')
             first_row.append('')      
             data.append(first_row)
             
-            increment=1
-            inbound=0
-            outbound=0
+            increment = 1
+            inbound = 0
+            outbound = 0
             for op_doc in d_list[d]['operations']:
-                amount=op_doc.total_amount
+                amount = op_doc.total_amount
                 row = []
                 row.append(increment)
                 row.append(op_doc.no)
                 row.append(op_doc.date)
                 row.append(op_doc.no)
-                if amount>=0:
+                if amount >= 0:
                     row.append(amount)
                     row.append('')
-                    inbound+=amount
+                    inbound += amount
                     
                 else:
                     row.append('')
-                    row.append(amount)
-                    outbound+=amount
-                increment+=1
+                    row.append(amount * -1)
+                    outbound += amount * -1
+                increment += 1
                 
                 data.append(row)
             
@@ -156,9 +158,9 @@ def to_pdf(tempFile, data, building):
                    ]))
     
     # TODO Ionut: fix image load. I don't like it
-    header_logo_path=settings.BASE_DIR+'/habitam/ui/static/ui/img/habitam-logo-header.jpg'
+    header_logo_path = settings.BASE_DIR + '/habitam/ui/static/ui/img/habitam-logo-header.jpg'
     I = Image(header_logo_path)
-    I.hAlign ='LEFT'
+    I.hAlign = 'LEFT'
     styleSheet = getSampleStyleSheet()
     P0 = Paragraph('''
         <para align=center spaceb=3><b>
@@ -167,12 +169,12 @@ def to_pdf(tempFile, data, building):
         styleSheet["BodyText"])
     P1 = Paragraph('''
         <para align=right spaceb=3><b>
-        <font color=black>Asociatia proprietari ''' + building.name +  '''</font></b>
+        <font color=black>Asociatia proprietari ''' + building.name + '''</font></b>
         </para>''',
         styleSheet["BodyText"])
     
-    headerTableData=[(I, P0),('http://www.habitam.ro',P1)]  
-    headerTable=Table(headerTableData, colWidths=(landscape(PAGE_SIZE)[0]-2*MARGIN_SIZE)/2)
+    headerTableData = [(I, P0), ('http://www.habitam.ro', P1)]  
+    headerTable = Table(headerTableData, colWidths=(landscape(PAGE_SIZE)[0] - 2 * MARGIN_SIZE) / 2)
     
     main_frame = KeepInFrame(maxWidth=landscape(PAGE_SIZE)[0] - 2 * MARGIN_SIZE, maxHeight=landscape(PAGE_SIZE)[1] - 2 * MARGIN_SIZE, content=[headerTable, table], mode='shrink', name='main_frame')
 
@@ -192,7 +194,7 @@ def download_register(building, day):
         d_elem[d], initial_balance = __register(building, d, initial_balance)
         d = d + relativedelta(days=1)
     
-    logger.debug('Register is %s' % d_elem )
+    logger.debug('Register is %s' % d_elem)
     
     temp = tempfile.NamedTemporaryFile()
 
