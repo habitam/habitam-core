@@ -24,6 +24,7 @@ encoding//habitam/ui/templates/general_list.html=UTF-8
 encoding//habitam/ui/templates/home.html=UTF-8
 encoding//habitam/ui/templates/license_expired.html=UTF-8
 encoding//habitam/ui/templates/login.html=UTF-8
+encoding//habitam/ui/templates/logout.html=UTF-8
 encoding//habitam/ui/templates/operation_list.html=UTF-8
 encoding//habitam/ui/templates/operation_row.html=UTF-8
 encoding//habitam/ui/templates/password_change.html=UTF-8
