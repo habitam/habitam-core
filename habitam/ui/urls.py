@@ -91,7 +91,9 @@ urlpatterns = patterns('',
                        
     url(r'^buildings/(?P<entity_id>\d+)$', views.entity_view,
         {'entity_cls' : ApartmentGroup, 'edit_name': 'edit_building',
-         'view_name': 'building_view'},
+         'view_name': 'building_view', 'template_name': 'building_about.html',
+         'template_entity': 'building',
+         'extra_data': {'active_tab': 'building_view'}},
         name='building_view'),
                        
     url(r'^buildings/(?P<building_id>\d+)/apartments$', views.building_tab, {'tab': 'apartment_list'}, name='apartment_list'),

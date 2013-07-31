@@ -305,11 +305,15 @@ def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='
 
 @login_required
 @decorator_from_middleware(LicenseFilter)
-def entity_view(request, entity_cls, entity_id, edit_name, view_name):
+def entity_view(request, entity_cls, entity_id, edit_name, view_name,
+                template_name='entity_view.html', template_entity='entity',
+                extra_data = None):
     entity = entity_cls.objects.get(id=entity_id)
-    data = {'entity': entity, 'entity_cls': entity_cls, 'edit_name': edit_name,
-            'view_name': view_name}
-    return render(request, 'entity_view.html', data)
+    data = {template_entity: entity, 'entity_cls': entity_cls,
+            'edit_name': edit_name, 'view_name': view_name}
+    if extra_data != None:
+        data.update(extra_data)
+    return render(request, template_name, data)
        
 
 @login_required

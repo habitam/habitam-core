@@ -14,6 +14,7 @@ encoding//habitam/ui/forms/service_new_invoice.py=utf-8
 encoding//habitam/ui/forms/service_new_payment.py=utf-8
 encoding//habitam/ui/templates/apartment_list.html=UTF-8
 encoding//habitam/ui/templates/building.html=UTF-8
+encoding//habitam/ui/templates/building_about.html=UTF-8
 encoding//habitam/ui/templates/collecting_fund_list.html=UTF-8
 encoding//habitam/ui/templates/contact.html=UTF-8
 encoding//habitam/ui/templates/contact_thanks.html=UTF-8
