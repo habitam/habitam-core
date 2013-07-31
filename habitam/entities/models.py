@@ -48,7 +48,7 @@ class ApartmentGroup(Entity):
             validators=[MaxValueValidator(MAX_CLOSE_DAY)])
     default_account = models.ForeignKey(Account, null=True, blank=True,
                                         related_name='default_account')
-    type = models.CharField(max_length=5, choices=TYPES)
+    type = models.CharField(max_length=10, choices=TYPES)
     parent = models.ForeignKey('self', null=True, blank=True)
     payment_due_days = models.SmallIntegerField(null=True, blank=True,
             validators=[MaxValueValidator(MAX_PAYMENT_DUE_DAYS)])
