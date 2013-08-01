@@ -43,13 +43,15 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'billed', 'quota_type', 'archived', 'archive_date')
+    list_display = ('name', 'supplier', 'billed', 'quota_type', 'archived',
+                    'archive_date', 'contract_id', 'client_id')
     
 class ServiceConsumptionAdmin(admin.ModelAdmin):
     list_display = ('service', 'doc', 'consumed')
     
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'archived', 'archive_date', 'one_time')
+    list_display = ('name', 'archived', 'archive_date', 'one_time', 'county',
+                    'fiscal_id', 'registration_id')
 
 admin.site.register(ApartmentGroup, ApartmentGroupAdmin)
 admin.site.register(Apartment, ApartmentAdmin)

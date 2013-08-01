@@ -30,6 +30,7 @@ from habitam.entities.models import ApartmentGroup, Service, Supplier, \
     CollectingFund
 from habitam.financial.models import Quota
 from habitam.ui.forms.fund import MONEY_TYPES, TYPES
+from habitam.ui.widgets.bootstrap_date import BootstrapDateInput
 import logging
 
 
@@ -147,11 +148,23 @@ class EditCollectingFundForm(EditBillableForm):
             pass
     
 class EditServiceForm(EditBillableForm):
+    contact = forms.CharField(label='Nume contact', max_length=200, required=False)    
+    client_id = forms.CharField(label='ID client', max_length=50, required=False)
+    contract_date = forms.DateTimeField(label='Data contractului', required=False,
+                                        widget=BootstrapDateInput(input_format='yyyy-mm-dd')) 
+    contract_details = forms.CharField(label='Detalii contract', max_length=200, required=False)    
+    contract_id = forms.CharField(label='ID contract', max_length=50, required=False)    
+    email = forms.EmailField(label='Email', required=False)
+    invoice_date = forms.IntegerField(label=u'Ziua facturării', min_value=1, max_value=31, required=False)
     supplier = forms.ModelChoiceField(label='Furnizor', queryset=Supplier.objects.all())
+    phone = forms.CharField(label='Telefon', max_length=20, required=False)    
+    support_phone = forms.CharField(label='Telefon suport', max_length=20, required=False)   
 
     class Meta:
         model = Service
-        fields = ('supplier', 'name', 'billed', 'quota_type', 'archived')
+        fields = ('supplier', 'name', 'billed', 'contract_id', 'contract_date',
+                  'contract_details', 'client_id', 'contact', 'phone', 'support_phone',
+                  'email', 'invoice_date', 'quota_type', 'archived')
         
     def __init__(self, *args, **kwargs):
         user_license = kwargs['user_license']

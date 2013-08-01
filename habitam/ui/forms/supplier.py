@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 This file is part of Habitam.
 
@@ -25,12 +26,20 @@ from django.forms.util import ErrorDict
 from django.forms.forms import NON_FIELD_ERRORS 
 
 class EditSupplierForm(forms.ModelForm):
-    name = forms.CharField(label='Nume')
+    address = forms.CharField(label='Adresa', max_length=200, required=False)
     archived = forms.BooleanField(label='Arhivat', required=False)
+    bank = forms.CharField(label='Banca', max_length=30, required=False)
+    county = forms.CharField(label=u'Județ', max_length=30, required=False)
+    fiscal_id = forms.CharField(label=u'Nr. înregistrare fiscală', max_length=30, required=False)
+    iban = forms.CharField(label='IBAN', max_length=30, required=False)
+    legal_representative = forms.CharField(label='Reprezentant legal', max_length=200, required=False)
+    name = forms.CharField(label='Nume')   
+    registration_id = forms.CharField(label=u'Nr. registrul comerțului', max_length=30, required=False)
 
     class Meta:
         model = Supplier 
-        fields = ('name', 'archived')
+        fields = ('name', 'address', 'county', 'legal_representative', 'bank',
+                  'iban', 'fiscal_id', 'registration_id',  'archived')    
         
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs.keys():
@@ -47,11 +56,11 @@ class EditSupplierForm(forms.ModelForm):
         if self._user is None:
             return self.cleaned_data
         if 'name' in self.cleaned_data:
-            slist=self._user.administrator.license.suppliers
-            n=self.cleaned_data['name']
+            slist = self._user.administrator.license.suppliers
+            n = self.cleaned_data['name']
             for ss in slist.all():
-                if ss.name==n:
-                    raise forms.ValidationError('Numele %s mai exista in lista de furnizori'%(n))
+                if ss.name == n:
+                    raise forms.ValidationError('Numele %s mai exista in lista de furnizori' % (n))
         return self.cleaned_data
     
     def add_form_error(self, error_message):

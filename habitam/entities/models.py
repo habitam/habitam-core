@@ -334,6 +334,8 @@ class DisplayDate(models.Model):
     
 class Person(models.Model):
     name = models.CharField(max_length=200)
+    first_name = models.CharField(max_length=200, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
    
     @classmethod
@@ -450,10 +452,17 @@ class ApartmentConsumption(Consumption):
 
 
 class Supplier(models.Model):
+    address = models.CharField(max_length=200, null=True, blank=True)
     archived = models.BooleanField(default=False)
     archive_date = models.DateTimeField(null=True, blank=True) 
+    bank = models.CharField(max_length=30, null=True, blank=True)
+    county = models.CharField(max_length=30, null=True, blank=True)
+    fiscal_id = models.CharField(max_length=30, null=True, blank=True)
+    iban = models.CharField(max_length=30, null=True, blank=True)
+    legal_representative = models.CharField(max_length=200, null=True, blank=True)
     name = models.CharField(max_length=200)
     one_time = models.BooleanField(default=False)
+    registration_id = models.CharField(max_length=30, null=True, blank=True)
    
     @classmethod
     def can_add(cls, user_license):
@@ -504,8 +513,17 @@ class CollectingFund(Billable):
     
      
 class Service(Billable):
+    contact = models.CharField(max_length=200, null=True, blank=True)    
+    client_id = models.CharField(max_length=50, null=True, blank=True)    
+    contract_date = models.DateTimeField(null=True, blank=True) 
+    contract_details = models.CharField(max_length=200, null=True, blank=True)    
+    contract_id = models.CharField(max_length=50, null=True, blank=True)    
+    email = models.EmailField(null=True, blank=True)
+    invoice_date = models.IntegerField(null=True, blank=True) 
     supplier = models.ForeignKey('Supplier', null=True, blank=True) 
+    phone = models.CharField(max_length=20, null=True, blank=True)    
     one_time = models.BooleanField(default=False)
+    support_phone = models.CharField(max_length=20, null=True, blank=True)    
     
     def charge_type(self):
         return 'invoice'
