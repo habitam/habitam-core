@@ -7,6 +7,10 @@ body {
 	color: rgb(180, 180, 180);
 }
 
+.modal-body .control-group {
+	margin-bottom: 0;
+}
+
 .negative_balance,.negative_balance a {
 	color: rgb(200, 0, 0);
 }
