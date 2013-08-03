@@ -2,6 +2,27 @@
 
 {% block inner_content %}
 <h1>Bun venit!</h1>
+{% with license=user.administrator.license %}
+
+{% if license.available_buildings %}
+
 <p class="lead">Alegeți clădirea pe care vreți să o administrați din meniul
 de mai sus.</p>
+
+{% else %}
+
+{% if license.apartment_count < license.max_apartments %}
+
+<p>Începeți prin a adăuga o
+<a href="javascript:editDialog('{% url 'new_building' %}');">clădire nouă</a>.</p> 
+
+{% else %}
+
+<p>Licența dumneavoastră nu permite adăguarea de apartamente noi. Vă rugăm
+luați legătura cu <a href="{% url 'contact' %}">noi</a>.</p> 
+
+{% endif %}
+{% endif %}
+
+{% endwith %}
 {% endblock %}
