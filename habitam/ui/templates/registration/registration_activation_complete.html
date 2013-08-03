@@ -1,0 +1,11 @@
+{% extends 'left_base.html' %} 
+
+{% block inner_content %}
+<legend>Înregistrare</legend>
+
+<p>Contul dumneavostră a fost activat. Puteți să-l folosiți timp de
+{{ days_valid }} zile pentru a administra maxim {{ max_apartments }}
+apartamente.</p>
+<p>Puteți să intrați în aplicație <a href="{% url 'login' %}">aici</a>.</p> 
+
+{% endblock %}

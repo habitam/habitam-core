@@ -26,7 +26,7 @@ from habitam.downloads import register, balance
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person, \
     Supplier, CollectingFund
 from habitam.financial.models import Account
-from habitam.ui import views, billable_views
+from habitam.ui import views, billable_views, urls_user
 from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm, \
     NewApartmentPayment
 from habitam.ui.forms.billable_edit_form import EditServiceForm, \
@@ -41,7 +41,7 @@ from habitam.ui.forms.supplier import EditSupplierForm
 from habitam.ui.views import form_view
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^contact/$', form_view,
         {'view_name':'contact', 'form_class':ContactForm,
          'template_name':'contact.html', 'success_view':'contact_thanks'},
@@ -49,34 +49,6 @@ urlpatterns = patterns('',
     url(r'^contact_thanks/$',
         TemplateView.as_view(template_name='contact_thanks.html'),
         name='contact_thanks'),
-    
-    url(r'^users/login/$', 'django.contrib.auth.views.login',
-        {'template_name': 'login.html'}, 'login'),
-    url(r'^users/logout/$', 'django.contrib.auth.views.logout',
-        {'template_name': 'logout.html'}, 'logout'),
-    url(r'^users/password/$', 'django.contrib.auth.views.password_change',
-        {'template_name': 'password_change.html'}, 'password_change'),
-    url(r'^users/password/done$', 'django.contrib.auth.views.password_change_done',
-        {'template_name': 'password_change_complete.html'}, 'password_change_done'),
-    url(r'^users/reset/$', 'django.contrib.auth.views.password_reset',
-        {'template_name': 'password_reset.html',
-         'email_template_name': 'password_reset_email.txt',
-         'subject_template_name': 'password_reset_subject.txt'},
-        name='password_reset'),
-    url(r'^users/reset/done/$', 'django.contrib.auth.views.password_reset_done',
-        {'template_name': 'password_reset_done.html'},
-        name='password_reset_done'),
-    url(r'^users/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
-        'django.contrib.auth.views.password_reset_confirm',
-        {'template_name': 'password_reset_confirm.html'},
-        name='password_reset_confirm'),
-    url(r'^users/reset/complete/$',
-        'django.contrib.auth.views.password_reset_complete',
-        {'template_name': 'password_reset_complete.html'},
-        name='password_reset_complete'),
-    url(r'^users/license_expired/$',
-        TemplateView.as_view(template_name='license_expired.html'),
-        name='license_expired'),
     
     url(r'^$', views.home, name='home'),
     
@@ -258,3 +230,7 @@ urlpatterns = patterns('',
          'view_name': 'supplier_view'},
         name='supplier_view'),
 )
+
+
+urlpatterns += urls_user.urlpatterns;
+

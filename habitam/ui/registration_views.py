@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 This file is part of Habitam.
 
@@ -15,22 +16,22 @@ You should have received a copy of the GNU Affero General Public
 License along with Habitam. If not, see 
 <http://www.gnu.org/licenses/>.
     
-Created on Apr 8, 2013
+Created on Aug 3, 2013
 
 @author: Stefan Guna
 '''
+from habitam.licensing.trial_license import register_trial
+from registration.backends.default.views import RegistrationView, ActivationView
 
-from django.conf.urls import patterns, include, url
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
+class TrialActivationView(ActivationView):
+    def activate(self, request, activation_key):
+        user = super(TrialActivationView, self).activate(request, activation_key)
+        register_trial(user)
+        return user
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'habitam.views.home', name='home'),
-    # url(r'^habitam/', include('habitam.foo.urls')),
-    url(r'^ui/', include('habitam.ui.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^captcha/', include('captcha.urls')),
-)
+
+class TrialRegistrationView(RegistrationView):
+    def registration_allowed(self, request):
+        return True
+        return request.user == None

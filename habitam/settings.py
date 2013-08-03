@@ -129,13 +129,16 @@ INSTALLED_APPS = (
     'habitam.entities',
     'habitam.financial',
     'habitam.ui',
-    'habitam.licensing'
+    'habitam.licensing',
+    'registration',
+    'captcha',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
+ACCOUNT_ACTIVATION_DAYS = 2
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -202,3 +205,9 @@ PENALTY_START_DAYS = 30
 MAX_PENALTY_PER_DAY = .2
 
 EPS = Decimal('0.01')
+
+TRIAL_LICENSE = {
+    'max_apartments' : 100,
+    'months_back': 2,
+    'days_valid': 60
+}

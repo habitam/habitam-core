@@ -3,6 +3,10 @@ body {
 	padding-bottom: 40px;
 }
 
+input[id^="id_captcha"] {
+	width: 123px;
+}
+
 .collection {
 	color: rgb(180, 180, 180);
 }

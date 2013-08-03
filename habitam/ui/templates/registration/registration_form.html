@@ -1,0 +1,17 @@
+{% extends 'left_base.html' %} 
+
+{% block inner_content %}
+<legend>Înregistrare</legend>
+
+<p>Completează detaliile de mai jos pentru a primi access la aplicație. În
+câteva momente, vă vom trimite un email cu instrucțiuni suplimentare.</p>
+
+<form class="form-horizontal" action="" method="post">
+{% include 'form.html' %}
+	<div class="control-group">
+    	<div class="controls">
+			<button class="btn btn-primary" type="submit">Înregistrare</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

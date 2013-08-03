@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 This file is part of Habitam.
 
@@ -15,22 +16,29 @@ You should have received a copy of the GNU Affero General Public
 License along with Habitam. If not, see 
 <http://www.gnu.org/licenses/>.
     
-Created on Apr 8, 2013
+Created on Aug 3, 2013
 
 @author: Stefan Guna
 '''
+from datetime import date
+from dateutil.relativedelta import relativedelta
+from habitam.licensing.models import License, Administrator
+from habitam.settings import TRIAL_LICENSE
+import logging
 
-from django.conf.urls import patterns, include, url
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
+logger = logging.getLogger(__name__)
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'habitam.views.home', name='home'),
-    # url(r'^habitam/', include('habitam.foo.urls')),
-    url(r'^ui/', include('habitam.ui.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^captcha/', include('captcha.urls')),
-)
+
+def register_trial(user):
+    trial = {}
+    trial.update(TRIAL_LICENSE)
+    trial['valid_until'] = date.today()
+    trial['valid_until'] += relativedelta(days=TRIAL_LICENSE['days_valid'])
+    del trial['days_valid']
+    
+    l = License.objects.create(**trial)
+    admin = Administrator.objects.create(user=user, license=l)
+    admin.save()
+    logger.info('Created trial license for %s' % user)
+    

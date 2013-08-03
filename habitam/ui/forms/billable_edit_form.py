@@ -185,6 +185,9 @@ class EditServiceForm(EditBillableForm):
         cleaned_data['account_type'] = 'std'
         return cleaned_data
     
+    def spinners(self):
+        return ['invoice_date']
+    
     @classmethod
     def new_title(cls):
         return 'Serviciu nou'

@@ -1,0 +1,11 @@
+Bun venit pe Habitam!
+
+Înainte de a începe să folosiți aplicația, vă rugăm să vă activați contul printr-un click pe următorul link:
+
+{{site}}/ui/users/activate/do/{{ activation_key }}
+
+Atenție! Linkul devine invalid după {{ expiration_days }} zile. Dacă nu vă activați contul în acest interval, va trebui să vă înregistrați din nou.
+
+
+Vă mulțumim,
+Habitam.ro
