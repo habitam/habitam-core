@@ -11,6 +11,31 @@ input[id^="id_captcha"] {
 	color: rgb(180, 180, 180);
 }
 
+.field_title {
+	position: relative;
+	top: -15px;
+	left: -20px;
+	width: 100px;
+	padding-left: 10px;
+	background-color: #ddd;
+	border: 1px solid #ddd;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	font-weight: bold;
+}
+
+.field_value {
+	position: relative;
+	margin: 15px 0;
+	padding: 14px 19px 14px;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+
 .modal-body .control-group {
 	margin-bottom: 0;
 }

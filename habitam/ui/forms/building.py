@@ -21,25 +21,35 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
+from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
-from django.forms.forms import NON_FIELD_ERRORS 
-from habitam.entities.models import ApartmentGroup
+from habitam.entities.models import ApartmentGroup, BuildingDetails
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY
+import inspect
 
 
 class EditBuildingForm(forms.ModelForm):
     name = forms.CharField(label='Nume')
+    address = forms.CharField(label='Adresă', required=False)
+    notes = forms.CharField(label='Observații', widget=forms.Textarea,
+                            required=False)
 
     class Meta:
         model = ApartmentGroup
-        fields = ('name',)
+        fields = ('name', 'address', 'notes')
+        extra_fields = ('address', 'notes')
         
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs.keys():
             del kwargs['user']
         super(EditBuildingForm, self).__init__(*args, **kwargs)
-        
+        try:
+            bd = self.instance.buildingdetails
+            for ef in EditBuildingForm.Meta.extra_fields:
+                self.fields[ef].initial = getattr(bd, ef)
+        except BuildingDetails.DoesNotExist:
+            pass
     
     def add_form_error(self, error_message):
         if not self._errors:
@@ -47,6 +57,18 @@ class EditBuildingForm(forms.ModelForm):
         if not NON_FIELD_ERRORS in self._errors:
             self._errors[NON_FIELD_ERRORS] = self.error_class()
         self._errors[NON_FIELD_ERRORS].append(error_message)
+        
+    def save(self):
+        b = super(EditBuildingForm, self).save()
+        try:
+            bd = b.buildingdetails
+        except BuildingDetails.DoesNotExist:
+            bd = BuildingDetails.objects.create(apartment_group=b)
+        for ef in EditBuildingForm.Meta.extra_fields:
+            setattr(bd, ef, self.cleaned_data[ef])
+        bd.save()
+        return b
+
 
 class EditStaircaseForm(forms.ModelForm):
     name = forms.CharField(label='Nume')

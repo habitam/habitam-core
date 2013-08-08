@@ -314,6 +314,12 @@ class AccountLink(models.Model):
     
     def __unicode__(self):
         return self.account.name
+    
+    
+class BuildingDetails(models.Model):
+    apartment_group = models.OneToOneField(ApartmentGroup)
+    address = models.CharField(max_length=200)
+    notes = models.CharField(max_length=200)
    
     
 class Consumption(models.Model):

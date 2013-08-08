@@ -5,7 +5,17 @@
 <div class="content">
 	<div class="row-fluid">
 		<div class="span8 ">
-			Alegeți unul dintre tab-urile de mai sus pentru mai multe informații despre clădirea <em>{{ building.name }}</em>.
+			
+			<div class="field_value">
+			<div class="field_title">Adresa</div>
+			{{ building.buildingdetails.address }}
+			</div>
+			
+			<div class="field_value">
+			<div class="field_title">Observații</div>
+			{{ building.buildingdetails.notes }}
+			</div>
+			
 		</div>
 		<div class="span4 hidden-phone">
 			<img src="{% static 'ui/img/habitam-worker-hires.png' %}">
