@@ -6,7 +6,7 @@
 	<td>
 	{% if doc.type == "collection" %}Colectare pentru {% endif %}{{ other }}
 	</td>
-	<td>{{ doc.no }}</td>
+	<td>{{ doc.list_description }}</td>
 	<td class="{% op_amount_class account doc service %}">
 		{{ amount|floatformat:2 }}
 		{% if account.type == 'apart' and doc.penalties != None %} și {{ doc.penalties }} penalități{% endif %}

@@ -67,6 +67,12 @@ class OperationDoc(models.Model):
     def __unicode__(self):
         return self.no
     
+    def list_description(self):
+        try:
+            return self.invoice.series + '/' + self.no
+        except:
+            return self.no
+    
     def penalties(self):
         penalty_ops = self.operation_set.filter(dest__type='penalties').aggregate(total_amount=Sum('amount'))
         return penalty_ops['total_amount']
