@@ -59,10 +59,11 @@ def _required(args, ap):
 
 
 class NewServiceInvoice(NewDocPaymentForm):
-    series = INVOICE_FIELDS['series']
-    reference = INVOICE_FIELDS['reference']
-    fiscal_id = INVOICE_FIELDS['fiscal_id']
-    registration_id = INVOICE_FIELDS['registration_id']
+    series = forms.CharField(label='Serie', max_length=30, required=False)
+    reference = forms.CharField(label='Referință', max_length=30, required=False)
+    fiscal_id = forms.CharField(label='Nr. înregistrare fiscală', max_length=30, required=False)
+    registration_id = forms.CharField(label='Nr. registrul comerțului', max_length=30, required=False)
+    
     manual_costs = BooleanField(label='Distribuie costurile manual', required=False)
     cmd = forms.CharField(initial='save', widget=forms.HiddenInput())
     
