@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django settings for habitam project.
 from decimal import Decimal
 from django.conf import global_settings
@@ -211,3 +212,21 @@ TRIAL_LICENSE = {
     'months_back': 2,
     'days_valid': 60
 }
+
+COUNTIES_TUPLE = (('Alba', 'Alba'), ('Arad', 'Arad'), ('Arges', u'Argeș'),
+    ('Bacau', u'Bacău'), ('Bihor', 'Bihor'),
+    ('Bistrita-Nasaud', u'Bistrița-Năsăud'),
+    ('Botosani', u'Botoșani'), ('Braila', u'Brăila'), ('Brasov', u'Brașov'),
+    ('Bucuresti', u'București'), ('Buzau', u'Buzău'),
+    ('Calarasi', u'Călărași'), ('Caras-Severin', u'Caraș-Severin'),
+    ('Cluj', 'Cluj'), ('Constanta', u'Constanța'), ('Covasna', 'Covasna'),
+    ('Dambovita', u'Dâmbovița'), ('Dolj', u'Dolj'), ('Galati', u'Galați'),
+    ('Giurgiu', 'Giurgiu'), ('Gorj', 'Gorj'), ('Harghita', 'Harghita'), 
+    ('Hunedoara', 'Hunedoara'), ('Ialomita', u'Ialomița'), ('Iasi', u'Iasi'),
+    ('Ilfov', 'Ilfov'), ('Maramures', u'Maramureș'),
+    ('Mehedinti', u'Mehedinți'), ('Mures', u'Mureș'), ('Neamt', u'Neamț'), 
+    ('Olt', 'Olt'), ('Prahova', 'Prahova'), ('Salaj', u'Sălaj'),
+    ('Satu-Mare', 'Satu-Mare'), ('Sibiu', 'Sibiu'), ('Suceava', 'Suceava'),
+    ('Teleorman', 'Teleorman'), ('Timis', u'Timiș'), ('Tulcea', 'Tulcea'),
+    ('Valcea', u'Vâlcea'), ('Vaslui', 'Vaslui'), ('Vrancea', 'Vrancea'))
+DEFAULT_COUNTY = 'Bucuresti'
