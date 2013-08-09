@@ -12,10 +12,23 @@
 			</div>
 			
 			<div class="field_value">
+			<div class="field_title">Nr. înreg. fiscală</div>
+			{{ building.buildingdetails.fiscal_id }}
+			</div>
+			
+			<div class="field_value">
+			<div class="field_title">Nr. reg. comerțului</div>
+			{{ building.buildingdetails.registration_id }}
+			</div>
+			
+			<div class="field_value">
 			<div class="field_title">Observații</div>
 			{{ building.buildingdetails.notes }}
 			</div>
 			
+			<div class="btn-group pull-right">
+				<a class="btn" href="javascript:editDialog('{% url 'edit_building' entity_id=building.id %}')"><i class="icon-pencil"></i> Editare</a>
+			</div>
 		</div>
 		<div class="span4 hidden-phone">
 			<img src="{% static 'ui/img/habitam-worker-hires.png' %}">

@@ -26,7 +26,7 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models.query_utils import Q
 from django.utils import timezone
-from habitam.entities.base import Entity, SingleAccountEntity
+from habitam.entities.base import Entity, SingleAccountEntity, FiscalEntity
 from habitam.entities.billable import Billable
 from habitam.entities.penalties import penalties
 from habitam.financial.models import Account, OperationDoc
@@ -315,11 +315,10 @@ class AccountLink(models.Model):
         return self.account.name
     
     
-class BuildingDetails(models.Model):
+class BuildingDetails(FiscalEntity):
     apartment_group = models.OneToOneField(ApartmentGroup)
-    address = models.CharField(max_length=200)
     notes = models.CharField(max_length=200)
-   
+    
     
 class Consumption(models.Model):
     consumed = models.DecimalField(null=True, blank=True,
@@ -335,7 +334,7 @@ class DisplayDate(models.Model):
     def buildingdisplay_date(self):
         ts = self.timestamp
         return date(day=ts.day, month=ts.month, year=ts.year)
-    
+   
     
 class Person(models.Model):
     name = models.CharField(max_length=200)
@@ -459,19 +458,15 @@ class ApartmentConsumption(Consumption):
     apartment = models.ForeignKey(Apartment)
 
 
-class Supplier(models.Model):
-    address = models.CharField(max_length=200, null=True, blank=True)
+class Supplier(FiscalEntity):
     archived = models.BooleanField(default=False)
     archive_date = models.DateTimeField(null=True, blank=True) 
     bank = models.CharField(max_length=30, null=True, blank=True)
     county = models.CharField(max_length=30, null=True, blank=True)
-    fiscal_id = models.CharField(max_length=30, null=True, blank=True)
     iban = models.CharField(max_length=30, null=True, blank=True)
     legal_representative = models.CharField(max_length=200, null=True, blank=True)
-    name = models.CharField(max_length=200)
     one_time = models.BooleanField(default=False)
-    registration_id = models.CharField(max_length=30, null=True, blank=True)
-   
+    
     @classmethod
     def can_add(cls, user_license):
         return True 

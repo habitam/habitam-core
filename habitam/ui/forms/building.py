@@ -26,19 +26,21 @@ from django.forms.util import ErrorDict
 from habitam.entities.models import ApartmentGroup, BuildingDetails
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY
-import inspect
 
 
 class EditBuildingForm(forms.ModelForm):
-    name = forms.CharField(label='Nume')
     address = forms.CharField(label='Adresă', required=False)
+    fiscal_id = forms.CharField(label='CIF', max_length=30, required=False)
+    name = forms.CharField(label='Nume')
     notes = forms.CharField(label='Observații', widget=forms.Textarea,
                             required=False)
+    registration_id = forms.CharField(label='Nr.Reg.Comerțului',
+                            max_length=200, required=False)
 
     class Meta:
         model = ApartmentGroup
-        fields = ('name', 'address', 'notes')
-        extra_fields = ('address', 'notes')
+        fields = ('name', 'address', 'fiscal_id', 'registration_id', 'notes')
+        extra_fields = ('address', 'notes', 'fiscal_id', 'registration_id')
         
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs.keys():

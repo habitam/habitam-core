@@ -34,8 +34,8 @@ INVOICE_FIELDS = {
 
 RECEIPT_FIELDS = {
     'description': forms.CharField(label='Descriere chitanță', max_length=200, required=False),
-    'fiscal_id': forms.CharField(label='CIF', max_length=30, required=False),
-    'registration_id': forms.CharField(label='Nr. Reg. Comerțului', max_length=30, required=False),
+    'fiscal_id': forms.CharField(label='Nr. înregistrare fiscală', max_length=30, required=False),
+    'registration_id': forms.CharField(label='Nr. registrul comerțului', max_length=30, required=False),
     'payer_name': forms.CharField(label='Plătit de', max_length=200, required=False),
     'payer_address': forms.CharField(label='Adresa', max_length=200, required=False),
 }

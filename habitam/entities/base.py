@@ -35,6 +35,15 @@ class Entity(models.Model):
 
     class Meta:
         abstract = True 
+        
+        
+class FiscalEntity(Entity):
+    address = models.CharField(max_length=200)
+    fiscal_id = models.CharField(max_length=30, blank=True, null=True)
+    registration_id = models.CharField(max_length=200, blank=True, null=True)
+    
+    class Meta:
+        abstract = True
 
 
 class SingleAccountEntity(Entity):   
