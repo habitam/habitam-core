@@ -361,8 +361,10 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
     
     if request.method == 'POST':
         form = form_cls(request.POST, entity=entity)
-        if form.is_valid():
+        if form.is_valid() and ('cmd' not in form.cleaned_data or form.cleaned_data['cmd'] == 'save'):
             try:
+                if 'cmd' in form.cleaned_data:
+                    del form.cleaned_data['cmd']
                 entity.new_inbound_operation(**form.cleaned_data)
             except Exception as e:
                 data = {'form': form, 'target': target, 'parent_id': entity_id,
