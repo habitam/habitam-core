@@ -162,6 +162,8 @@
 				typeof newDate === 'string' ? newDate : (this.isInput ? this.element.prop('value') : this.element.data('date')),
 				this.format
 			);
+			if (!this.date)
+				return;
 			this.viewDate = new Date(this.date.getFullYear(), this.date.getMonth(), 1, 0, 0, 0, 0);
 			this.fill();
 		},
@@ -390,6 +392,8 @@
 			return {separator: separator, parts: parts};
 		},
 		parseDate: function(date, format) {
+			if (!date)
+				return;
 			var parts = date.split(format.separator),
 				date = new Date(),
 				val;
