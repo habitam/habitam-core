@@ -63,6 +63,8 @@ def op_amount_class(account, doc, service):
     if doc.type == 'collection' and service != None:
         return ''
     amount = doc.total_amount
+    if amount == None:
+        return 'positive_balance'
     if doc.src == account:
         amount = amount * -1
     if amount < 0:
