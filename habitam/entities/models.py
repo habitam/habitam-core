@@ -32,7 +32,6 @@ from habitam.entities.penalties import penalties
 from habitam.financial.models import Account, OperationDoc
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY
-from uuid import uuid1
 import logging
 
 logger = logging.getLogger(__name__)
@@ -403,7 +402,10 @@ class Apartment(SingleAccountEntity):
         penalties = self.penalties()
         if penalties != None:
             amount = amount + penalties
-        return {'amount' :-1 * amount}
+        amount = -1 * amount
+        if amount < 0:
+            amount = 0
+        return {'amount' : amount}
      
     # TODO test this as per https://trello.com/c/djqGiRgQ 
     def penalties(self, when=date.today()):
@@ -416,8 +418,8 @@ class Apartment(SingleAccountEntity):
         return getattr(self, quota_type)
 
 
-    def new_inbound_operation(self, amount, dest_account, date=timezone.now()):
-        no = uuid1()
+    def new_inbound_operation(self, no, amount, receipt, dest_account,
+                              date=timezone.now()):
         building = self.building()
         penalties = self.penalties(date)
         if penalties != None:
@@ -429,7 +431,7 @@ class Apartment(SingleAccountEntity):
         self.account.new_multi_transfer(no, dest_account,
                                 [(dest_account, amount - penalties),
                                  (building.penalties_account, penalties)],
-                                date)
+                                date, 'transfer', receipt)
 
 
     def save(self, **kwargs):

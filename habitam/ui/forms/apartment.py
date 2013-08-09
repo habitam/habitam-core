@@ -21,12 +21,13 @@ Created on Apr 21, 2013
 @author: Stefan Guna
 '''
 from django import forms
-from django.forms.util import ErrorDict
-from django.forms.forms import NON_FIELD_ERRORS 
 from django.db.models.query_utils import Q
+from django.forms.forms import NON_FIELD_ERRORS
+from django.forms.util import ErrorDict
 from habitam.entities.models import ApartmentGroup, Apartment, Person
 from habitam.financial.models import Account
-from habitam.ui.forms.generic import NewPaymentForm
+from habitam.ui.forms.generic import RECEIPT_FIELDS, NewDocPaymentForm
+from uuid import uuid1
 
 
 class EditApartmentForm(forms.ModelForm):
@@ -85,11 +86,12 @@ class EditPersonForm(forms.ModelForm):
             self._errors[NON_FIELD_ERRORS] = self.error_class()
         self._errors[NON_FIELD_ERRORS].append(error_message)
 
-class NewApartmentPayment(NewPaymentForm):
+class NewApartmentPayment(NewDocPaymentForm):
+    no = forms.CharField(label='Număr chitanță', initial=uuid1())
     dest_account = forms.ModelChoiceField(label='Cont',
                             queryset=Account.objects.all())
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):        
         ap = kwargs['entity']
         building = ap.building()
         super(NewApartmentPayment, self).__init__(*args, **kwargs)
@@ -99,3 +101,22 @@ class NewApartmentPayment(NewPaymentForm):
         q = Account.objects.filter(qdirect | qparent).exclude(type='penalties')
         
         self.fields['dest_account'].queryset = q
+        
+        for fn, fv in RECEIPT_FIELDS.iteritems():
+            self.fields[fn] = fv    
+        self.fields['payer_name'].initial = ap.owner.name
+        self.fields['payer_address'].initial = building.buildingdetails.address
+        self.fields['description'].initial = u'Plată întreținere apartament ' + ap.name 
+        
+    def clean(self):
+        cleaned_data = super(NewApartmentPayment, self).clean()    
+        if cleaned_data['amount'] <= 0:
+            raise forms.ValidationError(u'Te rog să introduci o sumă mai ca zero')   
+        
+        receipt = {}
+        for fn in RECEIPT_FIELDS:
+            receipt[fn] = cleaned_data[fn]
+            del cleaned_data[fn]
+        cleaned_data['receipt'] = receipt
+        return cleaned_data 
+        

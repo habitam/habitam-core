@@ -21,7 +21,8 @@ Created on Apr 13, 2013
 '''
 
 from django.contrib import admin
-from habitam.financial.models import Quota, OperationDoc, Operation, Account
+from habitam.financial.models import Quota, OperationDoc, Operation, Account, \
+    Receipt
 
 class QuotaAdmin(admin.ModelAdmin):
     list_display = ('src', 'dest', 'ratio')
@@ -34,8 +35,12 @@ class OperationAdmin(admin.ModelAdmin):
 
 class AccountAdmin(admin.ModelAdmin):
     list_display = ('name', 'type', 'money_type')
+    
+class ReceiptAdmin(admin.ModelAdmin):
+    list_display = ('operationdoc', 'description', 'payer_name')
 
 admin.site.register(Quota, QuotaAdmin)
 admin.site.register(OperationDoc, OperationDocAdmin)
 admin.site.register(Operation, OperationAdmin)
 admin.site.register(Account, AccountAdmin)
+admin.site.register(Receipt, ReceiptAdmin)

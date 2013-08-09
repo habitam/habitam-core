@@ -188,7 +188,7 @@ class Account(models.Model):
         self.save()
         
     def new_multi_transfer(self, no, billed, ops, date=timezone.now(),
-                           transfer_type='transfer'):
+                           transfer_type='transfer', receipt=None):
         self.__assert_doc_not_exists(no)
         doc = OperationDoc.objects.create(date=date, no=no, src=self,
                                           type=transfer_type, billed=billed)
@@ -198,6 +198,11 @@ class Account(models.Model):
                 loss = op[2]
             Operation.objects.create(amount=op[1], doc=doc, dest=op[0],
                                      loss=loss)
+        
+        if receipt != None:
+            ro = Receipt.objects.create(operationdoc=doc, **receipt)
+            ro.save()
+            
         self.save()
         return doc
         
@@ -267,3 +272,14 @@ class Account(models.Model):
         query = Q(doc__type='transfer')
         return self.__source_amount(query, month)
      
+
+class Receipt(models.Model):
+    operationdoc = models.OneToOneField(OperationDoc)
+    description = models.CharField(max_length=200, blank=True, null=True)
+    fiscal_id = models.CharField(max_length=30, blank=True, null=True)
+    registration_id = models.CharField(max_length=200, blank=True, null=True)
+    payer_name = models.CharField(max_length=200, blank=True, null=True)
+    payer_address = models.CharField(max_length=200, blank=True, null=True)
+
+    
+    

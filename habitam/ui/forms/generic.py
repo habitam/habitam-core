@@ -25,26 +25,34 @@ from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
 from habitam.ui.widgets.bootstrap_date import BootstrapDateInput
 import datetime
+
+INVOICE_FIELDS = {
+    'series': forms.CharField(label='CIF', max_length=30, required=False),
+    'number': forms.CharField(label='CIF', max_length=30, required=False),
+    'reference': forms.CharField(label='CIF', max_length=30, required=False),
+}
+
+RECEIPT_FIELDS = {
+    'description': forms.CharField(label='Descriere chitanță', max_length=200, required=False),
+    'fiscal_id': forms.CharField(label='CIF', max_length=30, required=False),
+    'registration_id': forms.CharField(label='Nr. Reg. Comerțului', max_length=30, required=False),
+    'payer_name': forms.CharField(label='Plătit de', max_length=200, required=False),
+    'payer_address': forms.CharField(label='Adresa', max_length=200, required=False),
+}
    
-class NewPaymentForm(forms.Form):
+class NewDocPaymentForm(forms.Form):
+    amount = forms.DecimalField(label='Suma')
     date = forms.DateField(label='Data', initial=datetime.date.today,
                         widget=BootstrapDateInput(input_format='yyyy-mm-dd'))
-    amount = forms.DecimalField(label='Suma')
+    no = forms.CharField(label='Număr document')
     
     def __init__(self, *args, **kwargs):
         if 'entity' in kwargs.keys():
             del kwargs['entity']
-        super(NewPaymentForm, self).__init__(*args, **kwargs)
+        super(NewDocPaymentForm, self).__init__(*args, **kwargs)
         
     def spinners(self):
         return ['amount'] 
-    
-    def clean(self):
-        if 'amount' in self.cleaned_data:
-            s = self.cleaned_data['amount']
-            if s <= 0:
-                raise forms.ValidationError('Te rog sa introduci o suma mai mare decat zero')   
-        return self.cleaned_data    
 
     def add_form_error(self, error_message):
         if not self._errors:
@@ -53,5 +61,4 @@ class NewPaymentForm(forms.Form):
             self._errors[NON_FIELD_ERRORS] = self.error_class()
         self._errors[NON_FIELD_ERRORS].append(error_message)
 
-class NewDocPaymentForm(NewPaymentForm):
-    no = forms.CharField(label='Nume')
+    
