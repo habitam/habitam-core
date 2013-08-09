@@ -188,7 +188,8 @@ class Account(models.Model):
         self.save()
         
     def new_multi_transfer(self, no, billed, ops, date=timezone.now(),
-                           transfer_type='transfer', receipt=None):
+                           transfer_type='transfer', receipt=None,
+                           invoice=None):
         self.__assert_doc_not_exists(no)
         doc = OperationDoc.objects.create(date=date, no=no, src=self,
                                           type=transfer_type, billed=billed)
@@ -202,16 +203,24 @@ class Account(models.Model):
         if receipt != None:
             ro = Receipt.objects.create(operationdoc=doc, **receipt)
             ro.save()
+        
+        if invoice != None:
+            inv = Invoice.objects.create(operationdoc=doc, **invoice)
+            inv.save()
             
         self.save()
         return doc
         
     def new_charge(self, amount, date, no, billed, dest_accounts,
-                    charge_type):
+                    charge_type, invoice):
         self.__assert_doc_not_exists(no)
         
         new_charge = OperationDoc.objects.create(date=date, no=no,
                             billed=billed, src=self, type=charge_type)
+        
+        if invoice != None:
+            inv = Invoice.objects.create(operationdoc=new_charge, **invoice)
+            inv.save()
         
         quotas = Quota.objects.filter(src=self)
         sum_fun = lambda x, q: x + Decimal(q.ratio * amount).quantize(EPS)
@@ -281,5 +290,12 @@ class Receipt(models.Model):
     payer_name = models.CharField(max_length=200, blank=True, null=True)
     payer_address = models.CharField(max_length=200, blank=True, null=True)
 
-    
+     
+
+class Invoice(models.Model):
+    operationdoc = models.OneToOneField(OperationDoc)
+    fiscal_id = models.CharField(max_length=30, blank=True, null=True)
+    reference = models.CharField(max_length=30, blank=True, null=True)
+    registration_id = models.CharField(max_length=200, blank=True, null=True)
+    series = models.CharField(max_length=30, blank=True, null=True)
     

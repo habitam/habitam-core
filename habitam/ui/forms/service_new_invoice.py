@@ -23,7 +23,7 @@ Created on July 6, 2013
 from decimal import Decimal
 from django import forms
 from django.forms.fields import DecimalField, BooleanField
-from habitam.ui.forms.generic import NewDocPaymentForm
+from habitam.ui.forms.generic import NewDocPaymentForm, INVOICE_FIELDS
 import logging
 
 
@@ -59,10 +59,16 @@ def _required(args, ap):
 
 
 class NewServiceInvoice(NewDocPaymentForm):
+    series = INVOICE_FIELDS['series']
+    reference = INVOICE_FIELDS['reference']
+    fiscal_id = INVOICE_FIELDS['fiscal_id']
+    registration_id = INVOICE_FIELDS['registration_id']
     manual_costs = BooleanField(label='Distribuie costurile manual', required=False)
-   
+    cmd = forms.CharField(initial='save', widget=forms.HiddenInput())
+    
     def __init__(self, *args, **kwargs):
         self.service = kwargs['entity']
+ 
         super(NewServiceInvoice, self).__init__(*args, **kwargs)
         
         if self.__manual_costs():
@@ -70,9 +76,14 @@ class NewServiceInvoice(NewDocPaymentForm):
                                                     widget=forms.HiddenInput())
         if self.service.quota_type == 'consumption':
             self.fields['consumption'] = forms.DecimalField(label='Cantitate')
+                               
         if self.__manual_costs() or self.service.quota_type == 'consumption':
             self.consumption_ids = []
             self.__add_apartments(args)
+            
+        self.fields['fiscal_id'].initial = self.service.supplier.fiscal_id
+        self.fields['registration_id'].initial = self.service.supplier.registration_id
+        
     
     def __add_apartments(self, args):
         aps = self.service.billed.apartments()
@@ -131,6 +142,13 @@ class NewServiceInvoice(NewDocPaymentForm):
         if 'manual_costs' in cleaned_data:
             del cleaned_data['manual_costs']
         _drop_undeclared_checkboxes(cleaned_data)
+        
+        invoice = {}
+        for fn in INVOICE_FIELDS:
+            invoice[fn] = cleaned_data[fn]
+            del cleaned_data[fn]
+        cleaned_data['invoice'] = invoice
+            
         return cleaned_data    
     
     def spinners(self):

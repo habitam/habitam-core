@@ -27,9 +27,10 @@ from habitam.ui.widgets.bootstrap_date import BootstrapDateInput
 import datetime
 
 INVOICE_FIELDS = {
-    'series': forms.CharField(label='CIF', max_length=30, required=False),
-    'number': forms.CharField(label='CIF', max_length=30, required=False),
-    'reference': forms.CharField(label='CIF', max_length=30, required=False),
+    'series': forms.CharField(label='Serie', max_length=30, required=False),
+    'reference': forms.CharField(label='Referință', max_length=30, required=False),
+    'fiscal_id': forms.CharField(label='Nr. înregistrare fiscală', max_length=30, required=False),
+    'registration_id': forms.CharField(label='Nr. registrul comerțului', max_length=30, required=False),
 }
 
 RECEIPT_FIELDS = {
