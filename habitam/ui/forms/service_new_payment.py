@@ -23,37 +23,50 @@ Created on July 6, 2013
 from django import forms
 from django.db.models.query_utils import Q
 from habitam.financial.models import Account
-from habitam.ui.forms.generic import NewDocPaymentForm
+from habitam.ui.forms.generic import NewDocPaymentForm, NewReceiptPayment
 import logging
 
 
 logger = logging.getLogger(__name__)
 
 
-class NewOtherServicePayment(NewDocPaymentForm):
+class BasicServicePayment(NewReceiptPayment):
+    def __init__(self, *args, **kwargs):
+        super(BasicServicePayment, self).__init__(*args, **kwargs)
+        
+        building = self.building        
+        self.fields['payer_name'].initial = building.name
+        self.fields['payer_address'].initial = building.buildingdetails.address
+        self.fields['fiscal_id'].initial = building.buildingdetails.fiscal_id
+        self.fields['registration_id'].initial = building.buildingdetails.registration_id
+        self.fields['description'].initial = u'Plată serviciu'
+        
+
+class NewOtherServicePayment(BasicServicePayment):
     supplier = forms.CharField(label='Furnizor')
     service = forms.CharField(label='Serviciu', max_length=100)
     
     def __init__(self, *args, **kwargs):
+        self.building = kwargs['building']
         del kwargs['building']
         del kwargs['account']
         del kwargs['user']
         super(NewOtherServicePayment, self).__init__(*args, **kwargs)
         
         
-class NewServicePayment(NewDocPaymentForm):
+class NewServicePayment(BasicServicePayment):
     dest_account = forms.ModelChoiceField(label='Serviciu',
                             queryset=Account.objects.all())
     
     def __init__(self, *args, **kwargs):
-        building = kwargs['building']
+        self.building = kwargs['building']
         del kwargs['building']
         del kwargs['account']
         del kwargs['user']
         super(NewServicePayment, self).__init__(*args, **kwargs)
      
-        qbilled_direct = Q(service__billed=building)
-        qbilled_parent = Q(service__billed__parent=building)
+        qbilled_direct = Q(service__billed=self.building)
+        qbilled_parent = Q(service__billed__parent=self.building)
         qgeneric_service = Q(Q(qbilled_direct | qbilled_parent))
         qnotarchived = Q(~Q(service__archived=True) & qgeneric_service)
         qnotonetime = Q(~Q(service__one_time=True) & qnotarchived)

@@ -185,12 +185,18 @@ class Account(models.Model):
     def has_quotas(self):
         return Quota.objects.filter(Q(dest=self) | Q(src=self)).count() > 0
     
-    def new_transfer(self, amount, no, dest_account, date=timezone.now()):
+    def new_transfer(self, amount, no, dest_account, date=timezone.now(),
+                     receipt=None):
         self.__assert_doc_not_exists(no)
         
         doc = OperationDoc.objects.create(date=date, no=no, src=self,
                                           type='transfer', billed=dest_account)
         Operation.objects.create(amount=amount, doc=doc, dest=dest_account)
+                
+        if receipt != None:
+            ro = Receipt.objects.create(operationdoc=doc, **receipt)
+            ro.save()
+            
         self.save()
         
     def new_multi_transfer(self, no, billed, ops, date=timezone.now(),
