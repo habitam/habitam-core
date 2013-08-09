@@ -26,7 +26,7 @@
 				<td>
 					{% if not service.archived %}
 					<div class="btn-group">
-						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_invoice' entity_id=service.id %}')"><i class="icon-plus-sign icon-white"></i> Factură nouă</button>
+						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_invoice' entity_id=service.id %}')"><i class="icon-plus-sign icon-white"></i> Factură</button>
 					</div>
 					{% endif %}
 					<div class="btn-group">

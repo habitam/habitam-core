@@ -29,9 +29,10 @@
 				<td>
 					{% if not service.archived %}
 					<div class="btn-group">
-						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_collection' entity_id=service.id %}')"><i class="icon-plus-sign icon-white"></i> Colectare nouă</button>
-						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_service_payment' account_id=service.account.id %}')"><i class="icon-share-alt icon-white"></i> Plată serviciu</button>
-						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_other_service_payment' account_id=service.account.id %}')"><i class="icon-share-alt icon-white"></i> Plată terț</button>
+						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'new_fund_transfer' account_id=service.account.id %}')" title="Transferă bani într-un alt cont sau fond"><i class="icon-retweet"></i></button>
+						<button class="btn btn-mini btn-info" type="button" onclick="editDialog('{% url 'new_collection' entity_id=service.id %}')" title="Definește un nou obiectiv de colectare"><i class="icon-plus-sign icon-white"></i> Colectare</button>
+						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_service_payment' account_id=service.account.id %}')" title="Plătește un serviciu"><i class="icon-share-alt icon-white"></i> Serviciu</button>
+						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_other_service_payment' account_id=service.account.id %}')" title="Plătește serviciile unui terț neînregistrat în sistem"><i class="icon-share-alt icon-white"></i> Terț</button>
 					</div>
 					{% endif %}
 					<div class="btn-group">

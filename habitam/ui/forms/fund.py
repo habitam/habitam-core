@@ -79,7 +79,7 @@ class EditAccountForm(forms.ModelForm):
 
 
 class NewFundTransfer(NewDocPaymentForm):
-    dest_account = forms.ModelChoiceField(label='Fond',
+    dest_account = forms.ModelChoiceField(label='Destinație',
                             queryset=Account.objects.all())
     
     def __init__(self, *args, **kwargs):
@@ -99,6 +99,6 @@ class NewFundTransfer(NewDocPaymentForm):
         qbilled = Q(qbilled_direct | qbilled_parent)
         qnotarchived = Q(~Q(collectingfund__archived=True) & qbilled)
         
-        queryset = Account.objects.filter(collectingfund__billed=building)
-        queryset = queryset.exclude(pk=account.id)
+        queryset = Account.objects.filter(Q(qbuilding_accounts | qnotarchived))
+        queryset = queryset.exclude(pk=account.id).exclude(type='penalties')
         self.fields['dest_account'].queryset = queryset
