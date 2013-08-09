@@ -6,25 +6,12 @@
 	<div class="row-fluid">
 		<div class="span8 ">
 			
+			{% for key, value in building.view_fields.items %}
 			<div class="field_value">
-			<div class="field_title">Adresa</div>
-			{{ building.buildingdetails.address }}
+				<div class="field_title">{{ key }}</div>
+				{{ value }}
 			</div>
-			
-			<div class="field_value">
-			<div class="field_title">Nr. înreg. fiscală</div>
-			{{ building.buildingdetails.fiscal_id }}
-			</div>
-			
-			<div class="field_value">
-			<div class="field_title">Nr. reg. comerțului</div>
-			{{ building.buildingdetails.registration_id }}
-			</div>
-			
-			<div class="field_value">
-			<div class="field_title">Observații</div>
-			{{ building.buildingdetails.notes }}
-			</div>
+			{% endfor %}
 			
 			<div class="btn-group pull-right">
 				<a class="btn" href="javascript:editDialog('{% url 'edit_building' entity_id=building.id %}')"><i class="icon-pencil"></i> Editare</a>

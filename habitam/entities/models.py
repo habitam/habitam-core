@@ -304,6 +304,15 @@ class ApartmentGroup(Entity):
     def update_quotas(self):
         for svc in self.service_set.all():
             svc.set_quota()
+         
+            
+    def view_fields(self):
+        return {
+            'Adresa' : self.buildingdetails.address,
+            'Nr. înregistrare fiscală': self.buildingdetails.fiscal_id,
+            'Nr. registrul comerțului': self.buildingdetails.registration_id,
+            'Observații': self.buildingdetails.notes,
+        }
 
 
 class AccountLink(models.Model):
@@ -503,6 +512,16 @@ class Supplier(FiscalEntity):
     def save(self, **kwargs):
         self.__update_archived()
         super(Supplier, self).save(**kwargs) 
+        
+    def view_fields(self):
+        return {
+            'Adresa' : self.address,
+            'Județ': self.county,
+            'Nr. înregistrare fiscală': self.fiscal_id,
+            'Nr. registrul comerțului': self.registration_id,
+            'Bank': self.bank,
+            'IBAN': self.iban,
+        }
        
 
 class CollectingFund(Billable):
