@@ -198,4 +198,4 @@ class EditServiceForm(EditBillableForm):
     
     @classmethod
     def title(cls):
-        return 'Title'
+        return 'Serviciul'
