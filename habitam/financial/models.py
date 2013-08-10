@@ -69,7 +69,7 @@ class OperationDoc(models.Model):
     
     def list_description(self):
         try:
-            return self.invoice.series + '/' + self.no
+            return self.invoice.series + '/' + self.invoice.no
         except:
             return self.no
     
@@ -186,7 +186,7 @@ class Account(models.Model):
         return Quota.objects.filter(Q(dest=self) | Q(src=self)).count() > 0
     
     def new_transfer(self, amount, no, dest_account, date=timezone.now(),
-                     receipt=None):
+                     receipt=None, invoice=None):
         self.__assert_doc_not_exists(no)
         
         doc = OperationDoc.objects.create(date=date, no=no, src=self,
@@ -196,6 +196,10 @@ class Account(models.Model):
         if receipt != None:
             ro = Receipt.objects.create(operationdoc=doc, **receipt)
             ro.save()
+        
+        if invoice != None:
+            inv = Invoice.objects.create(operationdoc=doc, **invoice)
+            inv.save()
             
         self.save()
         
@@ -298,6 +302,7 @@ class Receipt(models.Model):
     operationdoc = models.OneToOneField(OperationDoc)
     description = models.CharField(max_length=200, blank=True, null=True)
     fiscal_id = models.CharField(max_length=30, blank=True, null=True)
+    no = models.CharField(max_length=100)
     registration_id = models.CharField(max_length=200, blank=True, null=True)
     payer_name = models.CharField(max_length=200, blank=True, null=True)
     payer_address = models.CharField(max_length=200, blank=True, null=True)
@@ -307,7 +312,9 @@ class Receipt(models.Model):
 class Invoice(models.Model):
     operationdoc = models.OneToOneField(OperationDoc)
     fiscal_id = models.CharField(max_length=30, blank=True, null=True)
+    no = models.CharField(max_length=100)
     reference = models.CharField(max_length=30, blank=True, null=True)
     registration_id = models.CharField(max_length=200, blank=True, null=True)
     series = models.CharField(max_length=30, blank=True, null=True)
+    
     

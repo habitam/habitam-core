@@ -23,7 +23,7 @@ Created on July 6, 2013
 from decimal import Decimal
 from django import forms
 from django.forms.fields import DecimalField, BooleanField
-from habitam.ui.forms.generic import NewDocPaymentForm, INVOICE_FIELDS
+from habitam.ui.forms.generic import NewDocPaymentForm, NewInvoice
 import logging
 
 
@@ -58,19 +58,14 @@ def _required(args, ap):
     return not (args and label in args[0])
 
 
-class NewServiceInvoice(NewDocPaymentForm):
-    series = forms.CharField(label='Serie', max_length=30, required=False)
-    reference = forms.CharField(label='Referință', max_length=30, required=False)
-    fiscal_id = forms.CharField(label='Nr. înregistrare fiscală', max_length=30, required=False)
-    registration_id = forms.CharField(label='Nr. registrul comerțului', max_length=30, required=False)
-    
+class NewBuildingCharge(NewDocPaymentForm):
     manual_costs = BooleanField(label='Distribuie costurile manual', required=False)
     cmd = forms.CharField(initial='save', widget=forms.HiddenInput())
     
     def __init__(self, *args, **kwargs):
         self.service = kwargs['entity']
  
-        super(NewServiceInvoice, self).__init__(*args, **kwargs)
+        super(NewBuildingCharge, self).__init__(*args, **kwargs)
         
         if self.__manual_costs():
             self.fields['amount'] = forms.DecimalField(label='Suma',
@@ -81,9 +76,6 @@ class NewServiceInvoice(NewDocPaymentForm):
         if self.__manual_costs() or self.service.quota_type == 'consumption':
             self.consumption_ids = []
             self.__add_apartments(args)
-            
-        self.fields['fiscal_id'].initial = self.service.supplier.fiscal_id
-        self.fields['registration_id'].initial = self.service.supplier.registration_id
         
     
     def __add_apartments(self, args):
@@ -132,7 +124,7 @@ class NewServiceInvoice(NewDocPaymentForm):
         return all_sum, all_data
     
     def clean(self):
-        cleaned_data = super(NewServiceInvoice, self).clean()
+        cleaned_data = super(NewBuildingCharge, self).clean()
         if self.__manual_costs():
             cleaned_data['amount'], cleaned_data['ap_sums'] = \
                 self.clean_apartments(cleaned_data, 'sum_ap_')
@@ -143,17 +135,21 @@ class NewServiceInvoice(NewDocPaymentForm):
         if 'manual_costs' in cleaned_data:
             del cleaned_data['manual_costs']
         _drop_undeclared_checkboxes(cleaned_data)
-        
-        invoice = {}
-        for fn in INVOICE_FIELDS:
-            invoice[fn] = cleaned_data[fn]
-            del cleaned_data[fn]
-        cleaned_data['invoice'] = invoice
             
         return cleaned_data    
     
     def spinners(self):
-        return super(NewServiceInvoice, self).spinners()
+        return super(NewBuildingCharge, self).spinners()
     
     def refresh_ids(self):
         return ['id_manual_costs']
+
+
+class NewServiceInvoice(NewInvoice, NewBuildingCharge):
+    def __init__(self, *args, **kwargs):
+        super(NewServiceInvoice, self).__init__(*args, **kwargs)   
+        self.fields['no'].label = 'Număr factură'     
+        del self.fields['invoice_no']
+        self.fields['invoice_fiscal_id'].initial = self.service.supplier.fiscal_id
+        self.fields['invoice_registration_id'].initial = self.service.supplier.registration_id
+        

@@ -27,13 +27,15 @@ from habitam.ui.widgets.bootstrap_date import BootstrapDateInput
 import datetime
 
 INVOICE_FIELDS = [
+    'fiscal_id',
+    'no',
     'series',
     'reference',
-    'fiscal_id',
     'registration_id',
 ]
 
 RECEIPT_FIELDS = [
+    'no',
     'description',
     'fiscal_id',
     'registration_id',
@@ -63,22 +65,51 @@ class NewDocPaymentForm(forms.Form):
         self._errors[NON_FIELD_ERRORS].append(error_message)
 
 
-class NewReceiptPayment(NewDocPaymentForm):
-    description = forms.CharField(label='Descriere chitanță', max_length=200, required=False)
-    fiscal_id = forms.CharField(label='Nr. înregistrare fiscală', max_length=30, required=False)
-    registration_id = forms.CharField(label='Nr. registrul comerțului', max_length=30, required=False)
-    payer_name = forms.CharField(label='Plătit de', max_length=200, required=False)
-    payer_address = forms.CharField(label='Adresa', max_length=200, required=False)
+class NewInvoice(NewDocPaymentForm):
+    invoice_series = forms.CharField(label='Serie factură', max_length=30, required=False)
+    invoice_no = forms.CharField(label='Număr factură')
+    invoice_reference = forms.CharField(label='Referință factură', max_length=30, required=False)
+    invoice_fiscal_id = forms.CharField(label='Nr. înreg. fiscală furnizor', max_length=30, required=False)
+    invoice_registration_id = forms.CharField(label='Nr. reg. com. furnizor', max_length=30, required=False)
+
+    def clean(self):
+        cleaned_data = super(NewInvoice, self).clean()
+        
+        invoice = {}
+        for fn in INVOICE_FIELDS:
+            label = 'invoice_' + fn
+            if not label in cleaned_data:
+                continue
+            invoice[fn] = cleaned_data[label]
+            del cleaned_data[label]
+        if 'no' in cleaned_data and not 'no' in invoice:
+            invoice['no'] = cleaned_data['no']
+        cleaned_data['invoice'] = invoice
+        return cleaned_data
+
+
+class NewReceipt(NewDocPaymentForm):
+    no = forms.CharField(label='Număr chitanță')
+    receipt_description = forms.CharField(label='Descriere chitanță', max_length=200, required=False)
+    receipt_fiscal_id = forms.CharField(label='Nr. înreg. fiscală plătitor', max_length=30, required=False)
+    receipt_registration_id = forms.CharField(label='Nr. reg. com. plătitor', max_length=30, required=False)
+    receipt_payer_name = forms.CharField(label='Plătit de', max_length=200, required=False)
+    receipt_payer_address = forms.CharField(label='Adresa plătitor', max_length=200, required=False)
        
     def clean(self):
-        cleaned_data = super(NewReceiptPayment, self).clean()    
+        cleaned_data = super(NewReceipt, self).clean()    
         if cleaned_data['amount'] <= 0:
             raise forms.ValidationError(u'Te rog să introduci o sumă mai ca zero')   
         
         receipt = {}
         for fn in RECEIPT_FIELDS:
-            receipt[fn] = cleaned_data[fn]
-            del cleaned_data[fn]
+            label = 'receipt_' + fn
+            if not label in cleaned_data:
+                continue
+            receipt[fn] = cleaned_data[label]
+            del cleaned_data[label]
+        if not 'no' in receipt:
+            receipt['no'] = cleaned_data['no']
         cleaned_data['receipt'] = receipt
         return cleaned_data 
     

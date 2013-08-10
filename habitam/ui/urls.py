@@ -34,7 +34,8 @@ from habitam.ui.forms.billable_edit_form import EditServiceForm, \
 from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
 from habitam.ui.forms.contact import ContactForm
 from habitam.ui.forms.fund import NewFundTransfer, EditAccountForm
-from habitam.ui.forms.service_new_invoice import NewServiceInvoice
+from habitam.ui.forms.service_new_invoice import NewServiceInvoice, \
+    NewBuildingCharge
 from habitam.ui.forms.service_new_payment import NewServicePayment, \
     NewOtherServicePayment
 from habitam.ui.forms.supplier import EditSupplierForm
@@ -146,7 +147,7 @@ urlpatterns = patterns('habitam.ui.urls_user',
                            
     url(r'^collecting_funds/(?P<entity_id>\d+)/collection/new$',
         views.new_inbound_operation,
-        {'entity_cls': CollectingFund, 'form_cls': NewServiceInvoice,
+        {'entity_cls': CollectingFund, 'form_cls': NewBuildingCharge,
          'target': 'new_collection', 'title': 'Colectare pentru'},
         name='new_collection'),
 

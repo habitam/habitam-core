@@ -23,26 +23,29 @@ Created on July 6, 2013
 from django import forms
 from django.db.models.query_utils import Q
 from habitam.financial.models import Account
-from habitam.ui.forms.generic import NewDocPaymentForm, NewReceiptPayment
+from habitam.ui.forms.generic import NewReceipt, NewInvoice
 import logging
 
 
 logger = logging.getLogger(__name__)
 
 
-class BasicServicePayment(NewReceiptPayment):
+class BasicServicePayment(NewReceipt):
     def __init__(self, *args, **kwargs):
         super(BasicServicePayment, self).__init__(*args, **kwargs)
         
         building = self.building        
-        self.fields['payer_name'].initial = building.name
-        self.fields['payer_address'].initial = building.buildingdetails.address
-        self.fields['fiscal_id'].initial = building.buildingdetails.fiscal_id
-        self.fields['registration_id'].initial = building.buildingdetails.registration_id
-        self.fields['description'].initial = u'Plată serviciu'
+        self.fields['receipt_payer_name'].initial = building.name
+        try:
+            self.fields['receipt_payer_address'].initial = building.buildingdetails.address
+            self.fields['receipt_fiscal_id'].initial = building.buildingdetails.fiscal_id
+            self.fields['receipt_registration_id'].initial = building.buildingdetails.registration_id
+        except:
+            pass
+        self.fields['receipt_description'].initial = u'Plată serviciu'
         
 
-class NewOtherServicePayment(BasicServicePayment):
+class NewOtherServicePayment(BasicServicePayment, NewInvoice):
     supplier = forms.CharField(label='Furnizor')
     service = forms.CharField(label='Serviciu', max_length=100)
     
@@ -52,6 +55,7 @@ class NewOtherServicePayment(BasicServicePayment):
         del kwargs['account']
         del kwargs['user']
         super(NewOtherServicePayment, self).__init__(*args, **kwargs)
+        self.fields['no'].label = 'Număr chitanță'
         
         
 class NewServicePayment(BasicServicePayment):

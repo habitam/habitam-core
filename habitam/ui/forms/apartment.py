@@ -26,7 +26,7 @@ from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
 from habitam.entities.models import ApartmentGroup, Apartment, Person
 from habitam.financial.models import Account
-from habitam.ui.forms.generic import NewReceiptPayment
+from habitam.ui.forms.generic import NewReceipt
 from uuid import uuid1
 
 
@@ -86,7 +86,7 @@ class EditPersonForm(forms.ModelForm):
             self._errors[NON_FIELD_ERRORS] = self.error_class()
         self._errors[NON_FIELD_ERRORS].append(error_message)
 
-class NewApartmentPayment(NewReceiptPayment):
+class NewApartmentPayment(NewReceipt):
     no = forms.CharField(label='Număr chitanță', initial=uuid1())
     dest_account = forms.ModelChoiceField(label='Cont',
                             queryset=Account.objects.all())
@@ -102,7 +102,10 @@ class NewApartmentPayment(NewReceiptPayment):
         
         self.fields['dest_account'].queryset = q
         
-        self.fields['payer_name'].initial = ap.owner.name
-        self.fields['payer_address'].initial = building.buildingdetails.address
-        self.fields['description'].initial = u'Plată întreținere apartament ' + ap.name
+        self.fields['receipt_payer_name'].initial = ap.owner.name
+        try:
+            self.fields['receipt_payer_address'].initial = building.buildingdetails.address
+        except:
+            pass
+        self.fields['receipt_description'].initial = u'Plată întreținere apartament ' + ap.name
         
