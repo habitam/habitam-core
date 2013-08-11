@@ -1,27 +1,31 @@
+{% load gravatar %}
 {% with license=user.administrator.license %}
-<table width="300px">
-	<tbody>
-		<tr>
-			<th>Valabilitate:</th>
-			<td>{{ license.valid_until }}</td>
-		</tr>
-		<tr>
-			<th>Folosiți:</th>
-			<td>{{ license.apartment_count }} din {{ license.max_apartments }} apartamente</td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				<div class="progress">
-					<div class="bar" style="width: {{ license.usage_ratio }}%;"></div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center">
-				<a class="btn" href="{% url 'password_change' %}"><i class="icon-lock"></i> Parola</a>
-				<a class="btn" href="{% url 'logout' %}"><i class="icon-off"></i> Deconectare</a>
-			</td>
-		</tr>
-	</tbody>
-</table>
+<div class="media" style="width: 380px;">
+	<a class="pull-left" href="http://www.gravatar.com">
+		<img class="media-object" alt="Gravatar" style="width: 80px; height: 80px;" src="{% gravatar_url user.email %}">
+	</a>
+	<div class="media-body">
+		<table width="300px">
+			<tbody>
+				<tr>
+					<th>Valabilitate:</th>
+					<td>{{ license.valid_until }}</td>
+				</tr>
+				<tr>
+					<th>Folosiți:</th>
+					<td>{{ license.apartment_count }} din {{ license.max_apartments }} apartamente</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div class="progress">
+							<div class="bar" style="width: {{ license.usage_ratio }}%;"></div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<a class="btn" href="{% url 'password_change' %}"><i class="icon-lock"></i> Parola</a>
+<a class="btn" href="{% url 'logout' %}"><i class="icon-off"></i> Deconectare</a>
 {% endwith %}
