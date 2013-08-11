@@ -398,10 +398,8 @@ def new_simple_entity(request, entity_cls, form_cls, target,
                 return render(request, 'edit_ok.html')
             # TODO @iia catch by different exceptions
             except Exception as e:
-                data = {'form': form, 'target': target, 'title': title}
                 logger.exception('Cannot save entity')
                 form.add_form_error(e)
-                return render(request, 'edit_dialog.html', data)
     else:
         form = form_cls(user=request.user)
     

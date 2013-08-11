@@ -25,7 +25,6 @@ from habitam.settings import TRIAL_LICENSE
 from habitam.ui.forms.trial_registration import HabitamRegistrationForm
 from habitam.ui.registration_views import TrialRegistrationView, \
     TrialActivationView
-from registration.views import RegistrationView
 
 urlpatterns = patterns('',
     url(r'^users/login/$', 'django.contrib.auth.views.login',

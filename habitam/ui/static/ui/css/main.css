@@ -11,6 +11,10 @@ input[id^="id_captcha"] {
 	color: rgb(180, 180, 180);
 }
 
+.control-group ul {
+	list-style: none;
+}
+
 .field_title {
 	position: relative;
 	top: -15px;

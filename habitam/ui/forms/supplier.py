@@ -21,9 +21,10 @@ Created on Jun 6, 2013
 @author: stefan
 '''
 from django import forms
-from habitam.entities.models import Supplier
+from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
-from django.forms.forms import NON_FIELD_ERRORS 
+from habitam.entities.bootstrap_suppliers import remaining_suppliers
+from habitam.entities.models import Supplier
 
 class EditSupplierForm(forms.ModelForm):
     address = forms.CharField(label='Adresa', max_length=200, required=False)
@@ -39,7 +40,7 @@ class EditSupplierForm(forms.ModelForm):
     class Meta:
         model = Supplier 
         fields = ('name', 'address', 'county', 'legal_representative', 'bank',
-                  'iban', 'fiscal_id', 'registration_id',  'archived')    
+                  'iban', 'fiscal_id', 'registration_id', 'archived')    
         
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs.keys():
@@ -62,6 +63,21 @@ class EditSupplierForm(forms.ModelForm):
                 if ss.name == n:
                     raise forms.ValidationError('Numele %s mai exista in lista de furnizori' % (n))
         return self.cleaned_data
+    
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)
+
+
+class SelectSuppliersForm(forms.Form):
+    suppliers = forms.MultipleChoiceField(label='Alege unul sau mai mulți furnizori:', widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, existing_suppliers, *args, **kwargs):
+        super(SelectSuppliersForm, self).__init__(*args, **kwargs)
+        self.fields['suppliers'].choices = remaining_suppliers(existing_suppliers)
     
     def add_form_error(self, error_message):
         if not self._errors:

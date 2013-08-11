@@ -24,9 +24,9 @@ from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
 from habitam.downloads import register, balance
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person, \
-    Supplier, CollectingFund
+    CollectingFund
 from habitam.financial.models import Account
-from habitam.ui import views, billable_views, urls_user
+from habitam.ui import views, billable_views, urls_user, urls_suppliers
 from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm, \
     NewApartmentPayment
 from habitam.ui.forms.billable_edit_form import EditServiceForm, \
@@ -38,7 +38,6 @@ from habitam.ui.forms.service_new_invoice import NewServiceInvoice, \
     NewBuildingCharge
 from habitam.ui.forms.service_new_payment import NewServicePayment, \
     NewOtherServicePayment
-from habitam.ui.forms.supplier import EditSupplierForm
 from habitam.ui.views import form_view
 
 
@@ -200,38 +199,9 @@ urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^owners/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
         {'entity_cls': Person, 'form_cls': EditPersonForm,
          'target': 'edit_owner', 'title': ''}, name='edit_owner'),
-
-
-    url(r'^suppliers/new$', views.new_simple_entity,
-        {'entity_cls': Supplier, 'form_cls': EditSupplierForm,
-         'target': 'new_supplier', 'title': 'Furnizor nou'}, 'new_supplier'),
-                       
-    url(r'^suppliers/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
-        {'entity_cls': Supplier, 'form_cls': EditSupplierForm,
-         'target': 'edit_supplier', 'title': 'Editare furnizor'},
-        'edit_supplier'),
-                       
-    url(r'^suppliers$', views.general_list,
-        {'license_subtype': 'suppliers', 'entity_cls' : Supplier,
-         'title': 'Furnizori disponibili', 'edit_name': 'edit_supplier',
-         'new_name' :'new_supplier', 'view_name': 'suppliers',
-         'entity_view_name': 'supplier_view', 'alt_view_name': 'all_suppliers'},
-        name='suppliers'),
-
-    url(r'^suppliers/all$', views.general_list,
-        {'license_subtype': 'suppliers', 'entity_cls' : Supplier,
-         'title': 'Furnizori disponibili', 'edit_name': 'edit_supplier',
-         'new_name' :'new_supplier', 'view_name': 'all_suppliers',
-         'alt_view_name': 'suppliers', 'entity_view_name': 'supplier_view',
-         'show_all': True},
-        name='all_suppliers'),
-                       
-    url(r'^suppliers/(?P<entity_id>\d+)$', views.entity_view,
-        {'entity_cls' : Supplier, 'edit_name': 'edit_supplier',
-         'view_name': 'supplier_view'},
-        name='supplier_view'),
 )
 
 
-urlpatterns += urls_user.urlpatterns;
+urlpatterns += urls_user.urlpatterns
+urlpatterns += urls_suppliers.urlpatterns
 

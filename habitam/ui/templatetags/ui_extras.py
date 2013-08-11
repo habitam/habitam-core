@@ -20,6 +20,7 @@ Created on Apr 20, 2013
 @author: Stefan Guna
 '''
 from django import template
+from habitam.entities.bootstrap_suppliers import remaining_suppliers
 from habitam.settings import PENALTY_START_DAYS
 
 register = template.Library()
@@ -46,6 +47,10 @@ def operation_other_party(account, doc):
 @register.assignment_tag
 def available_list_months(building, user_license):
     return building.available_list_months(user_license.months_back)        
+
+@register.filter
+def class_name(ob):
+    return ob.__class__.__name__
 
 @register.simple_tag
 def field_class(field):
@@ -84,6 +89,10 @@ def penalty_collect(building):
 @register.assignment_tag
 def services_without_invoice(building, month):
     return building.services_without_invoice(month)
+
+@register.filter
+def remaining_std_suppliers(l):
+    return remaining_suppliers(l.available_suppliers())
 
 @register.assignment_tag
 def valid_timestamp(timestamp, user_license):
