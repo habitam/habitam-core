@@ -11,7 +11,13 @@
 		{% if not entity.show_all %}
 		{% if show_all or not entity.archived %}
 		<tr>
-			<td {% if entity.archived %}class="archived"{% endif %}><a href="{% url entity_view_name entity.id %}">{{ entity.name }}</a></td>
+			<td {% if entity.archived %}class="archived"{% endif %}>
+			<a href="{% url entity_view_name entity.id %}">{{ entity.name }}
+			{% if entity_cls|class_name == 'ApartmentGroup'  %}
+			<span class="badge pull-right">{{ entity.apartments|length }}</span>
+			{% endif %}
+			</a>
+			</td>
 			<td>
 				<div class="btn-group">
 					{% if entity.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url edit_name entity_id=entity.id %}', '{% url view_name %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
@@ -29,6 +35,15 @@
 	{% if can_archive %}
 	<a href="{% url alt_view_name %}" class="btn{% if show_all %} active{% endif %}">Arată tot</a>
 	{% endif %}
+	
+	{% if entity_cls|class_name == 'Supplier' %}
+	{% with license=user.administrator.license %}
+	{% if  license|remaining_std_suppliers %}
+	<button class="btn btn-info" type="button" onclick="javascript:editDialog('{% url 'select_std_suppliers' %}');">Adaugă predefinit</button>
+	{% endif %}
+	{% endwith %}
+	{% endif %}
+	
 	{% capability entity_cls user.administrator.license 'can_add' as can_add %}
 	{% if can_add %}
 	<button class="btn btn-info" type="button" onclick="javascript:editDialog('{% url new_name %}');">Adaugă</button>
