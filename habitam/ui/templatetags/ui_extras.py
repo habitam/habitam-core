@@ -92,7 +92,10 @@ def services_without_invoice(building, month):
 
 @register.filter
 def remaining_std_suppliers(l):
-    return remaining_suppliers(l.available_suppliers())
+    try:
+        return remaining_suppliers(l.available_suppliers())
+    except:
+        return None
 
 @register.assignment_tag
 def valid_timestamp(timestamp, user_license):
