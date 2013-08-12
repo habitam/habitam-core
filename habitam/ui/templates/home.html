@@ -2,20 +2,10 @@
 
 {% block inner_content %}
 <h1>Bun venit!</h1>
+
+{% include 'checks/available_suppliers.html' %}
+
 {% with license=user.administrator.license %}
-
-{% if not license.available_suppliers %}
-
-<div class="alert alert-info">
-<span class="label label-info">Atenție!</span> Nu ați adăugat nici un
-<strong>furnizor</strong>. Puteți să selectați câțiva dintre cei 
-<a href="javascript:editDialog('{% url 'select_std_suppliers' %}');">predefiniți</a>
-sau să definiți
-<a href="javascript:editDialog('{% url 'new_supplier' %}');">unul nou</a>.
-</div>
-
-{% endif %}
-
 {% if license.available_buildings %}
 
 {% if license.apartment_count >= license.max_apartments %}
@@ -32,8 +22,7 @@ de mai sus.</p>
 {% else %}
 
 <div class="alert alert-info">
-<span class="label label-info">Atenție!</span> Nu ați adăugat nici o
-<strong>clădire</strong>. Începeți prin a adăuga 
+Nu ați adăugat nici o <strong>clădire</strong>. Începeți prin a adăuga 
 <a href="javascript:editDialog('{% url 'new_building' %}');">una nouă</a>.
 </div>
 

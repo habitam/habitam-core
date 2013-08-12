@@ -52,10 +52,20 @@
 	</legend>
 </div>
 <div class="container">
+	{% include 'checks/available_suppliers.html' %}
+	{% if user.administrator.license.available_suppliers and not building.services %}
+	<div class="alert">
+		Nu există nici un serviciu (de ex., "apă caldă") definit pentru această
+		clădire. Înainte de a putea adăuga intrări la lista de întreținere,
+		trebuie să definiți câteva servicii. Începeți
+		<a href="javascript:editDialog('{% url 'new_billable_general' building.id %}')">aici</a>.
+	</div>
+	{% endif %}
 	{% if building.needs_bootstrap %}
 	<div class="alert alert-info">
 		Nu există nici o operațiune înregistrată pentru apartamentele din
-		această clădire. Dacă doriți să introduceți soldurile inițiale, apăsați
+		această clădire. <em>{{ building.name }}</em> este un bloc nou și doriți să
+		introduceți soldurile inițiale? Apăsați
 		<a href="javascript:editDialog('{% url 'initial_operations' building.id %}')">aici</a>.
 	</div>
 	{% endif %}

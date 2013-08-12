@@ -43,11 +43,9 @@
 <div class="container">
 	<div class="pull-right">
 		<a href="{% if show_all %}{% url 'service_list' building.id %}{% else %}{% url 'all_service_list' building.id %}{% endif %}" class="btn{% if show_all %} active{% endif %}">Toate serviciile</a>
-		{% with license=user.administrator.license %}
-		{% if license.available_suppliers %}
+		{% if user.administrator.license.available_suppliers %}
 		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_billable_general' building.id %}')">Serviciu nou</button>
 		{% endif %}
-		{% endwith %}
 	</div>
 </div>
 {% endblock %}
