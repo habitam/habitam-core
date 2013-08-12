@@ -56,65 +56,6 @@ class ApartmentGroup(Entity):
     daily_penalty = models.DecimalField(null=True, blank=True,
             decimal_places=2, max_digits=4,
             validators=[MaxValueValidator(MAX_PENALTY_PER_DAY)])
-  
-    @classmethod
-    def bootstrap_building(cls, user_license, name, staircases, apartments,
-                           apartment_offset, daily_penalty, close_day,
-                           payment_due_days):
-        per_staircase = apartments / staircases
-        remainder = apartments % staircases
-        
-        building = ApartmentGroup.building_create(name=name,
-                        daily_penalty=daily_penalty,
-                        close_day=close_day,
-                        payment_due_days=payment_due_days)
-        ap_idx = apartment_offset
-        today = date.today()
-        for i in range(staircases):
-            staircase = ApartmentGroup.staircase_create(parent=building,
-                                                        name=str(i + 1))
-            for j in range(per_staircase):
-                name = str(ap_idx)
-                owner = Person.bootstrap_owner(name)
-                Apartment.objects.create(name=name, parent=staircase,
-                                         owner=owner, no_penalties_since=today)
-                ap_idx = ap_idx + 1
-            if i + 1 < staircases:
-                continue
-            for j in range(remainder):
-                name = str(ap_idx)
-                owner = Person.bootstrap_owner(name)
-                Apartment.objects.create(name=name, parent=staircase,
-                                         owner=owner, no_penalties_since=today)
-                ap_idx = ap_idx + 1
-        if user_license != None:
-            user_license.add_entity(building, ApartmentGroup)
-        else:
-            building.save()
-        return building.id
-    
-    
-    @classmethod
-    def building_create(cls, name, daily_penalty=None, close_day=None,
-                        payment_due_days=None):
-        default_account = Account.objects.create(type='std')
-        penalties_account = Account.objects.create(type='penalties')
-        building = ApartmentGroup.objects.create(name=name, type='building',
-                                default_account=default_account,
-                                penalties_account=penalties_account,
-                                daily_penalty=daily_penalty,
-                                close_day=close_day,
-                                payment_due_days=payment_due_days)
-        
-        AccountLink.objects.create(holder=building, account=default_account)
-        default_account.name = building.__unicode__()
-        default_account.save()
-        
-        AccountLink.objects.create(holder=building, account=penalties_account)
-        penalties_account.name = building.__unicode__()
-        penalties_account.save()
-        
-        return building
     
     @classmethod
     def can_add(cls, user_license):
@@ -123,17 +64,6 @@ class ApartmentGroup(Entity):
     @classmethod
     def can_archive(cls, user_license):
         return False
-     
-    @classmethod
-    def staircase_create(cls, name, parent, daily_penalty=None, close_day=None,
-                        payment_due_days=None):
-        staircase = ApartmentGroup.objects.create(name=name, parent=parent,
-                                type='stair', daily_penalty=daily_penalty,
-                                close_day=close_day,
-                                payment_due_days=payment_due_days)
-        staircase.save()
-        
-        return staircase
     
     
     def __billable(self, billable_type):

@@ -30,6 +30,7 @@ from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.utils.decorators import decorator_from_middleware
 from habitam.downloads.display_list import download_display_list
+from habitam.entities.bootstrap_building import bootstrap_building
 from habitam.entities.accessor import entity_for_account, building_for_account
 from habitam.entities.models import ApartmentGroup, Apartment, AccountLink, \
     CollectingFund, Supplier, Service
@@ -83,9 +84,9 @@ def new_building(request):
         form = NewBuildingForm(request.user, request.POST)
         if form.is_valid():
             try:
-                building_id = ApartmentGroup.bootstrap_building(
-                                                                request.user.administrator.license, **form.cleaned_data)
-                url = reverse('apartment_list', args=[building_id])
+                l = request.user.administrator.license
+                building = bootstrap_building(l, **form.cleaned_data)
+                url = reverse('apartment_list', args=[building.id])
                 data = {'location': url}
                 return render(request, 'edit_redirect.html', data)
             # TODO @iia catch by different exceptions
