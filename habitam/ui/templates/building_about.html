@@ -7,8 +7,8 @@
 		<div class="span8 ">
 			
 			{% for key, value in building.view_fields.items %}
-			<div class="field_value">
-				<div class="field_title">{{ key }}</div>
+			<div class="well well-small">
+				<span class="label">{{ key }}</span>
 				{{ value }}
 			</div>
 			{% endfor %}
