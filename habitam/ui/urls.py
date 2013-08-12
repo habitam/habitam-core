@@ -31,7 +31,8 @@ from habitam.ui.forms.apartment import EditApartmentForm, EditPersonForm, \
     NewApartmentPayment
 from habitam.ui.forms.billable_edit_form import EditServiceForm, \
     EditCollectingFundForm
-from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm
+from habitam.ui.forms.building import EditStaircaseForm, EditBuildingForm, \
+    InitialOperations
 from habitam.ui.forms.contact import ContactForm
 from habitam.ui.forms.fund import NewFundTransfer, EditAccountForm
 from habitam.ui.forms.service_new_invoice import NewServiceInvoice, \
@@ -79,6 +80,12 @@ urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^buildings/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
         {'entity_cls': ApartmentGroup, 'form_cls': EditBuildingForm,
          'target': 'edit_building', 'title': ''}, name='edit_building'),
+                       
+    url(r'^buildings/(?P<building_id>\d+)/initial_operations$',
+        views.new_building_entity,
+        {'form_cls': InitialOperations, 'target': 'initial_operations',
+         'title': u'Operațiuni inițiale', 'commit_directly': True},
+        'initial_operations'),
 
     url(r'^buildings/(?P<building_id>\d+)/staircases/new$',
         views.new_building_entity,

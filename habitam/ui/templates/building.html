@@ -52,6 +52,13 @@
 	</legend>
 </div>
 <div class="container">
+	{% if building.needs_bootstrap %}
+	<div class="alert alert-info">
+		Nu există nici o operațiune înregistrată pentru apartamentele din
+		această clădire. Dacă doriți să introduceți soldurile inițiale, apăsați
+		<a href="javascript:editDialog('{% url 'initial_operations' building.id %}')">aici</a>.
+	</div>
+	{% endif %}
 	<ul class="nav nav-tabs">
 		<li {% if active_tab = 'building_view' %}class="active"{% endif %}><a href="{% url 'building_view' building.id %}">Despre</a></li>
 		<li {% if active_tab = 'apartment_list' %}class="active"{% endif %}><a href="{% url 'apartment_list' building.id %}">Apartamente</a></li>

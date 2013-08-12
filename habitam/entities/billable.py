@@ -178,6 +178,12 @@ class Billable(SingleAccountEntity):
             del kwargs['ap_quotas']
         self.__update_archived()
         
+        #TODO this is a hack
+        if not 'money_type' in kwargs:
+            kwargs['money_type'] = 'cash'
+        if not 'account_type' in kwargs:
+            kwargs['account_type'] = 'special'
+ 
         super(Billable, self).save(**kwargs)
        
         if self.__change_billed() or self.__change_quotas() or \

@@ -181,6 +181,11 @@ class Account(models.Model):
     
     def count_src_operations(self, begin, end):
         return self.doc_src_set.filter(Q(date__gt=begin) & Q(date__lt=end)).count()
+    
+    def has_operations(self):
+        q = Q(Q(src=self) | Q(operation__dest=self))
+        qs = OperationDoc.objects.filter(q)
+        return qs.exists()
      
     def has_quotas(self):
         return Quota.objects.filter(Q(dest=self) | Q(src=self)).count() > 0

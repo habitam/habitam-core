@@ -24,24 +24,18 @@ from decimal import Decimal
 from django import forms
 from django.forms.fields import DecimalField, BooleanField
 from habitam.ui.forms.generic import NewDocPaymentForm, NewInvoice
+from habitam.ui.forms.helper.all_apartments import skip_apartments, \
+    aggregate_apartments, drop_skip_checkboxes
 import logging
 
 
 logger = logging.getLogger(__name__)
 
 
-def _drop_undeclared_checkboxes(cleaned_data):    
-    for k in cleaned_data.keys():
-        if not k.startswith('consumption_undeclared_ap_'):
-            continue
-        del cleaned_data[k]
+
  
 def _process_undeclared(cleaned_data):
-    to_drop = [] 
-    for k, v in cleaned_data.iteritems():
-        if not k.startswith('consumption_undeclared_ap_') or not v:
-            continue
-        to_drop.append(int(k[len('consumption_undeclared_ap_'):])) 
+    to_drop = skip_apartments('consumption_undeclared_ap_', cleaned_data)
     if not to_drop or not cleaned_data['ap_consumptions'] or not cleaned_data['consumption']:
         return
     for pk in to_drop:
@@ -104,37 +98,19 @@ class NewBuildingCharge(NewDocPaymentForm):
                 continue
             ap = k[len('consumption_undeclared_ap_'):]
             self.fields['consumption_ap_' + ap].required = False
-                
-    def clean_apartments(self, cleaned_data, label):
-        all_data = {}
-        all_sum = 0
-        for k, v in cleaned_data.items():
-            if not k.startswith(label):
-                continue
-            all_data[int(k[len(label):])] = v
-            if not v:
-                continue
-            all_sum = all_sum + v
-            
-        for k in all_data.keys():
-            del cleaned_data[label + str(k)]
-        
-        if all_sum == 0 or len(all_data) == 0:
-            return None, None 
-        return all_sum, all_data
     
     def clean(self):
         cleaned_data = super(NewBuildingCharge, self).clean()
         if self.__manual_costs():
             cleaned_data['amount'], cleaned_data['ap_sums'] = \
-                self.clean_apartments(cleaned_data, 'sum_ap_')
+                aggregate_apartments('sum_ap_', cleaned_data)
         if self.service.quota_type == 'consumption': 
             dummy, cleaned_data['ap_consumptions'] = \
-                self.clean_apartments(cleaned_data, 'consumption_ap_')
+                aggregate_apartments('consumption_ap_', cleaned_data)
             _process_undeclared(cleaned_data)
         if 'manual_costs' in cleaned_data:
             del cleaned_data['manual_costs']
-        _drop_undeclared_checkboxes(cleaned_data)
+        drop_skip_checkboxes('consumption_undeclared_ap_', cleaned_data)
             
         return cleaned_data    
     

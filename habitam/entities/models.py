@@ -185,6 +185,14 @@ class ApartmentGroup(Entity):
             dd = DisplayDate.objects.create(building=self, month=month,
                                             timestamp=datetime.now())
             dd.save()
+            
+    
+    def needs_bootstrap(self):
+        ap_accounts = (a.account for a in self.apartments())
+        for account in ap_accounts:
+            if account.has_operations():
+                return False
+        return True
         
 
     def funds(self):

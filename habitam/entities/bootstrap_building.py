@@ -20,9 +20,9 @@ Created on Aug 12, 2013
 
 @author: Stefan Guna
 '''
-from datetime import date
+from datetime import date, datetime
 from habitam.entities.models import ApartmentGroup, Person, Apartment, \
-    AccountLink
+    AccountLink, CollectingFund
 from habitam.financial.models import Account
 
 
@@ -91,3 +91,21 @@ def bootstrap_building(user_license, name, staircases, apartments,
     else:
         building.save()
     return building
+
+
+def initial_operations(building, sums, dates):
+    assert sums
+    assert dates
+    assert (k in dates.keys() for k in sums.keys())
+    assert len(sums) == len(dates)
+    
+    name = u'Sold inițial'
+    f = CollectingFund.objects.create(archived=True,
+                        archive_date=datetime.fromtimestamp(0),
+                        billed=building, quota_type='noquota',
+                        name=name)
+    
+    for ap, s in sums.iteritems():
+        no = 'Sold inițial ' + str(ap)
+        f.new_inbound_operation(amount=s, no=no, ap_sums={ap:s},
+                        date=dates[ap])

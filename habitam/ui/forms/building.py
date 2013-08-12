@@ -23,9 +23,14 @@ Created on Apr 21, 2013
 from django import forms
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
+from habitam.entities.bootstrap_building import initial_operations
 from habitam.entities.models import ApartmentGroup, BuildingDetails
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY
+from habitam.ui.forms.helper.all_apartments import skip_apartments, \
+    drop_skip_checkboxes, all_apartments_data
+from habitam.ui.widgets.bootstrap_date import BootstrapDateInput
+import datetime
 
 
 class EditBuildingForm(forms.ModelForm):
@@ -108,6 +113,55 @@ class EditStaircaseForm(forms.ModelForm):
             self._errors[NON_FIELD_ERRORS] = self.error_class()
         self._errors[NON_FIELD_ERRORS].append(error_message)
         
+
+class InitialOperations(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.building = kwargs['building']
+        del kwargs['user']
+        del kwargs['building']
+        
+        super(InitialOperations, self).__init__(*args, **kwargs)
+        for ap in self.building.apartments():
+            f = forms.BooleanField(label='Fără operațini la ' + str(ap), \
+                                    required=False)
+            self.fields['undeclared_ap_' + str(ap.pk)] = f
+            f = forms.DecimalField(label='Suma ' + str(ap), required=False)
+            self.fields['sum_ap_' + str(ap.pk)] = f
+            f = forms.DateField(label='Data', initial=datetime.date.today,
+                        widget=BootstrapDateInput(input_format='yyyy-mm-dd'))
+            self.fields['date_ap_' + str(ap.pk)] = f
+
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)
+            
+    def clean(self):
+        cleaned_data = super(InitialOperations, self).clean()
+        to_skip = skip_apartments('undeclared_ap_', cleaned_data)
+        sums = all_apartments_data('sum_ap_', cleaned_data)
+        dates = all_apartments_data('date_ap_', cleaned_data)
+        for k in to_skip:
+            del(sums[k])
+            del(dates[k])
+       
+        msg = u'Introduceți o valoare'
+        for k, v in sums.iteritems():
+            if not v:
+                self._errors['sum_ap_' + str(k)] = self.error_class([msg])
+        if not sums:
+            raise forms.ValidationError(u'Nu a fost introdusă nici o valoare')
+        drop_skip_checkboxes('undeclared_ap_', cleaned_data)
+        
+        cleaned_data['sums'] = sums
+        cleaned_data['dates'] = dates
+        return cleaned_data
+    
+    def save(self):
+        initial_operations(self.building, **self.cleaned_data)
+         
          
 class NewBuildingForm(forms.Form):
     apartments = forms.IntegerField(label='Număr apartamente', initial=1, min_value=1,
