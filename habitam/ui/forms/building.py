@@ -122,7 +122,7 @@ class InitialOperations(forms.Form):
         
         super(InitialOperations, self).__init__(*args, **kwargs)
         for ap in self.building.apartments():
-            f = forms.BooleanField(label='Fără operațini la ' + str(ap), \
+            f = forms.BooleanField(label='Fără sold inițial pentru ' + str(ap), \
                                     required=False)
             self.fields['undeclared_ap_' + str(ap.pk)] = f
             f = forms.DecimalField(label='Suma ' + str(ap), required=False)

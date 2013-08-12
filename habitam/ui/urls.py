@@ -84,7 +84,7 @@ urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^buildings/(?P<building_id>\d+)/initial_operations$',
         views.new_building_entity,
         {'form_cls': InitialOperations, 'target': 'initial_operations',
-         'title': u'Operațiuni inițiale', 'commit_directly': True},
+         'title': u'Solduri inițiale', 'commit_directly': True},
         'initial_operations'),
 
     url(r'^buildings/(?P<building_id>\d+)/staircases/new$',
