@@ -51,8 +51,12 @@ class Billable(SingleAccountEntity):
     class Meta:
         abstract = True
         
-    def __init__(self, *args, **kwargs): 
-        super(Billable, self).__init__('std', '3rd party', *args, **kwargs) 
+    def __init__(self, *args, **kwargs):
+        money_type = kwargs['money_type'] if 'money_type' in kwargs else 'money_type'
+        account_type = kwargs['account_type'] if 'account_type' in kwargs else 'std'
+        if 'account_type' in kwargs: del kwargs['account_type']
+        if 'money_type' in kwargs: del kwargs['money_type']
+        super(Billable, self).__init__(account_type, money_type, *args, **kwargs) 
         try:
             self._old_billed = self.billed
         except:

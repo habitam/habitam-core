@@ -90,6 +90,19 @@ def bootstrap_building(user_license, name, staircases, apartments,
         user_license.add_entity(building, ApartmentGroup)
     else:
         building.save()
+        
+    f = CollectingFund.objects.create(billed=building, quota_type='equally',
+                        name='Fond reparații', money_type='cash',
+                        account_type='repairs')
+    f.account.type = 'repairs'
+    f.account.save()
+    
+    f = CollectingFund.objects.create(billed=building, quota_type='noquota',
+                        name='Fond rulment', money_type='cash',
+                        account_type='rulment')
+    f.account.type = 'rulment'
+    f.account.save()
+
     return building
 
 
