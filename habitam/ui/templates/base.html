@@ -84,7 +84,7 @@
 					            <li class="divider"></li>
 					            {% endif %}
 								{% for building in license.available_buildings %}
-									<li><a href="{% url 'apartment_list' building.id %}" title="{{ building.apartments|length }} apartamente">{{ building.name }} <span class="badge pull-right">{{ building.apartments|length }}</span></a></li>
+									<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
 								{% endfor %}
 				            </ul>
 			            </li>
