@@ -4,7 +4,7 @@
 <tr class="{% op_class doc service %}">
 	<td>{{ doc.date|date:"d-m-Y" }}</td>
 	<td>
-	{% if doc.type == "collection" %}Colectare pentru {% endif %}{{ other }}
+	{{ other }}
 	</td>
 	<td>{{ doc.list_description }}</td>
 	<td class="{% op_amount_class account doc service %}">
