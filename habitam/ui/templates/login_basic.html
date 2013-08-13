@@ -1,7 +1,6 @@
 <div>
-	<form class="form-horizontal" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+	<form class="form-horizontal" method="post" action="{{ SITE }}/users/login-basic/">
     	{% csrf_token %}
-    	<legend>Autentificare</legend>
 		{% if form.errors %}
 			<div class="alert alert-error">
 				Nu am putut verifica credențialele. Încercați din nou.
@@ -21,13 +20,8 @@
         </div>
         <div class="control-group">
         	<div class="controls">
-        		<a href="{% url 'registration' %}">Cont nou?</a>
-        		<br>
-        		<a href="{% url 'password_reset' %}">Ați uitat parola?</a>
-        	</div>
-        </div>
-        <div class="control-group">
-        	<div class="controls">
+        		<a class="btn" href="{% url 'registration' %}">Cont nou?</a>
+        		<a class="btn" href="{% url 'password_reset' %}">Cont nou?</a>
 		        <button class="btn btn-primary" type="submit">Intră</button>
 		        <input type="hidden" name="next" value="{{ next }}" />
 		    </div>

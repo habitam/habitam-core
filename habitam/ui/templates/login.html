@@ -1,5 +1,40 @@
 {% extends 'left_base.html' %} 
 
 {% block inner_content %}
-{% include 'login_basic.html' %}
+<div>
+	<form class="form-horizontal" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+    	{% csrf_token %}
+    	<legend>Autentificare</legend>
+		{% if form.errors %}
+			<div class="alert alert-error">
+				Nu am putut verifica credențialele. Încercați din nou.
+			</div>
+		{% endif %}
+		<div class="control-group">
+			<label class="control-label" for="id_username">Utilizator</label>
+			<div class="controls">
+			    {{ form.username }}
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="id_password">Parola</label>
+			<div class="controls">
+			    {{ form.password }}
+			</div>
+        </div>
+        <div class="control-group">
+        	<div class="controls">
+        		<a href="{% url 'registration' %}">Cont nou?</a>
+        		<br>
+        		<a href="{% url 'password_reset' %}">Ați uitat parola?</a>
+        	</div>
+        </div>
+        <div class="control-group">
+        	<div class="controls">
+		        <button class="btn btn-primary" type="submit">Intră</button>
+		        <input type="hidden" name="next" value="{{ next }}" />
+		    </div>
+		</div>
+    </form>
+</div>
 {% endblock %}
