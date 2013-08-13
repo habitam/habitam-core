@@ -207,3 +207,20 @@ class NewBuildingForm(forms.Form):
         if not NON_FIELD_ERRORS in self._errors:
             self._errors[NON_FIELD_ERRORS] = self.error_class()
         self._errors[NON_FIELD_ERRORS].append(error_message)
+        
+        
+class UploadInitialOperations(forms.Form):
+    file  = forms.FileField()
+    
+    def __init__(self, *args, **kwargs):
+        self.building = kwargs['building']
+        del kwargs['building']
+        
+        super(UploadInitialOperations, self).__init__(*args, **kwargs)
+
+    def add_form_error(self, error_message):
+        if not self._errors:
+            self._errors = ErrorDict()
+        if not NON_FIELD_ERRORS in self._errors:
+            self._errors[NON_FIELD_ERRORS] = self.error_class()
+        self._errors[NON_FIELD_ERRORS].append(error_message)

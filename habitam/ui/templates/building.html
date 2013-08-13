@@ -65,8 +65,11 @@
 	<div class="alert alert-info">
 		Nu există nici o operațiune înregistrată pentru apartamentele din
 		această clădire. <em>{{ building.name }}</em> este un bloc nou și doriți să
-		introduceți soldurile inițiale? Apăsați
-		<a href="javascript:editDialog('{% url 'initial_operations' building.id %}')">aici</a>.
+		introduceți soldurile inițiale? 
+		<button type="button" class="btn-info btn-mini" onclick="editDialog('{% url 'upload_initial_operations' building.id %}')">Importați din Excel</button>	
+		{% if building.apartments|length < 10 %}
+		<button type="button" class="btn-info btn-mini" onclick="editDialog('{% url 'initial_operations' building.id %}')">Introduceți</button>
+		{% endif %}
 	</div>
 	{% endif %}
 	<ul class="nav nav-tabs">

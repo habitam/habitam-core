@@ -77,6 +77,10 @@ urlpatterns = patterns('habitam.ui.urls_user',
          'title': 'Apartament nou'},
         name='new_apartment'),
                        
+    url(r'^buildings/(?P<building_id>\d+)/initial_operations_template$',
+        views.download_initial_operations_template,
+        name='initial_operations_template'),
+                       
     url(r'^buildings/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
         {'entity_cls': ApartmentGroup, 'form_cls': EditBuildingForm,
          'target': 'edit_building', 'title': ''}, name='edit_building'),
@@ -150,6 +154,9 @@ urlpatterns = patterns('habitam.ui.urls_user',
         views.download_report,
         {'name': 'registru', 'generator': register.download_register},
         name='download_register'),
+
+    url(r'^buildings/(?P<building_id>\d+)/upload_initial_operations$',
+        views.upload_initial_operations, name='upload_initial_operations'),
                            
     url(r'^collecting_funds/(?P<entity_id>\d+)/collection/new$',
         views.new_inbound_operation,

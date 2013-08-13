@@ -1,0 +1,52 @@
+{% load ui_extras %} 
+<div id="editFormContainer">
+	<form id="editForm" class="form-horizontal" method="post"
+		action="{% url 'upload_initial_operations' building.id %}">
+		{% if form.non_field_errors %}
+		   	<div class="alert alert-error">
+			    {% for error in form.non_field_errors %}
+					<span class="help-inline">{{ error }}</span>
+		    	{% endfor %}
+		   	</div>
+		{% endif %}
+		
+		<p>Puteți să încărcați soldurile inițiale pentru apartamentele din
+		clădirea <em>{{ building.name }}</em> dintr-un fișier Excel. Urmați
+		acești trei pași:</p>
+		
+		<ol>
+			<li>Descărcați un șablon pentru fișierul Excel.<br>
+			<a class="btn btn-primary btn-mini" href="{% url 'initial_operations_template' building.id %}">Descarcă șablon</a>
+			<li>Completați soldul și data la care este valabil în celulele
+			colorate galben din fișierul descărcat.
+			<li>Salvați fișierul și apăsați butonul de mai jos pentru a îl urca
+			înapoi pe Habitam.
+		</ol>
+		{% csrf_token %}
+		{% for hidden in form.hidden_fields %}
+		   {{ hidden }}
+		{% endfor %}
+		{% for field in form.visible_fields %}
+		<div class="control-group {% if field.errors %}error{% endif %}">
+			{{ field }}
+			{% for error in field.errors %}
+				<span class="help-inline">{{ error }}</span>
+			{% endfor %}
+		</div>	 	
+		{% endfor %}
+	</form>
+</div>
+
+<script>
+$(document).ready(function() {
+	$("#editTitle").text("Solduri inițiale");
+	
+	$('#editForm').ajaxForm({
+		target : '#editFormContainer',
+	});
+	
+	$('#submitButton').click(function() {
+		$('#editForm').submit();
+	});
+});
+</script>

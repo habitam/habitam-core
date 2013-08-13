@@ -30,14 +30,16 @@ from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.utils.decorators import decorator_from_middleware
 from habitam.downloads.display_list import download_display_list
-from habitam.entities.bootstrap_building import bootstrap_building
 from habitam.entities.accessor import entity_for_account, building_for_account
+from habitam.entities.bootstrap_building import bootstrap_building, \
+    initial_operations_template, load_initial_operations
 from habitam.entities.models import ApartmentGroup, Apartment, AccountLink, \
     CollectingFund, Supplier, Service
 from habitam.financial.models import Account, OperationDoc
-from habitam.ui.forms.building import NewBuildingForm
+from habitam.ui.forms.building import NewBuildingForm, UploadInitialOperations
 from habitam.ui.forms.service_new_payment import NewOtherServicePayment
 from habitam.ui.license_filter import LicenseFilter
+from test.test_xml_etree import entity
 import calendar
 import logging
 
@@ -49,6 +51,16 @@ def __pdf_response(building, month, name, f):
     wrapper = FileWrapper(f)
     response = HttpResponse(wrapper, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=' + name + building.name + '_' + month + '.pdf'
+    response['Content-Length'] = f.tell()
+    f.seek(0)
+    
+    return response
+
+
+def __xlsx_response(building, name, f):
+    wrapper = FileWrapper(f)
+    response = HttpResponse(wrapper, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=' + name + building.name + '.xlsx'
     response['Content-Length'] = f.tell()
     f.seek(0)
     
@@ -108,6 +120,15 @@ def building_tab(request, building_id, tab, show_all=False):
     building = ApartmentGroup.objects.get(pk=building_id).building()
     data = {'building': building, 'active_tab': tab, 'show_all': show_all}
     return render(request, tab + '.html', data)  
+
+
+@login_required
+@decorator_from_middleware(LicenseFilter)
+def download_initial_operations_template(request, building_id):
+    building = ApartmentGroup.objects.get(pk=building_id)
+
+    temp = initial_operations_template(building)
+    return __xlsx_response(building, 'solduri_initiale_', temp)
 
 
 @login_required
@@ -309,7 +330,7 @@ def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='
 @decorator_from_middleware(LicenseFilter)
 def entity_view(request, entity_cls, entity_id, edit_name, view_name,
                 template_name='entity_view.html', template_entity='entity',
-                extra_data = None):
+                extra_data=None):
     entity = entity_cls.objects.get(id=entity_id)
     data = {template_entity: entity, 'entity_cls': entity_cls,
             'edit_name': edit_name, 'view_name': view_name}
@@ -443,3 +464,26 @@ def new_transfer(request, account_id, form_cls, target, title):
             'building': building,
             'title': title + ' ' + src_account.name}
     return render(request, 'edit_dialog.html', data)
+
+
+
+@login_required
+@decorator_from_middleware(LicenseFilter)
+def upload_initial_operations(request, building_id):
+    building = ApartmentGroup.objects.get(pk=building_id)
+    if request.method == 'POST':
+        form = UploadInitialOperations(request.POST, request.FILES, building=building)
+        if form.is_valid():
+            try:
+                load_initial_operations(building, request.FILES['file'])
+                return render(request, 'edit_ok.html')
+            except Exception as e:
+                logger.exception('Cannot upload initial operations')
+                form.add_form_error(e)
+    else:
+        form = UploadInitialOperations(building=building)
+    data = {'form': form, 'building': building}
+    return render(request, 'upload_initial_operations.html', data)
+    
+    
+    

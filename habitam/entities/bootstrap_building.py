@@ -24,6 +24,11 @@ from datetime import date, datetime
 from habitam.entities.models import ApartmentGroup, Person, Apartment, \
     AccountLink, CollectingFund
 from habitam.financial.models import Account
+from openpyxl.datavalidation import DataValidation, ValidationType
+from openpyxl.reader.excel import load_workbook
+from openpyxl.style import Fill, Color
+from openpyxl.workbook import Workbook
+import tempfile
 
 
 def __create_building(name, daily_penalty=None, close_day=None,
@@ -120,5 +125,96 @@ def initial_operations(building, sums, dates):
     
     for ap, s in sums.iteritems():
         no = 'Sold inițial ' + str(ap)
-        f.new_inbound_operation(amount=s, no=no, ap_sums={ap:s},
+        f.new_inbound_operation(amount=s * -1, no=no, ap_sums={ap:s * -1},
                         date=dates[ap])
+        
+def load_initial_operations(building, xlsx):
+    wb = load_workbook(xlsx)
+    ws = wb.get_sheet_by_name(u'Solduri inițiale')
+    
+    ap_ids = map(lambda ap: ap.id, building.apartments())
+    num_rows = ws.get_highest_row()
+    if num_rows - 1 != len(ap_ids):
+        raise Exception(u'Fișier invalid')
+    sums = {}
+    dates = {}
+    
+    for row in range(1, num_rows):
+        ap_id = int(ws.cell(row=row, column=0).value)
+        if not ap_id in ap_ids:
+            raise Exception(u'Fișier invalid')
+        s = ws.cell(row=row, column=2).value
+        d = ws.cell(row=row, column=3).value
+        if s == None or d == None:
+            continue
+        sums[ap_id] = s
+        dates[ap_id] = d
+    
+    if not sums:
+        raise Exception(u'Nu ați introdus nici o valoare')
+    
+    initial_operations(building, sums, dates)
+        
+def initial_operations_template(building):
+    wb = Workbook()
+    ws = wb.worksheets[0]
+    ws.title = u'Solduri inițiale'
+    ws.cell(row=0, column=0).value = 'ID intern'
+    ws.cell(row=0, column=1).value = 'Apartament'
+    ws.cell(row=0, column=2).value = 'Sold'
+    ws.cell(row=0, column=3).value = 'Data'
+    
+    
+    def attr_validator(attr):
+        l = (str(getattr(ap, attr)) for ap in building.apartments())
+        formula = '"' + ','.join(l) + '"'
+        validator = DataValidation(ValidationType.LIST, formula1=formula,
+                                    allow_blank=False)
+        return validator
+    
+    id_validator = attr_validator('id')
+    ws.add_data_validation(id_validator)
+    name_validator = attr_validator('name')
+    ws.add_data_validation(name_validator)
+    
+    decimal_validator = DataValidation(ValidationType.DECIMAL, allow_blank=True)
+    decimal_validator.set_error_message('Introduceți un număr zecimal', 'Eroare de validare')
+    ws.add_data_validation(decimal_validator)
+    
+    date_validator = DataValidation(ValidationType.DATE, allow_blank=True)
+    date_validator.set_error_message('Introduceți o dată', 'Eroare de validare')
+    ws.add_data_validation(date_validator)
+
+    row = 1
+    now = datetime.now()
+    for ap in building.apartments():
+        cell_id = ws.cell(row=row, column=0)
+        cell_id.value = ap.id
+        id_validator.add_cell(cell_id)
+        
+        cell_name = ws.cell(row=row, column=1)
+        cell_name.value = ap.name
+        name_validator.add_cell(cell_name)
+        
+        cell_balance = ws.cell(row=row, column=2)
+        cell_balance.style.fill.fill_type = Fill.FILL_SOLID
+        cell_balance.style.fill.start_color.index = Color.YELLOW
+        decimal_validator.add_cell(cell_balance)
+        
+        cell_date = ws.cell(row=row, column=3)
+        cell_date.value = now
+        cell_date.style.number_format.format_code = 'yyyy-mm-dd'
+        cell_date.style.fill.fill_type = Fill.FILL_SOLID
+        cell_date.style.fill.start_color.index = Color.YELLOW
+        date_validator.add_cell(cell_date)
+        
+        row += 1
+    
+    ws.column_dimensions['A'].visible = False
+    ws.column_dimensions['B'].width = 20.0
+    ws.column_dimensions['C'].width = 20.0
+    ws.column_dimensions['D'].width = 20.0
+    temp = tempfile.NamedTemporaryFile()
+    wb.save(temp)
+    return temp
+    
