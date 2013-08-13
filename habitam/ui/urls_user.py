@@ -29,6 +29,8 @@ from habitam.ui.registration_views import TrialRegistrationView, \
 urlpatterns = patterns('',
     url(r'^users/login/$', 'django.contrib.auth.views.login',
         {'template_name': 'login.html'}, 'login'),
+    url(r'^users/login-basic/$', 'django.contrib.auth.views.login',
+        {'template_name': 'login_basic.html'}, 'login_basic'),
     url(r'^users/logout/$', 'django.contrib.auth.views.logout',
         {'template_name': 'logout.html'}, 'logout'),
     url(r'^users/password/$', 'django.contrib.auth.views.password_change',
