@@ -1,6 +1,5 @@
 <div>
 	<form class="form-horizontal" method="post" action="{{ site }}{% url 'login_basic' %}">
-    	{% csrf_token %}
 		{% if form.errors %}
 			<div class="alert alert-error">
 				Nu am putut verifica credențialele. Încercați din nou.
