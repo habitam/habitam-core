@@ -20,8 +20,6 @@ Created on Aug 3, 2013
 @author: Stefan Guna
 '''
 from django.conf.urls import patterns, url
-from django.contrib.auth.views import login
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
 from habitam.settings import TRIAL_LICENSE
 from habitam.ui.forms.trial_registration import HabitamRegistrationForm
@@ -31,8 +29,6 @@ from habitam.ui.registration_views import TrialRegistrationView, \
 urlpatterns = patterns('',
     url(r'^users/login/$', 'django.contrib.auth.views.login',
         {'template_name': 'login.html'}, 'login'),
-    url(r'^users/login-basic/$', csrf_exempt(login),
-        {'template_name': 'login_basic.html'}, 'login_basic'),
     url(r'^users/logout/$', 'django.contrib.auth.views.logout',
         {'template_name': 'logout.html'}, 'logout'),
     url(r'^users/password/$', 'django.contrib.auth.views.password_change',
