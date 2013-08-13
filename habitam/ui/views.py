@@ -39,7 +39,6 @@ from habitam.financial.models import Account, OperationDoc
 from habitam.ui.forms.building import NewBuildingForm, UploadInitialOperations
 from habitam.ui.forms.service_new_payment import NewOtherServicePayment
 from habitam.ui.license_filter import LicenseFilter
-from test.test_xml_etree import entity
 import calendar
 import logging
 
