@@ -1,5 +1,5 @@
 <div>
-	<form class="form-horizontal" method="post" action="{{ SITE }}/users/login-basic/">
+	<form class="form-horizontal" method="post" action="{{ site }}{% url 'login_basic' %}">
     	{% csrf_token %}
 		{% if form.errors %}
 			<div class="alert alert-error">
@@ -20,9 +20,8 @@
         </div>
         <div class="control-group">
         	<div class="controls">
-        		<a class="btn" href="{% url 'registration' %}">Cont nou?</a>
-        		<a class="btn" href="{% url 'password_reset' %}">Cont nou?</a>
-		        <button class="btn btn-primary" type="submit">Intră</button>
+        		<button class="btn btn-primary" type="submit">Intră</button>
+		        <a href="{{ site }}{% url 'password_reset' %}">Ați uitat parola?</a>
 		        <input type="hidden" name="next" value="{{ next }}" />
 		    </div>
 		</div>
