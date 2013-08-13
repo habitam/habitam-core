@@ -132,6 +132,7 @@ def download_report(request, generator, name, building_id, month):
     building = ApartmentGroup.objects.get(pk=building_id)
     if month == None:
         day = date.today()
+        month = str(day.month)
     else:
         day = datetime.strptime(month + '-01', '%Y-%m-%d').date()
         last = calendar.monthrange(day.year, day.month)[1]
