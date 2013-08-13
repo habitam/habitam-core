@@ -1,12 +1,12 @@
 {% if not user.administrator.license.available_suppliers %}
 
 <div class="alert">
-<span class="label label-alert">Atenție!</span> Nu ați adăugat nici un
+<span class="label label-warning">Atenție!</span> Nu ați adăugat nici un
 <strong>furnizor</strong>. Fără furnizori, nu se pot configura serviciile de
 care beneficiază blocurile. Puteți să selectați câțiva dintre cei 
-<a href="javascript:editDialog('{% url 'select_std_suppliers' %}');">predefiniți</a>
-sau să definiți
-<a href="javascript:editDialog('{% url 'new_supplier' %}');">unul nou</a>.
+predefiniți sau să definiți unul nou.
+<button type="button" class="btn-warning btn-mini" onclick="editDialog('{% url 'select_std_suppliers' %}');">Furnizor predefiniți</button>
+<button type="button" class="btn-warning btn-mini" onclick="editDialog('{% url 'new_supplier' %}');">Furnizor nou</button>
 </div>
 
 {% endif %}

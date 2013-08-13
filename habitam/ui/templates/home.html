@@ -12,7 +12,7 @@
 <div class="alert">
 <span class="label label-warning">Atenție!</span> Licența dumneavoastră nu mai
 permite adăguarea de apartamente noi. Vă rugăm luați legătura cu
-<a href="{% url 'contact' %}">noi</a>.
+noi. <a class="btn btn-warning btn-mini" href="{% url 'contact' %}">Contact</a>
 </div>
 {% endif %}
 
@@ -22,8 +22,8 @@ de mai sus.</p>
 {% else %}
 
 <div class="alert alert-info">
-Nu ați adăugat nici o <strong>clădire</strong>. Începeți prin a adăuga 
-<a href="javascript:editDialog('{% url 'new_building' %}');">una nouă</a>.
+Nu ați definit nici o clădire de administrat.
+<button type="button" class="btn-info btn-mini" onclick="editDialog('{% url 'new_building' %}');">Clădire nouă</button>
 </div>
 
 {% endif %}
