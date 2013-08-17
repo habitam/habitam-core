@@ -6,10 +6,10 @@
 	<thead>
 		<tr>
 			<th>Nume</th>
-			<th>Furnizor</th>
-			<th>Clienți</th>
+			<th class="hidden-phone">Furnizor</th>
+			<th class="hidden-phone">Clienți</th>
 			<th>Balanță</th>
-			<th>&nbsp;</th>
+			<th class="hidden-phone">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -20,10 +20,10 @@
 		{% if not service.one_time %}
 			<tr {% if service.archived %}class="archived"{% endif %}>
 				<td><a href="javascript:editDialog('{% url 'edit_billable_general' entity_id=service.id %}')">{{ service }}</a></td>
-				<td><a href="{% url 'supplier_view' service.supplier.id %}">{{ service.supplier.name }}</a></td>
-				<td>{{ service.billed }}</td>
+				<td class="hidden-phone"><a href="{% url 'supplier_view' service.supplier.id %}">{{ service.supplier.name }}</a></td>
+				<td class="hidden-phone">{{ service.billed }}</td>
 				<td class="{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=service.account.id %}">{{ service.balance|floatformat:2 }}</a></td>
-				<td>
+				<td class="hidden-phone">
 					{% if not service.archived %}
 					<div class="btn-group">
 						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_invoice' entity_id=service.id %}')"><i class="icon-plus-sign icon-white"></i> Factură</button>
@@ -40,7 +40,7 @@
 		{% endfor %}
 	</tbody>
 </table>
-<div class="container">
+<div class="container hidden-phone">
 	<div class="pull-right">
 		<a href="{% if show_all %}{% url 'service_list' building.id %}{% else %}{% url 'all_service_list' building.id %}{% endif %}" class="btn{% if show_all %} active{% endif %}">Toate serviciile</a>
 		{% if user.administrator.license.available_suppliers %}

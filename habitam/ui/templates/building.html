@@ -5,7 +5,7 @@
 <div class="container">
 	<legend>
 		<a href="javascript:editDialog('{% url 'edit_building' entity_id=building.id %}')">{{ building.name }}</a>
-		<span class="btn-group pull-right">
+		<span class="btn-group pull-right hidden-phone">
 			{% with license=user.administrator.license %}
 			{% available_list_months building user.administrator.license as alm %}
 			<div class="btn-group">
@@ -54,7 +54,7 @@
 <div class="container">
 	{% include 'checks/available_suppliers.html' %}
 	{% if user.administrator.license.available_suppliers and not building.services %}
-	<div class="alert">
+	<div class="alert hidden-phone">
 		<span class="label label-warning">Atenție!</span> Nu există nici un
 		serviciu (de ex., "apă caldă") definit pentru această clădire. Înainte
 		de a putea adăuga intrări la lista de întreținere, trebuie să definiți
@@ -63,7 +63,7 @@
 	</div>
 	{% endif %}
 	{% if building.needs_bootstrap %}
-	<div class="alert alert-info">
+	<div class="alert alert-info hidden-phone">
 		Nu există nici o operațiune înregistrată pentru apartamentele din
 		această clădire. <em>{{ building.name }}</em> este un bloc nou și doriți să
 		introduceți soldurile inițiale? 
@@ -74,7 +74,7 @@
 	</div>
 	{% endif %}
 	<ul class="nav nav-tabs">
-		<li {% if active_tab = 'building_view' %}class="active"{% endif %}><a href="{% url 'building_view' building.id %}">Despre</a></li>
+		<li class="{% if active_tab = 'building_view' %}active {% endif %} hidden-phone"><a href="{% url 'building_view' building.id %}">Despre</a></li>
 		<li {% if active_tab = 'apartment_list' %}class="active"{% endif %}><a href="{% url 'apartment_list' building.id %}">Apartamente</a></li>
 		<li {% if active_tab = 'fund_list' %}class="active"{% endif %}><a href="{% url 'fund_list' building.id %}">Conturi</a></li>
 		<li {% if active_tab = 'collecting_fund_list' %}class="active"{% endif %}><a href="{% url 'collecting_fund_list' building.id %}">Fonduri</a></li>

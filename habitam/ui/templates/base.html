@@ -76,7 +76,7 @@
 				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clădiri <b class="caret"></b></a>
 				            <ul class="dropdown-menu">
 				            {% if license.apartment_count < license.max_apartments %}
-					            <li><a href="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a> 
+					            <li class="hidden-phone"><a href="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a> 
 					        {% endif %}
 					        	{% if license.available_buildings %}
 					            <li><a href="{% url 'buildings' %}">Toate clădirile</a></li>
@@ -91,9 +91,9 @@
 				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Furnizori <b class="caret"></b></a>
 				            <ul class="dropdown-menu">
 				            	{% if license|remaining_std_suppliers %}
-				            	<li><a href="javascript:editDialog('{% url 'select_std_suppliers' %}');">Furnizori predefiniți</a></li>					        	
+				            	<li class="hidden-phone"><a href="javascript:editDialog('{% url 'select_std_suppliers' %}');">Furnizori predefiniți</a></li>					        	
 				            	{% endif %}
-				            	<li><a href="javascript:editDialog('{% url 'new_supplier' %}');">Furnizor nou</a></li>
+				            	<li class="hidden-phone"><a href="javascript:editDialog('{% url 'new_supplier' %}');">Furnizor nou</a></li>
 					        	{% if license.available_suppliers %}				            	
 					        	<li><a href="{% url 'suppliers' %}">Toți furnizorii</a></li>
 				            	<li class="divider"></li>
@@ -105,7 +105,7 @@
 				            	{% endfor %}
 				            </ul>
 				        </li>
-				        <li><a href="#">Instrucțiuni</a></li>
+				        <li class="hidden-phone"><a href="#">Instrucțiuni</a></li>
 				        <li><a href="{% url 'contact' %}">Contact</a></li>
 					    {% endwith %}
 		            </ul>

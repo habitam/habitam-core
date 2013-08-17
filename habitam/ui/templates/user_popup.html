@@ -1,7 +1,7 @@
 {% load gravatar %}
 {% with license=user.administrator.license %}
 <div class="media" style="width: 380px;">
-	<a class="pull-left" href="http://www.gravatar.com">
+	<a class="pull-left hidden-phone" href="http://www.gravatar.com">
 		<img class="media-object" alt="Gravatar" style="width: 80px; height: 80px;" src="{% gravatar_url user.email %}">
 	</a>
 	<div class="media-body">

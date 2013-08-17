@@ -6,12 +6,12 @@
 	<thead>
 		<tr>
 			<th>Nume</th>
-			<th>Tip</th>
-			<th>Tip bani</th>			
-			<th>Colectare de la</th>
+			<th class="hidden-phone">Tip</th>
+			<th class="hidden-phone">Tip bani</th>			
+			<th class="hidden-phone">Colectare de la</th>
 			<th>De colectat</th>
 			<th>Balanță</th>
-			<th>&nbsp;</th>
+			<th class="hidden-phone">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -21,12 +21,12 @@
 		{% if show_all or not service.archived %}
 			<tr>
 				<td {% if service.archived %}class="archived"{% endif %}><a href="javascript:editDialog('{% url 'edit_billable_collecting' entity_id=service.id %}')">{{ service }}</a></td>
-				<td {% if service.archived %}class="archived"{% endif %}>{{ service.account.type }}</td>				
-				<td {% if service.archived %}class="archived"{% endif %}>{{ service.account.money_type }}</td>
-				<td {% if service.archived %}class="archived"{% endif %}>{{ service.billed }}</td>
+				<td class="{% if service.archived %}archived{% endif %} hidden-phone">{{ service.account.type }}</td>				
+				<td class="{% if service.archived %}archived{% endif %} hidden-phone">{{ service.account.money_type }}</td>
+				<td class="{% if service.archived %}archived{% endif %} hidden-phone">{{ service.billed }}</td>
 				<td class="{% if service.archived %}archived {% endif %}{% if service.to_collect > 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=service.account.id %}">{{ service.to_collect|floatformat:2 }}</a></td>
 				<td class="{% if service.archived %}archived {% endif %}{% if service.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=service.account.id %}">{{ service.balance|floatformat:2 }}</a></td>
-				<td>
+				<td class="hidden-phone">
 					{% if not service.archived %}
 					<div class="btn-group">
 						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'new_fund_transfer' account_id=service.account.id %}')" title="Transferă bani într-un alt cont sau fond"><i class="icon-retweet"></i></button>
@@ -45,7 +45,7 @@
 		{% endfor %}
 	</tbody>
 </table>
-<div class="container">
+<div class="container hidden-phone">
 	<div class="pull-right">
 		<a href="{% if show_all %}{% url 'collecting_fund_list' building.id %}{% else %}{% url 'all_collecting_fund_list' building.id %}{% endif %}" class="btn{% if show_all %} active{% endif %}">Toate fondurile</a>
 		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_billable_collecting' building.id %}')">Fond nou</button>

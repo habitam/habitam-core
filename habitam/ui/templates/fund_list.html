@@ -5,20 +5,20 @@
 	<thead>
 		<tr>
 			<th>Nume</th>
-			<th>Tip</th>
-			<th>Tip bani</th>
+			<th class="hidden-phone">Tip</th>
+			<th class="hidden-phone">Tip bani</th>
 			<th>Balanță</th>
-			<th>&nbsp;</th>
+			<th class="hidden-phone">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for account in building.funds %}
 			<tr>
 				<td><a href="javascript: editDialog('{% url 'edit_fund' entity_id=account.id %}')">{{ account.name }}</a></td>
-				<td>{{ account.type }}</td>
-				<td>{{ account.money_type }}</td>
+				<td class="hidden-phone">{{ account.type }}</td>
+				<td class="hidden-phone">{{ account.money_type }}</td>
 				<td class="{% if account.balance < 0 %}negative_balance{% else %}positive_balance{% endif %}"><a href="{% url 'operation_list' building_id=building.id account_id=account.id %}">{{ account.balance|floatformat:2 }}</a></td>
-				<td>
+				<td class="hidden-phone">
 					<div class="btn-group">
 						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'new_fund_transfer' account_id=account.id %}')" title="Transferă bani într-un alt cont sau fond"><i class="icon-retweet"></i></button>
 						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_service_payment' account_id=account.id %}')" title="Plătește un serviciu"><i class="icon-share-alt icon-white"></i> Serviciu</button>						
@@ -32,7 +32,7 @@
 		{% endfor %}
 	</tbody>
 </table>
-<div class="container">
+<div class="container hidden-phone">
 	<div class="pull-right">
 		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_fund' building.id %}')">Cont nou</button>
 	</div>

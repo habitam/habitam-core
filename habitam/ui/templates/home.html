@@ -3,6 +3,11 @@
 {% block inner_content %}
 <h1>Bun venit!</h1>
 
+<div class="alert alert-info visible-phone">
+Pentru a asigura o experiență optimă, anumite funcționalități ale aplicației
+nu sunt disponibile în varianta pentru telefoane mobile. 
+</div>
+
 {% include 'checks/available_suppliers.html' %}
 
 {% with license=user.administrator.license %}
@@ -21,7 +26,7 @@ de mai sus.</p>
 
 {% else %}
 
-<div class="alert alert-info">
+<div class="alert alert-info hidden-phone">
 Nu ați definit nici o clădire de administrat.
 <button type="button" class="btn-info btn-mini" onclick="editDialog('{% url 'new_building' %}');">Clădire nouă</button>
 </div>
