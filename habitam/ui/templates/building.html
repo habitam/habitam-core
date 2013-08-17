@@ -74,7 +74,7 @@
 	</div>
 	{% endif %}
 	<ul class="nav nav-tabs">
-		<li class="{% if active_tab = 'building_view' %}active {% endif %} hidden-phone"><a href="{% url 'building_view' building.id %}">Despre</a></li>
+		<li {% if active_tab = 'building_view' %}class="active"{% endif %}><a href="{% url 'building_view' building.id %}">Despre</a></li>
 		<li {% if active_tab = 'apartment_list' %}class="active"{% endif %}><a href="{% url 'apartment_list' building.id %}">Apartamente</a></li>
 		<li {% if active_tab = 'fund_list' %}class="active"{% endif %}><a href="{% url 'fund_list' building.id %}">Conturi</a></li>
 		<li {% if active_tab = 'collecting_fund_list' %}class="active"{% endif %}><a href="{% url 'collecting_fund_list' building.id %}">Fonduri</a></li>
