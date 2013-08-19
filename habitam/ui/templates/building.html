@@ -55,21 +55,25 @@
 	{% include 'checks/available_suppliers.html' %}
 	{% if user.administrator.license.available_suppliers and not building.services %}
 	<div class="alert hidden-phone">
+		<a class="close" data-dismiss="alert" href="#">&times;</a>
 		<span class="label label-warning">Atenție!</span> Nu există nici un
 		serviciu (de ex., "apă caldă") definit pentru această clădire. Înainte
 		de a putea adăuga intrări la lista de întreținere, trebuie să definiți
 		câteva servicii.
-		<button type="button" class="btn-warning btn-mini" onclick="editDialog('{% url 'new_billable_general' building.id %}')">Serviciu nou</button>
+		<br>
+		<button type="button" class="btn-warning btn-small" onclick="editDialog('{% url 'new_billable_general' building.id %}')">Serviciu nou</button>
 	</div>
 	{% endif %}
 	{% if building.needs_bootstrap %}
 	<div class="alert alert-info hidden-phone">
+		<a class="close" data-dismiss="alert" href="#">&times;</a>
 		Nu există nici o operațiune înregistrată pentru apartamentele din
 		această clădire. <em>{{ building.name }}</em> este un bloc nou și doriți să
-		introduceți soldurile inițiale? 
-		<button type="button" class="btn-info btn-mini" onclick="editDialog('{% url 'upload_initial_operations' building.id %}')">Importați din Excel</button>	
+		introduceți soldurile inițiale?
+		<br>
+		<button type="button" class="btn-info btn-small" onclick="editDialog('{% url 'upload_initial_operations' building.id %}')">Importați din Excel</button>	
 		{% if building.apartments|length < 10 %}
-		<button type="button" class="btn-info btn-mini" onclick="editDialog('{% url 'initial_operations' building.id %}')">Introduceți</button>
+		<button type="button" class="btn-info btn-small" onclick="editDialog('{% url 'initial_operations' building.id %}')">Introduceți</button>
 		{% endif %}
 	</div>
 	{% endif %}
