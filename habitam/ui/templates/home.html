@@ -1,8 +1,6 @@
 {% extends 'left_base.html' %} 
 
 {% block inner_content %}
-<h1>Bun venit!</h1>
-
 <div class="alert alert-info visible-phone">
 Pentru a asigura o experiență optimă, anumite funcționalități ale aplicației
 nu sunt disponibile la această rezoluție. 
@@ -21,8 +19,34 @@ noi. <a class="btn btn-warning btn-mini" href="{% url 'contact' %}">Contact</a>
 </div>
 {% endif %}
 
-<p class="lead">Alegeți clădirea pe care vreți să o administrați din meniul
-de mai sus.</p>
+{% if license.available_buildings %}
+<div class="span4">
+<legend>
+<a href="{% url 'buildings' %}">clădiri</a>
+</legend>
+<ul>
+	{% for building in license.available_buildings %}
+	<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
+	{% endfor %}
+</ul>
+</div>
+{% endif %}
+
+{% if license.available_suppliers %}
+<div class="span4">
+<legend>
+<a href="{% url 'suppliers' %}">furnizori</a>
+</legend>
+<ul>
+	{% for supplier in license.available_suppliers %}
+	{% if not supplier.archived and not supplier.one_time %}
+	<li><a href="{% url 'supplier_view' supplier.id %}">{{ supplier.name }}</a>
+	{% endif %}
+	{% endfor %}	
+</ul>
+</p>
+</div>
+{% endif %}
 
 {% else %}
 
