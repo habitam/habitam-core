@@ -6,12 +6,18 @@
 	<div class="row-fluid">
 		<div class="span8 ">
 			
+			{% if building.view_fields.items %}
 			{% for key, value in building.view_fields.items %}
 			<div class="well well-small">
 				<span class="label">{{ key }}</span>
 				{{ value }}
 			</div>
 			{% endfor %}
+			{% else %}
+			<div class="alert alert-info">
+			Nu ați introdus încă nici o informație despre această clădire.
+			</div>
+			{% endif %}
 			
 			<div class="btn-group pull-right hidden-phone">
 				<a class="btn" href="javascript:editDialog('{% url 'edit_building' entity_id=building.id %}')"><i class="icon-pencil"></i> Editare</a>

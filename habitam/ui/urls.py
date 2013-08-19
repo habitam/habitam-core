@@ -59,7 +59,7 @@ urlpatterns = patterns('habitam.ui.urls_user',
         {'license_subtype': 'buildings', 'entity_cls' : ApartmentGroup,
          'title': u'Clădiri disponibile', 'edit_name': 'edit_building',
          'new_name': 'new_building', 'view_name': 'buildings',
-         'entity_view_name': 'building_view'},
+         'entity_view_name': 'apartment_list'},
         name='buildings'),
                        
     url(r'^buildings/(?P<entity_id>\d+)$', views.entity_view,
