@@ -81,10 +81,11 @@
 					        	{% if license.available_buildings %}
 					            <li><a href="{% url 'buildings' %}">Toate clădirile</a></li>
 					            <li class="divider"></li>
-					            {% endif %}
-								{% for building in license.available_buildings %}
+					            {% top_entities license.top_buildings 5 as top_buildings %}
+					            {% for building in top_buildings %}
 									<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
 								{% endfor %}
+								{% endif %}
 				            </ul>
 			            </li>
 			            <li class="dropdown">
@@ -97,12 +98,13 @@
 					        	{% if license.available_suppliers %}				            	
 					        	<li><a href="{% url 'suppliers' %}">Toți furnizorii</a></li>
 				            	<li class="divider"></li>
-				            	{% endif %}
-				            	{% for supplier in license.available_suppliers %}
+				            	{% top_entities license.top_suppliers 5 as top_suppliers %}
+					            {% for supplier in top_suppliers %}
 				            	{% if not supplier.archived and not supplier.one_time %}
 				            		<li><a href="{% url 'supplier_view' supplier.id %}">{{ supplier.name }}</a>
 				            	{% endif %}	
 				            	{% endfor %}
+				            	{% endif %}
 				            </ul>
 				        </li>
 				        <li class="hidden-phone"><a href="#">Instrucțiuni</a></li>

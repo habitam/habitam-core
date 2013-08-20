@@ -23,6 +23,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.aggregates import Count
 from django.db.models.query_utils import Q
 from django.utils import timezone
 from habitam.entities.models import ApartmentGroup, Supplier
@@ -54,7 +55,8 @@ class License(models.Model):
         return no
     
     def available_buildings(self):
-        return self.buildings.all()
+        b = self.buildings.all()
+        return b.annotate(apartment_count=Count('apartmentgroup__apartment'))
     
     def available_months(self):
         result = []
@@ -68,7 +70,14 @@ class License(models.Model):
     def available_suppliers(self):
         q = Q(~Q(archived=True) | Q(archive_date__gt=self.__latest()))
         q = Q(q & ~Q(one_time=True))
-        return self.suppliers.filter(q)
+        s = self.suppliers.filter(q)
+        return s.annotate(service_count=Count('service'))
+    
+    def top_buildings(self):
+        return self.available_buildings().order_by('-apartment_count')
+    
+    def top_suppliers(self):
+        return self.available_suppliers().order_by('-service_count')
 
     def usage_ratio(self):
         return self.apartment_count() * 100 / self.max_apartments

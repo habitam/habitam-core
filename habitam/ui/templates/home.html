@@ -1,4 +1,5 @@
 {% extends 'left_base.html' %} 
+{% load ui_extras %}
 
 {% block inner_content %}
 <div class="alert alert-info visible-phone">
@@ -24,31 +25,38 @@ noi.
 {% endif %}
 
 {% if license.available_buildings %}
-<div class="span4">
+{% top_entities license.top_buildings 10 as top_buildings %}
+<div class="span5">
 <legend>
-<a href="{% url 'buildings' %}">clădiri</a>
+<a href="{% url 'buildings' %}">top clădiri</a>
 </legend>
 <ul>
-	{% for building in license.available_buildings %}
-	<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}</a></li>
+	{% for building in top_buildings %}
+	<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}
+	<span class="badge badge-info pull-right" title="Clădirea {{ building.name }} are {{ building.apartment_count }} apartamente">{{ building.apartment_count }}</span>
+	</a>
+	</li> 
 	{% endfor %}
 </ul>
 </div>
 {% endif %}
 
 {% if license.available_suppliers %}
-<div class="span4">
+{% top_entities license.top_suppliers 10 as top_suppliers %}
+<div class="span5 {% if license.available_buildings %}offset1{% endif %}">
 <legend>
-<a href="{% url 'suppliers' %}">furnizori</a>
+<a href="{% url 'suppliers' %}">top furnizori</a>
 </legend>
 <ul>
-	{% for supplier in license.available_suppliers %}
+	{% for supplier in top_suppliers %}
 	{% if not supplier.archived and not supplier.one_time %}
-	<li><a href="{% url 'supplier_view' supplier.id %}">{{ supplier.name }}</a>
+	<li><a href="{% url 'supplier_view' supplier.id %}">{{ supplier.name }}
+	<span class="badge badge-info pull-right" title="Furnizorul {{ supplier.name }} este folosit de {{ supplier.service_count }} servicii">{{ supplier.service_count }}</span>
+	</a>
+	</li>
 	{% endif %}
 	{% endfor %}	
 </ul>
-</p>
 </div>
 {% endif %}
 

@@ -14,7 +14,7 @@
 			<td {% if entity.archived %}class="archived"{% endif %}>
 			<a href="{% url entity_view_name entity.id %}">{{ entity.name }}
 			{% if entity_cls|class_name == 'ApartmentGroup'  %}
-			<span class="badge pull-right">{{ entity.apartments|length }}</span>
+			<span class="badge badge-info pull-right" title="Clădirea {{ entity.name }} are {{ entity.apartment_count }} apartamente">{{ entity.apartment_count }}</span>
 			{% endif %}
 			</a>
 			</td>

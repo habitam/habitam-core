@@ -98,6 +98,10 @@ def remaining_std_suppliers(l):
         return None
 
 @register.assignment_tag
+def top_entities(q, count):
+    return q[:count]
+
+@register.assignment_tag
 def valid_timestamp(timestamp, user_license):
     if timestamp == None or timestamp == '':
         return True
