@@ -13,20 +13,28 @@
 {% for field in form.visible_fields %}
 	<div class="{% field_class field %} control-group {% if field.errors %}error{% endif %}">
 	 	{% if field.field.widget|class_name == 'CheckboxSelectMultiple' %}
-	 		{{ field.label_tag }}
+	 		<label for="id_{{ field.html_name }}">
+	 		{{ field.label }}
+			{% if field.field.required %}<span class="required_field">*</span>{% endif %}
+			</label>
 	 		{{ field }}
 			{% for error in field.errors %}
 				<span class="help-inline">{{ error }}</span>
 			{% endfor %}	 	
 		{% elif 'checkbox' in field.as_widget %}
 			<label class="controls checkbox">
-				{{ field }} {{ field.label_tag }}
+				{{ field }}
+				{{ field.label }}
+				{% if field.field.required %}<span class="required_field">*</span>{% endif %}
 				{% for error in field.errors %}
 					<span class="help-inline">{{ error }}</span>
 				{% endfor %}
 			</label>
 		{% else %}
-			<label class="control-label" for="id_{{ field.html_name }}">{{ field.label_tag }}</label>
+			<label class="control-label" for="id_{{ field.html_name }}">
+			{{ field.label }}
+			{% if field.field.required %}<span class="required_field">*</span>{% endif %}
+			</label>
 			<div class="controls">
 				{{ field }}
 				{% for error in field.errors %}
