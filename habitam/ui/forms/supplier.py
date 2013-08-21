@@ -59,9 +59,10 @@ class EditSupplierForm(forms.ModelForm):
         if 'name' in self.cleaned_data:
             slist = self._user.administrator.license.suppliers
             n = self.cleaned_data['name']
-            for ss in slist.all():
-                if ss.name == n:
-                    raise forms.ValidationError('Numele %s mai exista in lista de furnizori' % (n))
+            if self.instance.pk == None:
+                for ss in slist.all():
+                    if ss.name == n:
+                        raise forms.ValidationError('Numele %s mai exista in lista de furnizori' % (n))
         return self.cleaned_data
     
     def add_form_error(self, error_message):
