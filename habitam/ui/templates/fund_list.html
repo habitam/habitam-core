@@ -21,8 +21,16 @@
 				<td class="hidden-phone">
 					<div class="btn-group">
 						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'new_fund_transfer' account_id=account.id %}')" title="Transferă bani într-un alt cont sau fond"><i class="icon-retweet"></i></button>
-						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_service_payment' account_id=account.id %}')" title="Plătește un serviciu"><i class="icon-share-alt icon-white"></i> Serviciu</button>						
-						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_other_service_payment' account_id=account.id %}')" title="Plătește serviciile unui terț neînregistrat în sistem"><i class="icon-share-alt icon-white"></i> Terț</button>
+					</div>	
+					<div class="btn-group">
+						<a class="btn btn-mini btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">
+						Plată
+						<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="javascript:editDialog('{% url 'new_service_payment' account_id=account.id %}')">Serviciu</a></li>
+							<li><a href="javascript:editDialog('{% url 'new_other_service_payment' account_id=account.id %}')">Terț</a></li>
+						</ul>
 					</div>
 					<div class="btn-group">
 						{% if account.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_fund' entity_id=account.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}

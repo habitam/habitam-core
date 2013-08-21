@@ -41,7 +41,7 @@
 				<td>
 					<div class="btn-toolbar btn-toolbar-apartment">
 						<div class="btn-group">
-							<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_payment' entity_id=ap.id %}')"><i class="icon-plus-sign icon-white"></i> Încasează</button>
+							<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_payment' entity_id=ap.id %}')">Încasează</button>
 						</div>
 						<div class="btn-group hidden-phone">
 						    {% if ap.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_apartment' entity_id=ap.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
