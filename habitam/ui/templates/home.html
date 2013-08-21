@@ -31,8 +31,10 @@ luați legătura cu noi.
 </legend>
 <ul>
 	{% for building in top_buildings %}
-	<li><a href="{% url 'apartment_list' building.id %}">{{ building.name }}
+	<li>
+	<a href="{% url 'apartment_list' building.id %}">
 	<span class="badge badge-info pull-right" title="Clădirea {{ building.name }} are {{ building.apartment_count }} apartamente">{{ building.apartment_count }}</span>
+	{{ building.name }}
 	</a>
 	</li> 
 	{% endfor %}
@@ -49,8 +51,10 @@ luați legătura cu noi.
 <ul>
 	{% for supplier in top_suppliers %}
 	{% if not supplier.archived and not supplier.one_time %}
-	<li><a href="{% url 'supplier_view' supplier.id %}">{{ supplier.name }}
+	<li>
+	<a href="{% url 'supplier_view' supplier.id %}">
 	<span class="badge badge-info pull-right" title="Furnizorul {{ supplier.name }} este folosit de {{ supplier.service_count }} servicii">{{ supplier.service_count }}</span>
+	{{ supplier.name }}
 	</a>
 	</li>
 	{% endif %}
