@@ -8,6 +8,7 @@
 		<span class="btn-group pull-right hidden-phone">
 			{% with license=user.administrator.license %}
 			{% available_list_months building user.administrator.license as alm %}
+			{% comment %}
 			<div class="btn-group">
 				<a class="btn" href="{% url 'download_balance' building_id=building.id %}">Sold</a>
 				<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
@@ -26,6 +27,7 @@
 				{% endfor %}
   				</ul>
 			</div>
+			{% endcomment %}
 			<div class="btn-group">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 	    			Listă	
