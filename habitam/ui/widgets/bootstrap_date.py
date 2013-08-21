@@ -33,6 +33,7 @@ class BootstrapDateInput(DateInput):
         super(BootstrapDateInput, self).__init__(attrs, format)
         
     def render(self, name, value, attrs=None):
+        value = '' if value == None else value
         output = []
         output.append(u'<div class="input-append">')
         output.append(u'<input class="datepicker datepicker-input" size="16" type="text" name="%s" id="id_%s" value="%s" data-date="%s" data-date-format="%s">' % (name, name, value, value, self.input_format))
