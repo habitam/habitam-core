@@ -2,6 +2,14 @@
 {% load ui_extras %}
 
 {% block inner_content %}
+<div class="alert alert-info">
+<a class="close" data-dismiss="alert" href="#">&times;</a>
+Punem la punct ultimele detalii ale serviciului nostru. Ne cerem
+scuze pentru eventualele disfuncționalități care pot apărea între timp și vă
+muțumim pentru orice sugestie de îmbunătățire aveți pentru noi.
+<a class="btn btn-mini btn-info" href="{% url 'contact' %}">Contact</a>
+</div>
+
 <div class="alert alert-info visible-phone">
 <a class="close" data-dismiss="alert" href="#">&times;</a>
 Pentru a asigura o experiență optimă, anumite funcționalități ale aplicației
