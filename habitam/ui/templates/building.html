@@ -56,10 +56,9 @@
 	{% if user.administrator.license.available_suppliers and not building.services %}
 	<div class="alert hidden-phone">
 		<a class="close" data-dismiss="alert" href="#">&times;</a>
-		<span class="label label-warning">Atenție!</span> Nu există nici un
-		serviciu (de ex., "apă caldă") definit pentru această clădire. Înainte
-		de a putea adăuga intrări la lista de întreținere, trebuie să definiți
-		câteva servicii.
+		Nu există nici un serviciu (de ex., "apă caldă") definit pentru această
+		clădire. Înainte de a putea adăuga intrări la lista de întreținere,
+		trebuie să definiți câteva servicii.
 		<br>
 		<button type="button" class="btn-warning btn-small" onclick="editDialog('{% url 'new_billable_general' building.id %}')">Serviciu nou</button>
 	</div>
