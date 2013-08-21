@@ -179,8 +179,6 @@ class EditServiceForm(EditBillableForm):
             
     def clean(self):
         cleaned_data = super(EditServiceForm, self).clean()
-        if self.instance.pk == None and not 'supplier' in cleaned_data.keys():
-            raise forms.ValidationError('No supplier selected')
         cleaned_data['money_type'] = '3rd party'
         cleaned_data['account_type'] = 'std'
         return cleaned_data
