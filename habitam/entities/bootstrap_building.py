@@ -99,6 +99,7 @@ def bootstrap_building(user_license, name, staircases, apartments,
     f = CollectingFund.objects.create(billed=building, quota_type='equally',
                         name='Fond reparații', money_type='cash',
                         account_type='repairs')
+    f.set_quota()
     f.account.type = 'repairs'
     f.account.save()
     
