@@ -53,13 +53,17 @@ def _required(args, ap):
 
 
 class NewBuildingCharge(NewDocPaymentForm):
-    manual_costs = BooleanField(label='Distribuie costurile manual', required=False)
     cmd = forms.CharField(initial='save', widget=forms.HiddenInput())
     
     def __init__(self, *args, **kwargs):
         self.service = kwargs['entity']
  
         super(NewBuildingCharge, self).__init__(*args, **kwargs)
+        
+        if self.service.quota_type != 'noquota':
+            self.fields['manual_costs'] = BooleanField(
+                                    label='Distribuie costurile manual',
+                                    required=False)
         
         if self.__manual_costs():
             self.fields['amount'] = forms.DecimalField(label='Suma',
@@ -90,7 +94,7 @@ class NewBuildingCharge(NewDocPaymentForm):
  
     
     def __manual_costs(self):
-        return 'manual_costs' in self.data or self.service.quota_type == 'no_quota'
+        return 'manual_costs' in self.data or self.service.quota_type == 'noquota'
     
     def __mark_unrequired(self):
         for k in self.data:
