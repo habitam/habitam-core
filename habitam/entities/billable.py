@@ -154,7 +154,7 @@ class Billable(SingleAccountEntity):
     def new_inbound_operation(self, amount, no, invoice=None, ap_sums=None,
                         ap_consumptions=None, consumption=None,
                         date=timezone.now()):
-        logger.info('new inbound op for %s amount=%f no=%s ap_sums=%s ap_consumptions=%s consumption=%s date=%s' % 
+        logger.info(u'new inbound op for %s amount=%f no=%s ap_sums=%s ap_consumptions=%s consumption=%s date=%s' % 
                     (self, amount, no, ap_sums, ap_consumptions, consumption, date))
         if ap_consumptions != None:
             self.__new_charge_with_consumptions(amount, no, ap_consumptions,
