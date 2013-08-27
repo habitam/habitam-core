@@ -76,7 +76,17 @@ class OperationDoc(models.Model):
     def penalties(self):
         penalty_ops = self.operation_set.filter(dest__type='penalties').aggregate(total_amount=Sum('amount'))
         return penalty_ops['total_amount']
-  
+    
+    def register_details(self):
+        details = None
+        try:
+            details = self.receipt.description.strip()
+        except:
+            pass
+        if details == None or details == '':
+            details = self.list_description()
+        return details
+            
    
 class Operation(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -263,12 +273,18 @@ class Account(models.Model):
         
         self.save()
         
-    def operation_list(self, month, month_end):
+    def operation_list(self, month, month_end, source_only=False, dest_only=False):
+        assert(not(source_only & dest_only))
         result = []
         
         q_time = Q(Q(date__gte=month.strftime('%Y-%m-%d')) & 
                    Q(date__lt=month_end.strftime('%Y-%m-%d')))
-        q_accnt_link = Q(Q(src=self) | Q(operation__dest=self))
+        if source_only:
+            q_accnt_link = Q(src=self)
+        elif dest_only:
+            q_accnt_link = Q(operation__dest=self)
+        else:    
+            q_accnt_link = Q(Q(src=self) | Q(operation__dest=self))
         q = Q(q_time & q_accnt_link)
         qs = OperationDoc.objects.filter(q)
         docs = qs.annotate(total_amount=Sum('operation__amount')).order_by(

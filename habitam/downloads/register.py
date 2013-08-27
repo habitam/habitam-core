@@ -47,9 +47,9 @@ def __balance(building, d):
     return s
 
 
-def __operations(entity, d):
+def __operations(entity, d, source_only, dest_only):
     next_day = d + relativedelta(days=1)
-    ops = entity.account.operation_list(d, next_day)
+    ops = entity.account.operation_list(d, next_day, source_only, dest_only)
     for op in ops:
         op.total_amount = op.total_amount * -1
         p = op.penalties()
@@ -58,8 +58,8 @@ def __operations(entity, d):
 
 
 def __register(building, d, initial_balance):
-    ml = map(lambda ap: __operations(ap, d), building.apartments()) + \
-         map(lambda svc: __operations(svc, d), building.services())
+    ml = map(lambda ap: __operations(ap, d, True, False), building.apartments()) + \
+         map(lambda svc: __operations(svc, d, False, True), building.services())
     ops = []
     for ol in ml:
         if ol:
@@ -108,7 +108,7 @@ def to_data(building, d_list, day):
                 row.append(increment)
                 row.append(op_doc.no)
                 row.append(op_doc.date)
-                row.append(op_doc.no)
+                row.append(op_doc.register_details())
                 if amount >= 0:
                     row.append(amount)
                     row.append('')
