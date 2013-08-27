@@ -23,6 +23,7 @@ Created on Apr 13, 2013
 from django.contrib import admin
 from habitam.entities.models import ApartmentGroup, Apartment, Person, Service, \
     ServiceConsumption, ApartmentConsumption, DisplayDate, Supplier, CollectingFund
+import sys
 
 class ApartmentGroupAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'type', 'parent')
@@ -32,8 +33,25 @@ class ApartmentAdmin(admin.ModelAdmin):
     
 class ApartmentConsumptionAdmin(admin.ModelAdmin):
     list_display = ('apartment', 'doc', 'consumed')
+    
+class BillableAdmin(admin.ModelAdmin):
+    actions = ['set_quota']
+    
+    def set_quota(self, request, queryset):
+        updated = 0
+        for b in queryset:
+            try:
+                b.set_quota()
+            except Exception as e:
+                self.message_user(request, 'Operation failed for %s because "%s"' % (str(b), str(e)))
+                return
+            updated += 1
+        self.message_user(request, 'Set the quota for %d entities' % updated)
+            
+    set_quota.short_description = 'Reset the quota for this entity'
+        
 
-class CollectingFundAdmin(admin.ModelAdmin):
+class CollectingFundAdmin(BillableAdmin):
     list_display = ('name', 'billed', 'quota_type', 'archived', 'archive_date')
     
 class DisplayDateAdmin(admin.ModelAdmin):
@@ -42,7 +60,7 @@ class DisplayDateAdmin(admin.ModelAdmin):
 class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
 
-class ServiceAdmin(admin.ModelAdmin):
+class ServiceAdmin(BillableAdmin):
     list_display = ('name', 'supplier', 'billed', 'quota_type', 'archived',
                     'archive_date', 'contract_id', 'client_id')
     

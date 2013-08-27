@@ -213,7 +213,7 @@ class Billable(SingleAccountEntity):
         for qt in Billable.QUOTA_TYPES:
             if qt[0] == self.quota_type:
                 found = True
-        if self.quota_type == 'manual' or not found:
+        if self.quota_type in ['manual', 'noquota'] or not found:
             logger.error('Quota type %s is invalid', self.quota_type)
             raise NameError('Invalid quota type')
         
