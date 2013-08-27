@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 This file is part of Habitam.
 
@@ -21,17 +22,21 @@ Created on Jul 18, 2013
 '''
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, cm, landscape
-from reportlab.platypus.flowables import PageBreak
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, Paragraph, KeepInFrame
 from reportlab.lib.styles import getSampleStyleSheet
-from django.conf import settings
-
-
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, \
+    Paragraph, KeepInFrame
+from reportlab.platypus.flowables import PageBreak
 import logging
+from os import path
 import tempfile
 
+
+pdfmetrics.registerFont(TTFont('Helvetica', path.join(settings.BASE_DIR, 'fonts', 'Arial.ttf' )))
 MARGIN_SIZE = 0.2 * cm
 PAGE_SIZE = A4
 
@@ -75,11 +80,11 @@ def to_data(building, d_list, day):
     data = [] 
     header = []
     header.append('Nr. Crt.')
-    header.append('Nr. Act. Casa')
-    header.append('Nr. Anexa')
-    header.append('Explicatii')
-    header.append('Incasari')
-    header.append('Plati')
+    header.append(u'Nr. Act. Casă')
+    header.append(u'Nr. Anexă')
+    header.append(u'Explicații')
+    header.append(u'Încasări')
+    header.append(u'Plăți')
     header.append('Simbol cont')
     data.append(header)
     while d <= day:
@@ -93,7 +98,7 @@ def to_data(building, d_list, day):
             first_row.append('')
             first_row.append('')
             first_row.append('')
-            first_row.append('Sold initial la %s' % d)
+            first_row.append(u'Sold inițial la %s' % d)
             first_row.append(initial_balance)
             first_row.append('')
             first_row.append('')      
@@ -148,7 +153,7 @@ def to_data(building, d_list, day):
 def to_pdf(tempFile, data, building):
     elements = []
    
-    doc = SimpleDocTemplate(tempFile, rightMargin=MARGIN_SIZE, leftMargin=MARGIN_SIZE, topMargin=MARGIN_SIZE, bottomMargin=0, pagesize=landscape(PAGE_SIZE))
+    doc = SimpleDocTemplate(tempFile, rightMargin=MARGIN_SIZE, leftMargin=MARGIN_SIZE, topMargin=MARGIN_SIZE, bottomMargin=0, encoding='utf8')
         
 
     table = Table(data, repeatRows=1)
@@ -162,18 +167,16 @@ def to_pdf(tempFile, data, building):
     I = Image(header_logo_path)
     I.hAlign = 'LEFT'
     styleSheet = getSampleStyleSheet()
-    P0 = Paragraph('''
-        <para align=center spaceb=3><b>
-        <font color=green>Registru casa </font></b>
-        </para>''',
+    P0 = Paragraph(u'<para align=right spaceb=3><b>' +
+        u'Registru casă</b>' +
+        u'</para>',
         styleSheet["BodyText"])
-    P1 = Paragraph('''
-        <para align=right spaceb=3><b>
-        <font color=black>Asociatia proprietari ''' + building.name + '''</font></b>
-        </para>''',
+    P1 = Paragraph((u'<para align=right spaceb=3>' +
+        u'Asociația de proprietari <b>%s</b>' + 
+        u'</para>') % building.name,
         styleSheet["BodyText"])
     
-    headerTableData = [(I, P0), ('http://www.habitam.ro', P1)]  
+    headerTableData = [(I, P0), ('www.habitam.ro', P1)]  
     headerTable = Table(headerTableData, colWidths=(landscape(PAGE_SIZE)[0] - 2 * MARGIN_SIZE) / 2)
     
     main_frame = KeepInFrame(maxWidth=landscape(PAGE_SIZE)[0] - 2 * MARGIN_SIZE, maxHeight=landscape(PAGE_SIZE)[1] - 2 * MARGIN_SIZE, content=[headerTable, table], mode='shrink', name='main_frame')
