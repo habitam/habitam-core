@@ -23,7 +23,7 @@
 		clădire. Înainte de a putea adăuga intrări la lista de întreținere,
 		trebuie să definiți câteva servicii.
 		<br>
-		<button type="button" class="btn-warning btn-small" onclick="editDialog('{% url 'new_billable_general' building.id %}')">Serviciu nou</button>
+		<a class="btn btn-warning btn-small" href="javascript:editDialog('{% url 'new_billable_general' building.id %}')">Serviciu nou</a>
 	</div>
 	{% endif %}
 	{% if building.needs_bootstrap %}
@@ -33,9 +33,9 @@
 		această clădire. <em>{{ building.name }}</em> este un bloc nou și doriți să
 		introduceți soldurile inițiale?
 		<br>
-		<button type="button" class="btn-info btn-small" onclick="editDialog('{% url 'upload_initial_operations' building.id %}')">Importați din Excel</button>	
+		<a class="btn btn-info btn-small" href="javascript:editDialog('{% url 'upload_initial_operations' building.id %}')">Importați din Excel</a>	
 		{% if building.apartments|length < 10 %}
-		<button type="button" class="btn-info btn-small" onclick="editDialog('{% url 'initial_operations' building.id %}')">Introduceți</button>
+		<a class="btn btn-info btn-small" href="javascript:editDialog('{% url 'initial_operations' building.id %}')">Introduceți</a>
 		{% endif %}
 	</div>
 	{% endif %}

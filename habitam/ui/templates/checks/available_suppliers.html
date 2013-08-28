@@ -6,8 +6,8 @@ Nu ați adăugat nici un <strong>furnizor</strong>. Fără furnizori, nu se pot
 configura serviciile de care beneficiază clădirile. Puteți să selectați câțiva
 dintre cei predefiniți sau să definiți unul nou.
 <br>
-<button type="button" class="btn-warning btn-small" onclick="editDialog('{% url 'select_std_suppliers' %}');">Furnizor predefiniți</button>
-<button type="button" class="btn-warning btn-small" onclick="editDialog('{% url 'new_supplier' %}');">Furnizor nou</button>
+<a class="btn btn-warning btn-small" href="javascript:editDialog('{% url 'select_std_suppliers' %}');">Furnizor predefiniți</a>
+<a class="btn btn-warning btn-small" href="javascript:editDialog('{% url 'new_supplier' %}');">Furnizor nou</a>
 </div>
 
 {% endif %}
