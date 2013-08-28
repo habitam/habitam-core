@@ -21,6 +21,7 @@ Created on Apr 20, 2013
 '''
 from django import template
 from habitam.entities.bootstrap_suppliers import remaining_suppliers
+from habitam.entities.models import Apartment
 from habitam.settings import PENALTY_START_DAYS
 
 register = template.Library()
@@ -81,6 +82,10 @@ def op_class(doc, service):
     if doc.type == 'collection' and service != None:
         return 'collection'
     return ''
+
+@register.assignment_tag
+def owner_apartments(email):
+    return Apartment.by_owner(email)
 
 @register.filter
 def penalty_collect(building):

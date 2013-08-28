@@ -1,0 +1,34 @@
+{% load ui_extras %}
+
+
+{% owner_apartments user.email as owned_apartments %}
+
+{% if owned_apartments %}
+<div class="span5">
+<legend>
+<a href="{% url 'buildings' %}">apartamentele mele</a>
+</legend>
+<ul>
+	{% for ap in owned_apartments %}
+	{% with ap.building as building %}
+	<li>
+	<a href="{% url 'apartment_list' building.id %}">
+	<span class="badge badge-info pull-right" title="Clădirea {{ building.name }} are {{ building.apartment_count }} apartamente">{{ building.apartment_count }}</span>
+	{{ building.name }}
+	</a>
+	</li>
+	{% endwith %}
+	{% endfor %}
+</ul>
+</div>
+{% else %}
+
+{% if not license %}
+<div class="alert alert-info">
+Nu dețineți nici un apartament administrat prin această aplicație. Vă rugăm să
+luați legătura cu administratorul dumnevoastră și să îi cereți să asocieze unui
+apartament adresa dumneavostră de email <strong>{{ user.email }}</strong>.
+</div>
+{% endif %}
+
+{% endif %}

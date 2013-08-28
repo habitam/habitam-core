@@ -29,7 +29,10 @@ def _license_valid(user):
 
 class LicenseFilter(object):
     def process_request(self, request):
-        if _license_valid(request.user):
+        try:
+            if _license_valid(request.user):
+                return None
+        except:
             return None
         return redirect('license_expired')
     

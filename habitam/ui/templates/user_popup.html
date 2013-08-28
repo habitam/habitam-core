@@ -1,10 +1,11 @@
 {% load gravatar %}
-{% with license=user.administrator.license %}
 <div class="media" style="width: 380px;">
 	<a class="pull-left hidden-phone" href="http://www.gravatar.com">
 		<img class="media-object" alt="Gravatar" style="width: 80px; height: 80px;" src="{% gravatar_url user.email %}">
 	</a>
 	<div class="media-body">
+		{% with license=user.administrator.license %}
+		{% if license %}
 		<table width="300px">
 			<tbody>
 				<tr>
@@ -24,8 +25,11 @@
 				</tr>
 			</tbody>
 		</table>
+		{% else %}
+		Bun venit, <strong>{{ user }}</strong>!
+		{% endif %}
+		{% endwith %}
 	</div>
 </div>
 <a class="btn" href="{% url 'password_change' %}"><i class="icon-lock"></i> Parola</a>
 <a class="btn" href="{% url 'logout' %}"><i class="icon-off"></i> Deconectare</a>
-{% endwith %}

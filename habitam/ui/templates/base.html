@@ -72,6 +72,7 @@
 		        	</ul>
 		            <ul class="nav">
 				        {% with license=user.administrator.license %}
+				        {% if license %}
 			            <li class="dropdown">
 				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clădiri <b class="caret"></b></a>
 				            <ul class="dropdown-menu">
@@ -108,8 +109,9 @@
 				            </ul>
 				        </li>
 				        <li class="hidden-phone"><a href="#">Instrucțiuni</a></li>
+				        {% endif %}
+					    {% endwith %}				        
 				        <li><a href="{% url 'contact' %}">Contact</a></li>
-					    {% endwith %}
 		            </ul>
 		        </div>
 	        {% endif %}

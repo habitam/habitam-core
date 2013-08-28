@@ -16,70 +16,13 @@ Pentru a asigura o experiență optimă, anumite funcționalități ale aplicaț
 nu sunt disponibile la această rezoluție. 
 </div>
 
-{% include 'checks/available_suppliers.html' %}
-
 {% with license=user.administrator.license %}
-{% if license.available_buildings %}
 
-{% if license.apartment_count >= license.max_apartments %}
-<div class="alert">
-<a class="close" data-dismiss="alert" href="#">&times;</a>
-Licența dumneavoastră nu mai permite adăguarea de apartamente noi. Vă rugăm
-luați legătura cu noi.
-<br>
-<a class="btn btn-warning btn-small" href="{% url 'contact' %}">Contact</a>
-</div>
+{% if license %}
+{% include 'home/administrator.html' with license=license %}
 {% endif %}
 
-{% if license.available_buildings %}
-{% top_entities license.top_buildings 10 as top_buildings %}
-<div class="span5">
-<legend>
-<a href="{% url 'buildings' %}">top clădiri</a>
-</legend>
-<ul>
-	{% for building in top_buildings %}
-	<li>
-	<a href="{% url 'apartment_list' building.id %}">
-	<span class="badge badge-info pull-right" title="Clădirea {{ building.name }} are {{ building.apartment_count }} apartamente">{{ building.apartment_count }}</span>
-	{{ building.name }}
-	</a>
-	</li> 
-	{% endfor %}
-</ul>
-</div>
-{% endif %}
-
-{% if license.available_suppliers %}
-{% top_entities license.top_suppliers 10 as top_suppliers %}
-<div class="span5 {% if license.available_buildings %}offset1{% endif %}">
-<legend>
-<a href="{% url 'suppliers' %}">top furnizori</a>
-</legend>
-<ul>
-	{% for supplier in top_suppliers %}
-	{% if not supplier.archived and not supplier.one_time %}
-	<li>
-	<a href="{% url 'supplier_view' supplier.id %}">
-	<span class="badge badge-info pull-right" title="Furnizorul {{ supplier.name }} este folosit de {{ supplier.service_count }} servicii">{{ supplier.service_count }}</span>
-	{{ supplier.name }}
-	</a>
-	</li>
-	{% endif %}
-	{% endfor %}	
-</ul>
-</div>
-{% endif %}
-
-{% else %}
-
-<div class="alert alert-info hidden-phone">
-Nu ați definit nici o clădire de administrat.
-<br>
-<button type="button" class="btn-info btn-small" onclick="editDialog('{% url 'new_building' %}');">Clădire nouă</button>
-</div>
-
-{% endif %}
+{% include 'home/owner.html' with license=license %}
 
 {% endwith %}
 {% endblock %}

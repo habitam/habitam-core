@@ -314,6 +314,11 @@ class Apartment(SingleAccountEntity):
     rented_to = models.ForeignKey(Person, related_name='rented_to',
                                   null=True, blank=True)
     rooms = models.SmallIntegerField(default=1)
+    
+    @classmethod
+    def by_owner(cls, email):
+        return Apartment.objects.filter(Q(owner__email=email))
+        
 
     def __init__(self, *args, **kwargs):       
         super(Apartment, self).__init__('apart', '3rd party', *args, **kwargs)
