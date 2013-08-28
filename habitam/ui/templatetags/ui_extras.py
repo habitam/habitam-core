@@ -119,6 +119,11 @@ def remaining_std_suppliers(l):
 def top_entities(q, count):
     return q[:count]
 
+@register.filter
+def unique_buildings(apartments):
+    buildings = [ap.building for ap in apartments]
+    return set(buildings)
+
 @register.assignment_tag
 def valid_timestamp(timestamp, user_license):
     if timestamp == None or timestamp == '':

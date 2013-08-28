@@ -9,15 +9,13 @@
 apartamentele mele
 </legend>
 <ul>
-	{% for ap in owned_apartments %}
-	{% with ap.building as building %}
+	{% for building in owned_apartments|unique_buildings %}
 	<li>
 	<a href="{% url 'apartment_list' building.id %}">
 	<span class="badge badge-info pull-right" title="Clădirea {{ building.name }} are {{ building.apartment_count }} apartamente">{{ building.apartment_count }}</span>
 	{{ building.name }}
 	</a>
 	</li>
-	{% endwith %}
 	{% endfor %}
 </ul>
 </div>
