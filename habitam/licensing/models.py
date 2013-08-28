@@ -41,6 +41,11 @@ class License(models.Model):
     def for_building(cls, building):
         licenses = License.objects.filter(buildings=building)[:1]
         return licenses[0]
+
+    @classmethod
+    def for_supplier(cls, supplier):
+        licenses = License.objects.filter(suppliers=supplier)[:1]
+        return licenses[0]
     
     def __latest(self):
         today = date.today()

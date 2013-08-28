@@ -24,7 +24,7 @@ from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.utils.decorators import decorator_from_middleware
 from habitam.entities.models import ApartmentGroup
-from habitam.ui.license_filter import LicenseFilter
+from habitam.ui.license_filter import LicenseFilter, building_accessible
 
 
 def __save_service(request, form):
@@ -74,6 +74,7 @@ def edit_billable(request, entity_id, form_class):
 @decorator_from_middleware(LicenseFilter)
 def new_billable(request, building_id, form_class, save_kwargs=None):
     building = ApartmentGroup.objects.get(pk=building_id).building()
+    building_accessible(request, building, True)
     user_license = request.user.administrator.license 
     
     if request.method == 'POST':

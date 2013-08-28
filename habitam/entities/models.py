@@ -57,6 +57,10 @@ class ApartmentGroup(Entity):
             decimal_places=2, max_digits=4,
             validators=[MaxValueValidator(MAX_PENALTY_PER_DAY)])
     
+    class LicenseMeta:
+        license_accessor = 'for_building'
+        license_collection = 'available_buildings'
+    
     @classmethod
     def can_add(cls, user_license):
         return user_license.apartment_count() < user_license.max_apartments
@@ -194,7 +198,13 @@ class ApartmentGroup(Entity):
                 return False
         return True
         
-
+    
+    def owned_apartments(self, email):
+        in_building = Q(parent__parent=self)
+        owned = Q(owner__email=email)
+        return Apartment.objects.filter(Q(in_building & owned))
+    
+    
     def funds(self):
         apartment_groups = self.apartment_groups()
         result = []
@@ -419,6 +429,10 @@ class Supplier(FiscalEntity):
     legal_representative = models.CharField(max_length=200, null=True, blank=True)
     one_time = models.BooleanField(default=False)
     
+    class LicenseMeta:
+        license_accessor='for_supplier'
+        license_collection = 'available_buildings'
+        
     @classmethod
     def can_add(cls, user_license):
         return True 

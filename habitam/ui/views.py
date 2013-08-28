@@ -39,7 +39,8 @@ from habitam.financial.models import Account, OperationDoc
 from habitam.licensing.models import License
 from habitam.ui.forms.building import NewBuildingForm, UploadInitialOperations
 from habitam.ui.forms.service_new_payment import NewOtherServicePayment
-from habitam.ui.license_filter import LicenseFilter
+from habitam.ui.license_filter import LicenseFilter, building_accessible, \
+    entity_accessible
 import calendar
 import logging
 
@@ -118,6 +119,7 @@ def new_building(request):
 @decorator_from_middleware(LicenseFilter)
 def building_tab(request, building_id, tab, show_all=False):
     building = ApartmentGroup.objects.get(pk=building_id).building()
+    building_accessible(request, building)
     data = {'building': building, 'active_tab': tab, 'show_all': show_all}
     return render(request, tab + '.html', data)  
 
@@ -126,7 +128,7 @@ def building_tab(request, building_id, tab, show_all=False):
 @decorator_from_middleware(LicenseFilter)
 def download_initial_operations_template(request, building_id):
     building = ApartmentGroup.objects.get(pk=building_id)
-
+    building_accessible(request, building, True)
     temp = initial_operations_template(building)
     return __xlsx_response(building, 'solduri_initiale_', temp)
 
@@ -135,6 +137,7 @@ def download_initial_operations_template(request, building_id):
 @decorator_from_middleware(LicenseFilter)
 def download_list(request, building_id, month):
     building = ApartmentGroup.objects.get(pk=building_id)
+    building_accessible(request, building, True)
     begin_ts = datetime.strptime(month + '-%02d' % building.close_day,
                                   "%Y-%m-%d").date()
     end_ts = begin_ts + relativedelta(months=1) 
@@ -151,6 +154,7 @@ def download_list(request, building_id, month):
 @decorator_from_middleware(LicenseFilter)
 def download_report(request, generator, name, building_id, month):
     building = ApartmentGroup.objects.get(pk=building_id)
+    building_accessible(request, building, True)
     if month == None:
         day = date.today()
         month = str(day.month)
@@ -207,6 +211,7 @@ def general_list(request, license_subtype, entity_cls, edit_name, new_name,
 @decorator_from_middleware(LicenseFilter)
 def operation_list(request, building_id, account_id, month=None):
     building = ApartmentGroup.objects.get(pk=building_id)
+    building_accessible(request, building)
     if month == None:
         today = date.today()
         month = date(day=building.close_day, month=today.month,
@@ -250,6 +255,8 @@ def operation_list(request, building_id, account_id, month=None):
 @login_required
 @decorator_from_middleware(LicenseFilter)
 def operation_doc(request, building_id, account_id, operationdoc_id):
+    building = ApartmentGroup.objects.get(pk=building_id)
+    building_accessible(request, building, True)
     OperationDoc.delete_doc(operationdoc_id)
     return redirect('operation_list', building_id=building_id,
                     account_id=account_id)
@@ -260,6 +267,7 @@ def operation_doc(request, building_id, account_id, operationdoc_id):
 def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'):
     entity = entity_cls.objects.get(pk=entity_id)
     building = entity.building()
+    building_accessible(request, building, True)
     
     if request.method == 'DELETE':
         if entity.can_delete():
@@ -296,6 +304,7 @@ def edit_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'
 @decorator_from_middleware(LicenseFilter)
 def edit_simple_entity(request, entity_id, entity_cls, form_cls, target, title='Entity'):
     entity = entity_cls.objects.get(pk=entity_id)
+    entity_accessible(request, entity_cls, entity, True)
     
     if request.method == 'DELETE':
         if entity.can_delete():
@@ -332,6 +341,7 @@ def entity_view(request, entity_cls, entity_id, edit_name, view_name,
                 template_name='entity_view.html', template_entity='entity',
                 extra_data=None):
     entity = entity_cls.objects.get(id=entity_id)
+    entity_accessible(request, entity_cls, entity)
     data = {template_entity: entity, 'entity_cls': entity_cls,
             'edit_name': edit_name, 'view_name': view_name}
     if extra_data != None:
@@ -345,6 +355,7 @@ def new_building_entity(request, building_id, form_cls, target,
                         title='New Entity', save_kwargs=None,
                         commit_directly=False):
     building = ApartmentGroup.objects.get(pk=building_id).building()
+    building_accessible(request, building, True)
     
     if request.method == 'POST':
         form = form_cls(request.POST, user=request.user, building=building)
@@ -381,6 +392,7 @@ def new_inbound_operation(request, entity_id, entity_cls, form_cls, target,
                         title):
     entity = entity_cls.objects.get(pk=entity_id)
     building = entity.building()
+    building_accessible(request, building, True)
     
     if request.method == 'POST':
         form = form_cls(request.POST, entity=entity)
@@ -439,6 +451,7 @@ def new_transfer(request, account_id, form_cls, target, title):
     except AccountLink.DoesNotExist:
         collecting_fund = CollectingFund.objects.get(account=src_account)
         building = collecting_fund.building()
+    building_accessible(request, building, True)
     
     if request.method == 'POST':
         form = form_cls(request.POST, account=src_account,
@@ -471,6 +484,8 @@ def new_transfer(request, account_id, form_cls, target, title):
 @decorator_from_middleware(LicenseFilter)
 def upload_initial_operations(request, building_id):
     building = ApartmentGroup.objects.get(pk=building_id)
+    building_accessible(request, building, True)
+    
     if request.method == 'POST':
         form = UploadInitialOperations(request.POST, request.FILES, building=building)
         if form.is_valid():
