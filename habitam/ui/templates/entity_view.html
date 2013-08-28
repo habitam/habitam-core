@@ -3,7 +3,7 @@
 
 {% block inner_content %}
 <legend>
-	{% if is_administrator %}
+	{% if user.administrator %}
 	<a href="javascript:editDialog('{% url edit_name entity_id=entity.id %}')">{{ entity }}</a>
 	<span class="btn-group pull-right hidden-phone">
 		<div class="btn-group">
