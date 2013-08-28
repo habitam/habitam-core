@@ -33,5 +33,4 @@ class TrialActivationView(ActivationView):
 
 class TrialRegistrationView(RegistrationView):
     def registration_allowed(self, request):
-        return True
-        return request.user == None
+        return not request.user.is_authenticated()
