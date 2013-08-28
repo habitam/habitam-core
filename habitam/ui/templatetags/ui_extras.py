@@ -22,9 +22,13 @@ Created on Apr 20, 2013
 from django import template
 from habitam.entities.bootstrap_suppliers import remaining_suppliers
 from habitam.entities.models import Apartment
+from habitam.licensing.models import License
 from habitam.settings import PENALTY_START_DAYS
 
 register = template.Library()
+
+
+
 
 @register.assignment_tag
 def capability(entity_cls, user_license, cn):
@@ -46,8 +50,9 @@ def operation_other_party(account, doc):
     return doc.src.name
 
 @register.assignment_tag
-def available_list_months(building, user_license):
-    return building.available_list_months(user_license.months_back)        
+def available_list_months(building):
+    l = License.for_building(building)
+    return building.available_list_months(l.months_back)        
 
 @register.filter
 def class_name(ob):
@@ -59,6 +64,14 @@ def field_class(field):
     if field.name.startswith('consumption_undeclared_ap_'):
         css_class = css_class + 'stick-to-next '
     return css_class
+
+@register.assignment_tag
+def license_allowed(admin_license, building):
+    return admin_license == License.for_building(building)
+
+@register.assignment_tag
+def license_for_building(building):
+    return License.for_building(building)
 
 @register.assignment_tag
 def list_downloaded(building, month):

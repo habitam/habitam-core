@@ -12,13 +12,23 @@
 			<th class="hidden-phone">Nr. persoane</th>
 			<th class="hidden-phone">Suprafață</th>
 			<th>Balanță</th>
+			{% if is_administrator %}
 			<th>&nbsp;</th>
+			{% endif %}
 		</tr>
 	</thead>
 	<tbody>
 		{% for sc in building.apartmentgroup_set.all %}
 			<tr>
-				<th colspan="8"><a href="javascript:editDialog('{% url 'edit_staircase' entity_id=sc.id %}')">Scara {{ sc.name }}</a></th>
+				<th colspan="8">
+					{% if is_administrator %}
+					<a href="javascript:editDialog('{% url 'edit_staircase' entity_id=sc.id %}')">
+					Scara {{ sc.name }}
+					</a>
+					{% else %}
+					Scara {{ sc.name }}
+					{% endif %}
+				</th>
 				<td class="hidden-phone">
 					{% if sc.can_delete %}<button class="btn btn-mini btn-danger hidden-phone" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_staircase' entity_id=sc.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
 				</td>
@@ -26,9 +36,21 @@
 			{% for ap in sc.apartment_set.all %}
 			<tr>
 				<td>&nbsp;</td>
-				<td><a href="javascript:editDialog('{% url 'edit_apartment' entity_id=ap.id %}')">{{ ap }}</a></td>
+				<td>
+					{% if is_administrator %}
+					<a href="javascript:editDialog('{% url 'edit_apartment' entity_id=ap.id %}')">{{ ap }}</a>
+					{% else %}
+					{{ ap }}
+					{% endif %}
+				</td>
 				<td class="hidden-phone">{{ ap.floor }}</td>
-				<td class="hidden-phone"><a href="javascript:editDialog('{% url 'edit_owner' entity_id=ap.owner.id %}')">{{ ap.owner }}</a></td>
+				<td class="hidden-phone">
+					{% if is_administrator %}
+					<a href="javascript:editDialog('{% url 'edit_owner' entity_id=ap.owner.id %}')">{{ ap.owner }}</a>
+					{% else %}
+					{{ ap.owner }}
+					{% endif %}
+				</td>
 				<td class="hidden-phone">{{ ap.rooms }}</td>
 				<td class="hidden-phone">{{ ap.inhabitance }}</td>
 				<td class="hidden-phone">{{ ap.area }}</td>
@@ -38,6 +60,7 @@
 					{% if ap.penalties %} și {{ ap.penalties|floatformat:2 }} penalități {% endif %}
 					</a>
 				</td>
+				{% if is_administrator %}
 				<td>
 					<div class="btn-toolbar btn-toolbar-apartment">
 						<div class="btn-group">
@@ -48,11 +71,14 @@
 						</div>
 					</div>
 				</td>
+				{% endif %}
 			</tr>
 			{% endfor %} 
 		{% endfor %}
 	</tbody>
 </table>
+
+{% if is_administrator %}
 <div class="container hidden-phone">
 	<div class="btn-group pull-right">
 		{% with license=user.administrator.license %}
@@ -63,4 +89,6 @@
 		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_staircase' building.id %}')">Scară nouă</button>
 	</div>
 </div>
+{% endif %}
+
 {% endblock %}

@@ -37,6 +37,11 @@ class License(models.Model):
     suppliers = models.ManyToManyField(Supplier, blank=True, null=True)
     valid_until = models.DateField()
     
+    @classmethod
+    def for_building(cls, building):
+        licenses = License.objects.filter(buildings=building)[:1]
+        return licenses[0]
+    
     def __latest(self):
         today = date.today()
         crnt = date(day=1, month=today.month, year=today.year)

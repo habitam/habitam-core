@@ -2,60 +2,21 @@
 {% load ui_extras %}
 
 {% block body %}
+{% license_allowed user.administrator.license building as is_administrator %}
+{% license_for_building building as license %} 
 <div class="container">
 	<legend>
-		<a href="javascript:editDialog('{% url 'edit_building' entity_id=building.id %}')">{{ building.name }}</a>
-		<span class="btn-group pull-right hidden-phone">
-			{% with license=user.administrator.license %}
-			{% available_list_months building user.administrator.license as alm %}
-			{% comment %}
-			<div class="btn-group">
-				<a class="btn" href="{% url 'download_balance' building_id=building.id %}">Sold</a>
-				<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
-  				<ul class="dropdown-menu">
-				{% for m in alm %}
-					<li><a href="{% url 'download_balance' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
-				{% endfor %}
-  				</ul>
-			</div>
-			{% endcomment %}
-			<div class="btn-group">
-				<a class="btn" href="{% url 'download_register' building_id=building.id %}">Registru</a>
-				<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
-  				<ul class="dropdown-menu">
-				{% for m in alm %}
-					<li><a href="{% url 'download_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
-				{% endfor %}
-  				</ul>
-			</div>
-			<div class="btn-group">
-				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-	    			Listă	
-	    			<span class="caret"></span>
-	  			</a>
-			  	<ul class="dropdown-menu">
-
-				{% for m in alm %}
-				{% list_downloaded building m as ld %}
-					<li>
-					<a {% if not ld %}class="confirmListDownload"{% endif %} href="{% url 'download_list' building_id=building.id month=m|date:"Y-m" %}" month="{{ m|date:"Y-m" }}">
-					<i class="icon-check" {% if not ld %}style="visibility: hidden"{% endif %}></i>
-					{{ m|date:"F Y" }}
-					</a>
-					</li>
-				{% endfor %}		
-				</ul>
-			</div>
-			<div class="btn-group">
-				{% if building.can_delete %}<button class="btn btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'edit_building' entity_id=building.id %}', '{% url 'home' %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
-			</div>
-			{% endwith %}
-		</span>	
+		{% if is_administrator %}
+		{% include 'building/administrator_legend.html' %}
+		{% else %}
+		{{ building.name }}
+		{% endif %}
 	</legend>
 </div>
 <div class="container">
+	{% if user.administrator %}
 	{% include 'checks/available_suppliers.html' %}
-	{% if user.administrator.license.available_suppliers and not building.services %}
+	{% if license.available_suppliers and not building.services %}
 	<div class="alert hidden-phone">
 		<a class="close" data-dismiss="alert" href="#">&times;</a>
 		Nu există nici un serviciu (de ex., "apă caldă") definit pentru această
@@ -77,6 +38,7 @@
 		<button type="button" class="btn-info btn-small" onclick="editDialog('{% url 'initial_operations' building.id %}')">Introduceți</button>
 		{% endif %}
 	</div>
+	{% endif %}
 	{% endif %}
 	<ul class="nav nav-tabs">
 		<li {% if active_tab = 'building_view' %}class="active"{% endif %}><a href="{% url 'building_view' building.id %}">Despre</a></li>
@@ -116,8 +78,7 @@
 
 <script type="text/javascript">
 var services_without_invoice = {
-{% with license=user.administrator.license %}
-{% available_list_months building user.administrator.license as alm %}
+{% available_list_months building as alm %}
 {% for m in alm %}
 	'{{ m|date:"Y-m" }}': [
 	{% services_without_invoice building m as services %}
@@ -126,7 +87,6 @@ var services_without_invoice = {
 	{% endfor %}
 	], 
 {% endfor %}
-{% endwith %}
 };
 
 $(".confirmListDownload").click(function(e) {

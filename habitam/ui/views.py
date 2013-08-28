@@ -36,6 +36,7 @@ from habitam.entities.bootstrap_building import bootstrap_building, \
 from habitam.entities.models import ApartmentGroup, Apartment, AccountLink, \
     CollectingFund, Supplier, Service
 from habitam.financial.models import Account, OperationDoc
+from habitam.licensing.models import License
 from habitam.ui.forms.building import NewBuildingForm, UploadInitialOperations
 from habitam.ui.forms.service_new_payment import NewOtherServicePayment
 from habitam.ui.license_filter import LicenseFilter
@@ -214,7 +215,7 @@ def operation_list(request, building_id, account_id, month=None):
         month = datetime.strptime(month + '-%02d' % building.close_day,
                                   "%Y-%m-%d").date()
     
-    l = request.user.administrator.license
+    l = License.for_building(building)
     l.validate_month(building, month)
     month_end = month + relativedelta(months=1) 
     

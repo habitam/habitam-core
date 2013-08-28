@@ -3,13 +3,17 @@
 
 {% block inner_content %}
 <legend>
+	{% if is_administrator %}
 	<a href="javascript:editDialog('{% url edit_name entity_id=entity.id %}')">{{ entity }}</a>
 	<span class="btn-group pull-right hidden-phone">
 		<div class="btn-group">
 			<button class="btn" onclick="editDialog('{% url edit_name entity_id=entity.id %}')"><i class="icon-pencil"></i></button>
 			{% if entity.can_delete %}<button class="btn btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url edit_name entity_id=entity.id %}', '{% url view_name entity.id %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
 		</div>
-	</span>		
+	</span>
+	{% else %}
+	{{ entity }}
+	{% endif %}
 </legend>
 
 {% for key, value in entity.view_fields.items %}

@@ -9,11 +9,9 @@ Operațiuni pentru {{ account.name }} în {{ month|date:"F Y" }}
     	<span class="caret"></span>
   	</a>
   	<ul class="dropdown-menu">
-	{% with license=user.administrator.license %}
 	{% for m in license.available_months %}
 		<li><a href="{% url 'operation_list' building_id=building.id account_id=account.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
 	{% endfor %}
-	{% endwith %}
 	</ul>
 </span>
 </h3>
@@ -23,7 +21,9 @@ Operațiuni pentru {{ account.name }} în {{ month|date:"F Y" }}
 		<th>Ordinator</th>
 		<th>Document</th>
 		<th>Suma</th>
+		{% if is_administrator %}
 		<th></th>
+		{% endif %}
 	</thead>
 	<tbody>
 	<tr>
@@ -36,7 +36,9 @@ Operațiuni pentru {{ account.name }} în {{ month|date:"F Y" }}
 		  		{% if initial_penalties != None %} și {{ initial_penalties|floatformat:2 }} penalități{% endif %}
 			</em>
 		</td>
+		{% if is_administrator %}
 		<td></td>
+		{% endif %}
 	</tr>
 	{% for doc in docs %}
 		{% include 'operation_row.html' with doc=doc %}
@@ -51,7 +53,9 @@ Operațiuni pentru {{ account.name }} în {{ month|date:"F Y" }}
 		  		{% if final_penalties != None %} și {{ final_penalties|floatformat:2 }} penalități{% endif %}
 		  	</em>
 		</td>
+		{% if is_administrator %}
 		<td></td>
+		{% endif %}
 	</tr>
 	</tbody>
 </table>

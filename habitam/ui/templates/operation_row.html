@@ -11,5 +11,7 @@
 		{{ amount|floatformat:2 }}
 		{% if account.type == 'apart' and doc.penalties != None %} și {{ doc.penalties }} penalități{% endif %}
 	</td>
+	{% if is_administrator %}
 	<td><a class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url 'operation_doc' building.id account.id doc.id %}');"><i class="icon-trash icon-white"></i></a></td>
+	{% endif %}
 </tr>

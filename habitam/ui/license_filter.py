@@ -33,6 +33,7 @@ class LicenseFilter(object):
             if _license_valid(request.user):
                 return None
         except:
-            return None
+            if request.method == 'GET':
+                return None
         return redirect('license_expired')
     
