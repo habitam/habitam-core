@@ -115,6 +115,10 @@ class Account(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(default='std', max_length=10, choices=TYPES) 
     
+    class LicenseMeta:
+        license_accessor = 'for_fund'
+        license_collection = 'available_funds'
+        
     def __assert_doc_not_exists(self, no):
         try:
             OperationDoc.objects.get(no=no, src=self)

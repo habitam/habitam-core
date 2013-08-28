@@ -26,7 +26,9 @@ from django.db import models
 from django.db.models.aggregates import Count
 from django.db.models.query_utils import Q
 from django.utils import timezone
-from habitam.entities.models import ApartmentGroup, Supplier
+from habitam.entities.accessor import building_for_account
+from habitam.entities.models import ApartmentGroup, Supplier, Apartment, Person
+from habitam.financial.models import Account
 
 
 class License(models.Model):
@@ -41,6 +43,17 @@ class License(models.Model):
     def for_building(cls, building):
         licenses = License.objects.filter(buildings=building)[:1]
         return licenses[0]
+    
+    @classmethod
+    def for_fund(cls, fund):
+        account = Account.objects.get(fund.pk)
+        building = building_for_account(account)
+        return License.for_building(building)
+    
+    @classmethod
+    def for_owner(cls, owner):
+        ap = Apartment.objects.filter(owner=owner)[:1]
+        return License.for_building(ap.building())
 
     @classmethod
     def for_supplier(cls, supplier):
@@ -76,6 +89,12 @@ class License(models.Model):
             tmp = crnt - relativedelta(months=i)
             result.append(tmp)
         return result
+    
+    def available_funds(self):
+        return Account.objects.filter(accountlink__holder__license=self)
+    
+    def available_owners(self):
+        return Person.objects.filter(owner__parent__parent__license=self)
     
     def available_suppliers(self):
         q = Q(~Q(archived=True) | Q(archive_date__gt=self.__latest()))

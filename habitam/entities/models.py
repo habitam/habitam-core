@@ -298,7 +298,11 @@ class Person(models.Model):
     first_name = models.CharField(max_length=200, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
-   
+    
+    class LicenseMeta:
+        license_accessor = 'for_owner'
+        license_collection = 'available_owners'
+    
     @classmethod
     def bootstrap_owner(cls, name):
         return Person.objects.create(name=Person.default_owner_name(name))
@@ -431,7 +435,7 @@ class Supplier(FiscalEntity):
     
     class LicenseMeta:
         license_accessor='for_supplier'
-        license_collection = 'available_buildings'
+        license_collection = 'available_suppliers'
         
     @classmethod
     def can_add(cls, user_license):
