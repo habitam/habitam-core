@@ -1,0 +1,30 @@
+{% load ui_extras %} 
+<div id="editFormContainer">
+	<form id="editForm" class="form-horizontal" method="post"
+		action="{% url 'trial_request' %}">
+		{% if form_error %}
+		   	<div class="alert alert-error">
+				<span class="help-inline">{{ form_error }}</span>
+		   	</div>
+		{% endif %}
+		
+		<p>Dacă doriți să încercați aplicația noastră, puteți cere o licență de
+		evaluare. Aceasta vă va permite ca timp de {{ days_valid }} zile să
+		administrați {{ max_apartments }} apartamente.</p>
+		{% csrf_token %}
+	</form>
+</div>
+
+<script>
+$(document).ready(function() {
+	$("#editTitle").text("Licență evaluare");
+	
+	$('#editForm').ajaxForm({
+		target : '#editFormContainer',
+	});
+	
+	$('#submitButton').click(function() {
+		$('#editForm').submit();
+	});
+});
+</script>

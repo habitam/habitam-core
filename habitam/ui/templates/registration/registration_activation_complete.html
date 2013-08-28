@@ -3,9 +3,10 @@
 {% block inner_content %}
 <legend>Înregistrare</legend>
 
-<p>Contul dumneavostră a fost activat. Puteți să-l folosiți timp de
-{{ days_valid }} zile pentru a administra maxim {{ max_apartments }}
-apartamente.</p>
-<p>Puteți să intrați în aplicație <a href="{% url 'login' %}">aici</a>.</p> 
+<p>Contul dumneavostră a fost activat. După ce intrați în aplicație, puteți 
+cere o licență de evaluare valabilă timp de {{ days_valid }} zile și pe care o
+puteți folosi pentru a administra {{ max_apartments }} apartamente.</p>
+
+<a class="btn" href="{% url 'login' %}">Access aplicație</a>
 
 {% endblock %}

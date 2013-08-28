@@ -31,6 +31,11 @@ logger = logging.getLogger(__name__)
 
 
 def register_trial(user):
+    try:
+        if user.administrator:
+            raise ValueError('Sunteți deja un administrator!')
+    except Administrator.DoesNotExist:
+        pass
     trial = {}
     trial.update(TRIAL_LICENSE)
     trial['valid_until'] = date.today()

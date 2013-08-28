@@ -22,6 +22,14 @@ apartamentele mele
 {% else %}
 
 {% if not license %}
+<div class="alert">
+<a class="close" data-dismiss="alert" href="#">&times;</a>
+Doriți să încercați aplicația noastră? Vă oferim gratuit o licență de evaluare,
+disponibilă imediat ce apăsați butonul de mai jos.
+<br>
+<a class="btn btn-warning btn-small" href="javascript:editDialog('{% url 'trial_request' %}')">Începeți evaluarea</a>
+</div>
+
 <div class="alert alert-info">
 Nu dețineți nici un apartament administrat prin această aplicație. Vă rugăm să
 luați legătura cu administratorul dumnevoastră și să îi cereți să asocieze unui

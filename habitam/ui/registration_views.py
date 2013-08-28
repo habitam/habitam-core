@@ -20,14 +20,30 @@ Created on Aug 3, 2013
 
 @author: Stefan Guna
 '''
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 from habitam.licensing.trial_license import register_trial
+from habitam.settings import TRIAL_LICENSE
 from registration.backends.default.views import RegistrationView, ActivationView
 
+
+@login_required
+def trial_request(request):
+    data = {}
+    data.update(TRIAL_LICENSE)
+    if request.method == 'POST':
+        try:
+            register_trial(request.user)
+        except Exception as e:
+            data['form_error'] = e
+            return render(request, 'registration/trial_request.html', data)
+        return render(request, 'edit_ok.html')
+    return render(request, 'registration/trial_request.html', data)     
+    
 
 class TrialActivationView(ActivationView):
     def activate(self, request, activation_key):
         user = super(TrialActivationView, self).activate(request, activation_key)
-        register_trial(user)
         return user
 
 

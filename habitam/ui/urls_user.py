@@ -24,7 +24,7 @@ from django.views.generic.base import TemplateView
 from habitam.settings import TRIAL_LICENSE
 from habitam.ui.forms.trial_registration import HabitamRegistrationForm
 from habitam.ui.registration_views import TrialRegistrationView, \
-    TrialActivationView
+    TrialActivationView, trial_request
     
 urlpatterns = patterns('',
     url(r'^users/login/$', 'django.contrib.auth.views.login',
@@ -69,7 +69,8 @@ urlpatterns = patterns('',
             template_name='registration/registration.html'),
         name='registration_activate'),
     url(r'^users/activate/complete$', TemplateView.as_view(
-            template_name='registration/registration_activation_complete.html',
-            get_context_data=lambda: TRIAL_LICENSE),
+            template_name='registration/registration_activation_complete.html'),
         name='registration_activation_complete'),
+                       
+    url(r'^users/trial_request$', trial_request, name='trial_request'),
 )
