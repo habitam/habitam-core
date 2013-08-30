@@ -13,9 +13,10 @@ luați legătura cu noi.
 </div>
 {% endif %}
 
+<div class="row-fluid">
 {% if license.available_buildings %}
 {% top_entities license.top_buildings 10 as top_buildings %}
-<div class="span5">
+<div class="span6">
 <legend>
 <a href="{% url 'buildings' %}">top clădiri</a>
 </legend>
@@ -34,7 +35,7 @@ luați legătura cu noi.
 
 {% if license.available_suppliers %}
 {% top_entities license.top_suppliers 10 as top_suppliers %}
-<div class="span5 {% if license.available_buildings %}offset1{% endif %}">
+<div class="span5 {% if license.available_buildings %}offset1{% else %}offset7{% endif %}">
 <legend>
 <a href="{% url 'suppliers' %}">top furnizori</a>
 </legend>
@@ -52,6 +53,7 @@ luați legătura cu noi.
 </ul>
 </div>
 {% endif %}
+</div>
 
 {% else %}
 
