@@ -65,7 +65,7 @@ def __monthly_penalties(ap, carry, display_date, when):
     building = ap.building()
     begin, end = __debt_interval(building, display_date)
     debt = __debt(ap, begin, end)
-    payments = __payments(ap, end, when)
+    payments = apartment_payments(ap, end, when)
     balance = debt + payments - carry
 
     logger.debug('Balance difference for %s between %s -> %s is %d' % 
@@ -88,7 +88,7 @@ def __monthly_penalties(ap, carry, display_date, when):
     return penalties, payments
 
     
-def __payments(ap, since, until):
+def apartment_payments(ap, since, until):
     account = ap.account
     until = until + relativedelta(days=1)
     

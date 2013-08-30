@@ -28,7 +28,7 @@ from django.db.models.query_utils import Q
 from django.utils import timezone
 from habitam.entities.base import Entity, SingleAccountEntity, FiscalEntity
 from habitam.entities.billable import Billable
-from habitam.entities.penalties import penalties
+from habitam.entities.penalties import penalties, apartment_payments
 from habitam.financial.models import Account, OperationDoc
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
     MAX_PENALTY_PER_DAY
@@ -205,6 +205,15 @@ class ApartmentGroup(Entity):
         return Apartment.objects.filter(Q(in_building & owned))
     
     
+    def owner_debt(self, email):
+        now = timezone.now()
+        ts = date(day=self.close_day, month=now.month, year=now.year)
+        if ts >= datetime.date(now):
+            ts = ts - relativedelta(months=1)
+        return reduce(lambda s, ap: s + ap.debt(ts),
+                      self.owned_apartments(email), 0)
+    
+    
     def funds(self):
         apartment_groups = self.apartment_groups()
         result = []
@@ -355,6 +364,11 @@ class Apartment(SingleAccountEntity):
 
     def can_delete(self):
         return self.account.can_delete() and not self.account.has_quotas()
+    
+    def debt(self, ts):
+        until = timezone.now() + relativedelta(days=1)
+        b = -apartment_payments(self, ts, until) - self.balance(ts)
+        return 0 if b < 0 else b
    
     
     def delete(self):

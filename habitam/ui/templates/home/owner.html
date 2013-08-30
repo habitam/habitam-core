@@ -13,6 +13,21 @@ apartamentele mele
 <ul>
 	{% for building in owned_apartments|unique_buildings %}
 	<li>
+	<span class="pull-right">
+	{% owner_debt building user.email as debt %}
+	{% if debt > 0 %}
+		<span class="label label-warning">
+		de plată: {{ debt }}
+		</span>
+	{% else %}
+		<span class="label label-info">
+		nimic de plată
+		</span>
+	{% endif %}
+		<a class="btn btn-small" href="#">
+		Plătește online
+		</a>
+	</span>
 	<a href="{% url 'apartment_list' building.id %}">
 	<span class="badge badge-info pull-right" title="Clădirea {{ building.name }} are {{ building.apartment_count }} apartamente">{{ building.apartment_count }}</span>
 	{{ building.name }}

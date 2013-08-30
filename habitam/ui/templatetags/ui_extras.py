@@ -100,6 +100,10 @@ def op_class(doc, service):
 def owner_apartments(email):
     return Apartment.by_owner(email)
 
+@register.assignment_tag
+def owner_debt(building, email):
+    return building.owner_debt(email)
+
 @register.filter
 def penalty_collect(building):
     return building.payment_due_days + PENALTY_START_DAYS
