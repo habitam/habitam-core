@@ -5,7 +5,7 @@ import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-BASE_DIR = '/Users/stefan/repositories/habitam'
+BASE_DIR = '/home/glassfish/teste/habitam-core'
 
 ADMINS = (
     ('Stefan Guna', 'svguna@gmail.com'),
