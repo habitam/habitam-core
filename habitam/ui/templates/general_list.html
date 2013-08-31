@@ -11,7 +11,7 @@
 		{% if not entity.show_all %}
 		{% if show_all or not entity.archived %}
 		<tr>
-			<td {% if entity.archived %}class="archived"{% endif %}><a href="{% url entity_view_name entity.id %}">{{ entity }}</a></td>
+			<td {% if entity.archived %}class="archived"{% endif %}><a href="{% url entity_view_name entity.id %}">{{ entity.name }}</a></td>
 			<td>
 				<div class="btn-group">
 					{% if entity.can_delete %}<button class="btn btn-mini btn-danger" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url edit_name entity_id=entity.id %}', '{% url view_name %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
