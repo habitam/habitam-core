@@ -23,7 +23,6 @@ Created on Apr 13, 2013
 from django.contrib import admin
 from habitam.entities.models import ApartmentGroup, Apartment, Person, Service, \
     ServiceConsumption, ApartmentConsumption, DisplayDate, Supplier, CollectingFund
-import sys
 
 class ApartmentGroupAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'type', 'parent')
