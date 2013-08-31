@@ -7,6 +7,11 @@ input[id^="id_captcha"] {
 	width: 123px;
 }
 
+.apartment-cell {
+	border-top: none !important;
+	border-bottom: 1px solid #dddddd;
+}
+
 .collection {
 	color: rgb(180, 180, 180);
 }
