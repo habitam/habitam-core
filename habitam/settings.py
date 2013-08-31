@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'habitam.financial',
     'habitam.ui',
     'habitam.licensing',
+    'habitam.payu',
     'registration',
     'captcha',
     # Uncomment the next line to enable admin documentation:

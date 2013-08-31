@@ -15,23 +15,27 @@ You should have received a copy of the GNU Affero General Public
 License along with Habitam. If not, see 
 <http://www.gnu.org/licenses/>.
     
-Created on Apr 8, 2013
+Created on Aug 31, 2013
 
 @author: Stefan Guna
 '''
+from django.contrib.auth.models import User
+from django.db import models
+from habitam.entities.models import Apartment
 
-from django.conf.urls import patterns, include, url
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
-
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'habitam.views.home', name='home'),
-    # url(r'^habitam/', include('habitam.foo.urls')),
-    url(r'^ui/', include('habitam.ui.urls')),
-    url(r'^payu/', include('habitam.payu.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^captcha/', include('captcha.urls')),
+ORDER_STATUS = (
+    ('submitted', 'submitted'),
 )
+
+class Order(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(default='submitted', max_length=10,
+                                  choices=ORDER_STATUS)
+    user = models.ForeignKey(User)
+ 
+    
+class ApartmentAmount(models.Model):
+    amount = models.DecimalField(max_digits=10, decimal_places=2)    
+    apartment = models.ForeignKey(Apartment)
+    order = models.ForeignKey(Order)

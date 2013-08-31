@@ -15,23 +15,20 @@ You should have received a copy of the GNU Affero General Public
 License along with Habitam. If not, see 
 <http://www.gnu.org/licenses/>.
     
-Created on Apr 8, 2013
+Created on Aug 31, 2013
 
 @author: Stefan Guna
 '''
+from django import template
+from habitam.payu.payu import payform
 
-from django.conf.urls import patterns, include, url
+FIELD_FORMAT = '<input name="%s" value="%s" type="hidden"/>'
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
+register = template.Library()
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'habitam.views.home', name='home'),
-    # url(r'^habitam/', include('habitam.foo.urls')),
-    url(r'^ui/', include('habitam.ui.urls')),
-    url(r'^payu/', include('habitam.payu.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^captcha/', include('captcha.urls')),
-)
+def __form_fields(order):
+    return ''.join(map(lambda (k, v): FIELD_FORMAT % (k, v), order))
+
+@register.simple_tag
+def payu_payment_fields(building, user): 
+    return __form_fields(payform(building, user))
