@@ -29,7 +29,7 @@ def order_amount(order):
 order_amount.short_description = 'Suma'
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('created', 'status', 'user', order_amount)
+    list_display = ('created', 'status', 'user', 'building', order_amount)
 
 admin.site.register(Order, OrderAdmin)        
     

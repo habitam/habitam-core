@@ -21,7 +21,7 @@ Created on Aug 31, 2013
 '''
 from django.contrib.auth.models import User
 from django.db import models
-from habitam.entities.models import Apartment
+from habitam.entities.models import Apartment, ApartmentGroup
 
 
 ORDER_STATUS = (
@@ -29,6 +29,7 @@ ORDER_STATUS = (
 )
 
 class Order(models.Model):
+    building = models.ForeignKey(ApartmentGroup)
     created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(default='submitted', max_length=10,
                                   choices=ORDER_STATUS)

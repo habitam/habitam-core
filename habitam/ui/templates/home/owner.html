@@ -21,6 +21,12 @@ apartamentele mele
 		</td>
 		<td class="apartment-cell">
 			{% owner_debt building user.email as debt %}
+			{% pending_payments building user as pp %}
+			{% if pp %}
+				<span class="label label-info pull-right">
+				de plată {{ debt }}
+				</span>
+			{% else %}
 			{% if debt > 0 %}
 				<form method="post" action="{% url 'submit_payment' building.id %}" style="margin: 0" class="pull-right"/>
 				{% csrf_token %}
@@ -32,6 +38,7 @@ apartamentele mele
 				<span class="label label-success pull-right">
 				nimic de plată
 				</span>
+			{% endif %}
 			{% endif %}
 		</td>
 	</tr>

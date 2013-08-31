@@ -23,6 +23,7 @@ from django import template
 from habitam.entities.bootstrap_suppliers import remaining_suppliers
 from habitam.entities.models import Apartment
 from habitam.licensing.models import License
+from habitam.payu import payu
 from habitam.settings import PENALTY_START_DAYS
 
 register = template.Library()
@@ -103,6 +104,10 @@ def owner_apartments(email):
 @register.assignment_tag
 def owner_debt(building, email):
     return building.owner_debt(email)
+
+@register.assignment_tag
+def pending_payments(building, user):
+    return payu.pending_payments(building, user)
 
 @register.filter
 def penalty_collect(building):

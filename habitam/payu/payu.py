@@ -23,6 +23,7 @@ Created on Aug 31, 2013
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from django.contrib.sites.models import Site
+from django.db.models.query_utils import Q
 from django.utils import timezone
 from habitam.payu.models import Order, ApartmentAmount
 import hmac
@@ -30,6 +31,7 @@ import logging
 
 PAYU_MERCHANT_ID = 'PAYUDEMO'
 PAYU_MERCHANT_KEY = '1231234567890123'
+PAYU_TIMEOUT = 5
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 EXCLUDE = ('TESTORDER',)
@@ -44,7 +46,7 @@ def __create_order(building, user):
     apartments = building.owned_apartments(user.email)
     
     amount = 0
-    order = Order.objects.create(user=user)
+    order = Order.objects.create(user=user, building=building)
     for ap in apartments:
         debt = ap.debt(ts)
         amount = amount + debt
@@ -66,7 +68,17 @@ def __timestamp(building):
         ts = ts - relativedelta(months=1)
     return ts
 
+def __clean_pending(user):
+    threshold = timezone.now() - relativedelta(minutes=PAYU_TIMEOUT)
+    qt = Q(created__lt=threshold)
+    qu = Q(user=user)
+    qs = Q(status='submitted')
+    Order.objects.filter(Q(qt & qu & qs)).delete()
+    
+
 def payform(building, user):
+    if pending_payments(building, user):
+        raise Exception(u'Nu mai pot fi efectuate plăți până când nu se proceseaza cele în derulare')
     order, amount = __create_order(building, user)
     
     order = [
@@ -90,4 +102,11 @@ def payform(building, user):
         order.append(('TESTORDER', 'TRUE'))
    
     return order   
-    
+
+
+def pending_payments(building, user):
+    __clean_pending(user)
+    qb = Q(building=building)
+    qu = Q(user=user)
+    qs = Q(status='submitted') 
+    return Order.objects.filter(Q(qb & qu & qs)).count() > 0 
