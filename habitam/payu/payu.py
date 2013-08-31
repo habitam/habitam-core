@@ -26,16 +26,14 @@ from django.contrib.sites.models import Site
 from django.db.models.query_utils import Q
 from django.utils import timezone
 from habitam.payu.models import Order, ApartmentAmount
+from habitam.settings import PAYU_MERCHANT_KEY, PAYU_TIMEOUT, PAYU_MERCHANT_ID, \
+    PAYU_DEBUG
 import hmac
 import logging
 
-PAYU_MERCHANT_ID = 'PAYUDEMO'
-PAYU_MERCHANT_KEY = '1231234567890123'
-PAYU_TIMEOUT = 5
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 EXCLUDE = ('TESTORDER',)
-DEBUG_PAYU = True
 
 
 logger = logging.getLogger(__name__)
@@ -98,7 +96,7 @@ def payform(building, user):
         ('BACK_REF', Site.objects.get_current().domain + '/ui'),
     ])
     
-    if DEBUG_PAYU:
+    if PAYU_DEBUG:
         order.append(('TESTORDER', 'TRUE'))
    
     return order   
