@@ -125,8 +125,11 @@ def top_entities(q, count):
 
 @register.filter
 def unique_buildings(apartments):
-    buildings = [ap.building for ap in apartments]
-    return set(buildings)
+    buildings = []
+    for ap in apartments:
+        if not ap.building().pk in map(lambda b: b.pk, buildings):
+            buildings.append(ap.building())
+    return buildings
 
 @register.assignment_tag
 def valid_timestamp(timestamp, user_license):
