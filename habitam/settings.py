@@ -196,8 +196,6 @@ CONTACT_EMAIL = 'office@habitam.ro'
 # APPLICATION CONFIGURATION
 
 PAYU_DEBUG = True
-PAYU_MERCHANT_ID = 'PAYUDEMO'
-PAYU_MERCHANT_KEY = '1231234567890123'
 PAYU_TIMEOUT = 5
 
 # The maximum day of the month after which no more payments are received

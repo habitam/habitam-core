@@ -33,7 +33,16 @@ class UserAdmin(UserAdmin):
     inlines = (AdministratorInline, )
     
 class LicenseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'valid_until', 'max_apartments', 'months_back')
+    list_display = ('id', 'valid_until', 'max_apartments', 'months_back',
+                    'payu_merchant_id', 'payu_merchant_key')
+    fieldsets = (
+                    ('License', {
+                        'fields': ('valid_until', 'max_apartments', 'months_back')
+                    }),
+                    ('PAYU', {
+                        'fields': ('payu_merchant_id', 'payu_merchant_key')
+                    }),
+                 )
  
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

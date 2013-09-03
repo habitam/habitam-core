@@ -22,12 +22,19 @@ apartamentele mele
 		<td class="apartment-cell">
 			{% owner_debt building user.email as debt %}
 			{% pending_payments building user as pp %}
-			{% if pp %}
+			{% license_for_building building as building_license %}
+			{% if not building_license.payu_available %}
 				<span class="label label-info pull-right">
 				de plată {{ debt }}
 				</span>
-			{% else %}
-			{% if debt > 0 %}
+				<span class="label label-warning pull-right">
+				plată online indisponibilă
+				</span>
+			{% elif pp %}
+				<span class="label label-info pull-right">
+				de plată {{ debt }}
+				</span>
+			{% elif debt > 0 %}
 				<form method="post" action="{% url 'submit_payment' building.id %}" style="margin: 0" class="pull-right"/>
 				{% csrf_token %}
 				<a class="btn btn-small btn-warning" href="#" onclick="$(this).closest('form').submit()">
@@ -38,7 +45,6 @@ apartamentele mele
 				<span class="label label-success pull-right">
 				nimic de plată
 				</span>
-			{% endif %}
 			{% endif %}
 		</td>
 	</tr>
@@ -55,7 +61,7 @@ apartamentele mele
 Doriți să încercați aplicația noastră? Vă oferim gratuit o licență de evaluare,
 disponibilă imediat ce apăsați butonul de mai jos.
 <br>
-<a class="btn btn-warning btn-small" href="javascript:editDialog('{% url 'trial_request' %}')">Începeți evaluarea</a>
+<a class="btn btn-warning btn-mini" href="javascript:editDialog('{% url 'trial_request' %}')">Începeți evaluarea</a>
 </div>
 
 <div class="alert alert-info">

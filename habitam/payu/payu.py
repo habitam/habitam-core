@@ -25,9 +25,9 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.sites.models import Site
 from django.db.models.query_utils import Q
 from django.utils import timezone
+from habitam.licensing.models import License
 from habitam.payu.models import Order, ApartmentAmount
-from habitam.settings import PAYU_MERCHANT_KEY, PAYU_TIMEOUT, PAYU_MERCHANT_ID, \
-    PAYU_DEBUG
+from habitam.settings import PAYU_TIMEOUT, PAYU_DEBUG
 import hmac
 import logging
 
@@ -55,9 +55,9 @@ def __create_order(building, user):
     logger.info('Online payment order %d for building %s on behalf of %s worth %d' % (order.id, building, user, amount))
     return order, amount
 
-def __sign(order):
+def __sign(key, order):
     s = ''.join(map(lambda (k, v): str(len(v)) + v, order))
-    return hmac.new(PAYU_MERCHANT_KEY, s).hexdigest()
+    return hmac.new(key, s).hexdigest()
 
 def __timestamp(building):
     now = timezone.now()
@@ -78,9 +78,10 @@ def payform(building, user):
     if pending_payments(building, user):
         raise Exception(u'Nu mai pot fi efectuate plăți până când nu se proceseaza cele în derulare')
     order, amount = __create_order(building, user)
+    l = License.for_building(building)
     
     order = [
-        ('MERCHANT', PAYU_MERCHANT_ID),
+        ('MERCHANT', l.payu_merchant_id),
         ('ORDER_REF' , 'Habitam ' + str(order.id)),
         ('ORDER_DATE', timezone.now().strftime(DATE_FORMAT)),
         ('ORDER_PNAME[]', 'Intretinere pentru %s' % str(building.name)),
@@ -92,7 +93,7 @@ def payform(building, user):
         ('ORDER_PRICE_TYPE[]', 'GROSS')
     ] 
     order.extend([
-        ('ORDER_HASH', __sign(order)),
+        ('ORDER_HASH', __sign(str(l.payu_merchant_key), order)),
         ('BACK_REF', Site.objects.get_current().domain + '/ui'),
     ])
     

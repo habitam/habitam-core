@@ -1,6 +1,17 @@
 {% load ui_extras %}
 
 {% include 'checks/available_suppliers.html' %}
+
+{% if not license.payu_available %}
+<div class="alert">
+<a class="close" data-dismiss="alert" href="#">&times;</a>
+Plata online pentru întreținere nu a fost configurată pentru clădirile
+administrate de dumneavostră. Vă rugăm luați legătura cu noi.
+<br>
+<a class="btn btn-warning btn-mini" href="{% url 'contact' %}">Contact</a>
+</div>
+{% endif %}
+
 {% if license.available_buildings %}
 
 {% if license.apartment_count >= license.max_apartments %}
@@ -9,7 +20,7 @@
 Licența dumneavoastră nu mai permite adăguarea de apartamente noi. Vă rugăm
 luați legătura cu noi.
 <br>
-<a class="btn btn-warning btn-small" href="{% url 'contact' %}">Contact</a>
+<a class="btn btn-warning btn-mini" href="{% url 'contact' %}">Contact</a>
 </div>
 {% endif %}
 
@@ -60,7 +71,7 @@ luați legătura cu noi.
 <div class="alert alert-info hidden-phone">
 Nu ați definit nici o clădire de administrat.
 <br>
-<a class="btn btn-info btn-small" url="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a>
+<a class="btn btn-info btn-mini" url="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a>
 </div>
 
 {% endif %}

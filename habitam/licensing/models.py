@@ -36,6 +36,8 @@ class License(models.Model):
         limit_choices_to={'parent': None}, blank=True, null=True)
     max_apartments = models.IntegerField()
     months_back = models.IntegerField()
+    payu_merchant_id = models.CharField(max_length=50, blank=True, null=True)
+    payu_merchant_key = models.CharField(max_length=50, blank=True, null=True)
     suppliers = models.ManyToManyField(Supplier, blank=True, null=True)
     valid_until = models.DateField()
     
@@ -101,6 +103,15 @@ class License(models.Model):
         q = Q(q & ~Q(one_time=True))
         s = self.suppliers.filter(q)
         return s.annotate(service_count=Count('service'))
+    
+    def payu_available(self):
+        if self.payu_merchant_id == None or self.payu_merchant_key == None:
+            return False
+        if len(self.payu_merchant_id.strip()) == 0:
+            return False
+        if len(self.payu_merchant_key.strip()) == 0:
+            return False
+        return True
     
     def top_buildings(self):
         return self.available_buildings().order_by('-apartment_count')
