@@ -61,7 +61,7 @@ class PersonAdmin(admin.ModelAdmin):
 
 class ServiceAdmin(BillableAdmin):
     list_display = ('name', 'supplier', 'billed', 'quota_type', 'archived',
-                    'archive_date', 'contract_id', 'client_id', 'online_payments')
+                    'archive_date', 'contract_id', 'client_id')
     
 class ServiceConsumptionAdmin(admin.ModelAdmin):
     list_display = ('service', 'doc', 'consumed')

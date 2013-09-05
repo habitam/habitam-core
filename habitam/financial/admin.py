@@ -25,7 +25,7 @@ from habitam.financial.models import Quota, OperationDoc, Operation, Account, \
     Receipt, Invoice
 
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ('name', 'type', 'money_type')
+    list_display = ('name', 'type', 'money_type', 'online_payments')
     
 class QuotaAdmin(admin.ModelAdmin):
     list_display = ('src', 'dest', 'ratio')

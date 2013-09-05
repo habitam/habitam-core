@@ -213,7 +213,7 @@ class ApartmentGroup(Entity):
     
     def payments_service(self):
         for s in self.services():
-            if s.online_payments:
+            if s.account.online_payments:
                 return s
         return None
     
@@ -511,15 +511,12 @@ class Service(Billable):
     contract_id = models.CharField(max_length=50, null=True, blank=True)    
     email = models.EmailField(null=True, blank=True)
     invoice_date = models.IntegerField(null=True, blank=True)
-    online_payments = models.BooleanField(default=False) 
     supplier = models.ForeignKey('Supplier', null=True, blank=True) 
     phone = models.CharField(max_length=20, null=True, blank=True)    
     one_time = models.BooleanField(default=False)
     support_phone = models.CharField(max_length=20, null=True, blank=True)    
     
     def can_delete(self):
-        if self.online_payments:
-            return False
         return super(Service, self).can_delete()
     
     def charge_type(self):

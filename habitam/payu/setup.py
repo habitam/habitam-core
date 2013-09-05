@@ -42,10 +42,12 @@ def __create_payu_supplier(l):
     
 def __create_payu_service(l, building, supplier):
     service = Service.objects.create(name=u'plăți online',
-                        supplier=supplier, online_payment=True, one_time=False,
+                        supplier=supplier, one_time=False,
                         billed=building, quota_type='equally')    
     service.save(money_type='3rd party', account_type='special')
+    service.account.online_payments = True
     service.set_quota()
+    service.save()
     return service
 
 def set_payu_payments(l):
@@ -57,7 +59,7 @@ def set_payu_payments(l):
     for b in l.available_buildings():
         found = False
         for service in b.services():
-            if service.online_payments:
+            if service.account.online_payments:
                 found = True
                 break
         if not found:

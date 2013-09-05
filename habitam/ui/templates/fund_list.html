@@ -1,4 +1,5 @@
 {% extends 'building.html' %} 
+{% load staticfiles %}  
 
 {% block building_body %}
 <table class="table table-hover table-condensed">
@@ -18,9 +19,14 @@
 			<tr>
 				<td>
 					{% if is_administrator %}
-					<a href="javascript: editDialog('{% url 'edit_fund' entity_id=account.id %}')">{{ account.name }}</a>
-					{% else %}
+					<a href="javascript: editDialog('{% url 'edit_fund' entity_id=account.id %}')">
+					{% endif %}
+					{% if account.online_payments %}
+					<img src="{% static 'ui/img/payu-small.gif' %}">
+					{% endif %}
 					{{ account.name }}
+					{% if is_administrator %}
+					</a>
 					{% endif %}
 				</td>
 				<td class="hidden-phone">{{ account.type }}</td>

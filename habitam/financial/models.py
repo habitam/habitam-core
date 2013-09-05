@@ -113,6 +113,7 @@ class Account(models.Model):
     money_type = models.CharField(default='cash', max_length=10,
                                   choices=MONEY_TYPES)
     name = models.CharField(max_length=100)
+    online_payments = models.BooleanField(default=False) 
     type = models.CharField(default='std', max_length=10, choices=TYPES) 
     
     class LicenseMeta:
@@ -181,7 +182,7 @@ class Account(models.Model):
         return balance 
     
     def can_delete(self):
-        if self.type == 'penalties':
+        if self.type == 'penalties' or self.online_payments:
             return False
         if OperationDoc.objects.filter(Q(src=self) | Q(billed=self)).count() > 0:
             return False

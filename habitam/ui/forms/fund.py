@@ -58,6 +58,8 @@ class EditAccountForm(forms.ModelForm):
         super(EditAccountForm, self).__init__(*args, **kwargs)
         if self.instance.type == 'penalties':
             del self.fields['type']
+        if self.instance.online_payments:
+            del self.fields['money_type']
         
     def save(self, commit=True):
         instance = super(EditAccountForm, self).save(commit=False)

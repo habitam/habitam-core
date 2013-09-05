@@ -1,4 +1,5 @@
-{% extends 'building.html' %} 
+{% extends 'building.html' %}
+{% load staticfiles %}  
 {% load ui_extras %}
 
 {% block building_body %}
@@ -23,9 +24,14 @@
 			<tr {% if service.archived %}class="archived"{% endif %}>
 				<td>
 					{% if is_administrator %}
-					<a href="javascript:editDialog('{% url 'edit_billable_general' entity_id=service.id %}')">{{ service }}</a>
-					{% else %}
+					<a href="javascript:editDialog('{% url 'edit_billable_general' entity_id=service.id %}')">
+					{% endif %}
+					{% if service.account.online_payments %}
+					<img src="{% static 'ui/img/payu-small.gif' %}">
+					{% endif %}
 					{{ service }}
+					{% if is_administrator %}
+					</a>
 					{% endif %}
 				</td>
 				<td class="hidden-phone"><a href="{% url 'supplier_view' service.supplier.id %}">{{ service.supplier.name }}</a></td>
