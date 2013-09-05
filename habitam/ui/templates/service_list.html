@@ -22,7 +22,7 @@
 		{% if not service.one_time %}
 			<tr {% if service.archived %}class="archived"{% endif %}>
 				<td>
-					{% if is_administrator %}
+					{% if is_administrator and service.can_edit %}
 					<a href="javascript:editDialog('{% url 'edit_billable_general' entity_id=service.id %}')">{{ service }}</a>
 					{% else %}
 					{{ service }}

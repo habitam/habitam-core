@@ -80,6 +80,9 @@ def payform(building, user):
     order, amount = __create_order(building, user)
     l = License.for_building(building)
     
+    if not l.payu_available() or not building.payments_available():
+        raise Exception(u'Nu a fost configurată plata pentru această clădire')
+    
     order = [
         ('MERCHANT', l.payu_merchant_id),
         ('ORDER_REF' , 'Habitam ' + str(order.id)),

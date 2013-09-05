@@ -23,6 +23,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from habitam.licensing.models import Administrator, License
+from habitam.payu.setup import set_payu_payments
 
 class AdministratorInline(admin.StackedInline):
     model = Administrator
@@ -43,6 +44,22 @@ class LicenseAdmin(admin.ModelAdmin):
                         'fields': ('payu_merchant_id', 'payu_merchant_key')
                     }),
                  )
+    
+    actions = ['set_payu_payments']
+    
+    def set_payu_payments(self, request, queryset):
+        updated = 0
+        for l in queryset:
+            try:
+                set_payu_payments(l)
+            except Exception as e:
+                self.message_user(request, 'Operation failed for %s because "%s"' % (str(l), str(e)))
+                return
+            updated += 1
+        self.message_user(request, 'Set PAYU payments for %d licenses' % updated)
+            
+    set_payu_payments.short_description = 'Set PAYU payments for this license'
+    
  
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

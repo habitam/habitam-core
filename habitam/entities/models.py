@@ -37,6 +37,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+ONLINE_PAYMENTS_SERVICE = u'plăți online'
+
+
 class ApartmentGroup(Entity):
     TYPES = (
              ('stair', 'staircase'),
@@ -152,19 +155,6 @@ class ApartmentGroup(Entity):
         for ag in self.apartmentgroup_set.all():
             result.extend(ag.apartments())
         return result
-   
-    
-    def add_service(self, name, quota_type=None):
-        try:
-            Service.objects.get(name=name, billed=self)
-            raise NameError('Service ' + name + ' already exists')
-        except Service.DoesNotExist:
-            pass
-        
-        service = Service.objects.create(name=name, billed=self,
-                                         quota_type=quota_type)
-        service.set_quota(quota_type)
-        service.save()
     
     
     def collecting_funds(self):
@@ -222,6 +212,13 @@ class ApartmentGroup(Entity):
             for link in links:
                 result.append(link.account)
         return result 
+    
+    
+    def payments_available(self):
+        for s in self.services():
+            if s.name == ONLINE_PAYMENTS_SERVICE:
+                return True
+        return False
     
     
     def save(self, **kwargs):
@@ -518,9 +515,18 @@ class Service(Billable):
     email = models.EmailField(null=True, blank=True)
     invoice_date = models.IntegerField(null=True, blank=True) 
     supplier = models.ForeignKey('Supplier', null=True, blank=True) 
+    system = models.BooleanField(default=False)
     phone = models.CharField(max_length=20, null=True, blank=True)    
     one_time = models.BooleanField(default=False)
     support_phone = models.CharField(max_length=20, null=True, blank=True)    
+    
+    def can_delete(self):
+        if self.system:
+            return False
+        return super(Service, self).can_delete()
+    
+    def can_edit(self):
+        return self.system == False
     
     def charge_type(self):
         return 'invoice'
