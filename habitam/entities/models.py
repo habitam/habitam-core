@@ -37,9 +37,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-ONLINE_PAYMENTS_SERVICE = u'plăți online'
-
-
 class ApartmentGroup(Entity):
     TYPES = (
              ('stair', 'staircase'),
@@ -214,11 +211,11 @@ class ApartmentGroup(Entity):
         return result 
     
     
-    def payments_available(self):
+    def payments_service(self):
         for s in self.services():
-            if s.name == ONLINE_PAYMENTS_SERVICE:
-                return True
-        return False
+            if s.online_payments:
+                return s
+        return None
     
     
     def save(self, **kwargs):
@@ -445,7 +442,7 @@ class Supplier(FiscalEntity):
     one_time = models.BooleanField(default=False)
     
     class LicenseMeta:
-        license_accessor='for_supplier'
+        license_accessor = 'for_supplier'
         license_collection = 'available_suppliers'
         
     @classmethod
@@ -513,20 +510,17 @@ class Service(Billable):
     contract_details = models.CharField(max_length=200, null=True, blank=True)    
     contract_id = models.CharField(max_length=50, null=True, blank=True)    
     email = models.EmailField(null=True, blank=True)
-    invoice_date = models.IntegerField(null=True, blank=True) 
+    invoice_date = models.IntegerField(null=True, blank=True)
+    online_payments = models.BooleanField(default=False) 
     supplier = models.ForeignKey('Supplier', null=True, blank=True) 
-    system = models.BooleanField(default=False)
     phone = models.CharField(max_length=20, null=True, blank=True)    
     one_time = models.BooleanField(default=False)
     support_phone = models.CharField(max_length=20, null=True, blank=True)    
     
     def can_delete(self):
-        if self.system:
+        if self.online_payments:
             return False
         return super(Service, self).can_delete()
-    
-    def can_edit(self):
-        return self.system == False
     
     def charge_type(self):
         return 'invoice'

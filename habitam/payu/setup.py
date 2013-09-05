@@ -20,8 +20,7 @@ Created on Sep 5, 2013
 
 @author: Stefan Guna
 '''
-from habitam.entities.models import Supplier, ONLINE_PAYMENTS_SERVICE, Service
-
+from habitam.entities.models import Supplier, Service
 
 
 PAYU_DETAILS = {
@@ -42,8 +41,8 @@ def __create_payu_supplier(l):
     l.add_entity(supplier, Supplier)
     
 def __create_payu_service(l, building, supplier):
-    service = Service.objects.create(name=ONLINE_PAYMENTS_SERVICE,
-                        supplier=supplier, system=True, one_time=False,
+    service = Service.objects.create(name=u'plăți online',
+                        supplier=supplier, online_payment=True, one_time=False,
                         billed=building, quota_type='equally')    
     service.save(money_type='3rd party', account_type='special')
     service.set_quota()
@@ -58,7 +57,7 @@ def set_payu_payments(l):
     for b in l.available_buildings():
         found = False
         for service in b.services():
-            if service.name == ONLINE_PAYMENTS_SERVICE:
+            if service.online_payments:
                 found = True
                 break
         if not found:

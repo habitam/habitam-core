@@ -23,7 +23,7 @@ apartamentele mele
 			{% owner_debt building user.email as debt %}
 			{% pending_payments building user as pp %}
 			{% license_for_building building as building_license %}
-			{% if not building.payments_available or not building_license.payu_available %}
+			{% if not building.payments_service or not building_license.payu_available %}
 				<span class="label label-info pull-right">
 				de plată {{ debt }}
 				</span>
