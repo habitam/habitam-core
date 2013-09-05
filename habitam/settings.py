@@ -197,6 +197,7 @@ CONTACT_EMAIL = 'office@habitam.ro'
 
 PAYU_DEBUG = True
 PAYU_TIMEOUT = 5
+PAYU_TRANSACTION_CHARGE = Decimal(0.025)
 
 # The maximum day of the month after which no more payments are received
 MAX_CLOSE_DAY = 28

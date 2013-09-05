@@ -22,10 +22,12 @@ Created on Aug 31, 2013
 from django.contrib.auth.models import User
 from django.db import models
 from habitam.entities.models import Apartment, ApartmentGroup
+from habitam.financial.models import OperationDoc
 
 
 ORDER_STATUS = (
     ('submitted', 'submitted'),
+    ('completed', 'completed'),
 )
 
 class Order(models.Model):
@@ -34,9 +36,15 @@ class Order(models.Model):
     status = models.CharField(default='submitted', max_length=10,
                                   choices=ORDER_STATUS)
     user = models.ForeignKey(User)
- 
-    
+
+
 class ApartmentAmount(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)    
     apartment = models.ForeignKey(Apartment)
     order = models.ForeignKey(Order)
+
+
+class OrderComplete(models.Model):
+    apartment_amount = models.ForeignKey(ApartmentAmount)
+    operation_doc = models.ForeignKey(OperationDoc)
+    

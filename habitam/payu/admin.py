@@ -21,7 +21,7 @@ Created on Aug 31, 2013
 '''
 from django.contrib import admin
 from django.db.models.aggregates import Sum
-from habitam.payu.models import Order, ApartmentAmount
+from habitam.payu.models import Order, ApartmentAmount, OrderComplete
 
 def order_amount(order):
     r = ApartmentAmount.objects.filter(order=order).aggregate(Sum('amount'))
@@ -30,6 +30,10 @@ order_amount.short_description = 'Suma'
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('created', 'status', 'user', 'building', order_amount)
+    
+class OrderCompleteAdmin(admin.ModelAdmin):
+    pass
 
-admin.site.register(Order, OrderAdmin)        
+admin.site.register(Order, OrderAdmin)    
+admin.site.register(OrderComplete, OrderCompleteAdmin)    
     

@@ -211,6 +211,13 @@ class ApartmentGroup(Entity):
         return result 
     
     
+    def payments_account(self):
+        for a in self.funds():
+            if a.online_payments:
+                return a
+        return None
+    
+    
     def payments_service(self):
         for s in self.services():
             if s.account.online_payments:
@@ -401,7 +408,7 @@ class Apartment(SingleAccountEntity):
             penalties = 0
         logger.info('New payment %s from %s worth %f + %f penalties' % 
                     (no, self, amount, penalties))
-        self.account.new_multi_transfer(no, dest_account,
+        return self.account.new_multi_transfer(no, dest_account,
                                 [(dest_account, amount - penalties),
                                  (building.penalties_account, penalties)],
                                 date, 'transfer', receipt)

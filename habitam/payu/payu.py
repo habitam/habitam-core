@@ -26,10 +26,11 @@ from django.contrib.sites.models import Site
 from django.db.models.query_utils import Q
 from django.utils import timezone
 from habitam.licensing.models import License
-from habitam.payu.models import Order, ApartmentAmount
-from habitam.settings import PAYU_TIMEOUT, PAYU_DEBUG
+from habitam.payu.models import Order, ApartmentAmount, OrderComplete
+from habitam.settings import PAYU_TIMEOUT, PAYU_DEBUG, PAYU_TRANSACTION_CHARGE
 import hmac
 import logging
+import uuid
 
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -38,6 +39,30 @@ EXCLUDE = ('TESTORDER',)
 
 logger = logging.getLogger(__name__)
 
+
+def complete_order(order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        logger.error('Callback with an invalid order id %d' % order_id)
+        return
+    amount = 0
+    account = order.building.payments_account()
+    service = order.building.payments_service()
+    for aa in ApartmentAmount.objects.filter(order=order):
+        doc = aa.apartment.new_inbound_operation(no=uuid.uuid1().hex,
+                    amount=aa.amount, receipt=None, dest_account=account)
+        OrderComplete.objects.create(apartment_amount=aa,
+                                     operation_doc=doc).save()
+        amount = amount + aa.amount
+    
+    payu_tax = PAYU_TRANSACTION_CHARGE * amount
+    service.new_inbound_operation(payu_tax, no=uuid.uuid1().hex)
+    account.new_transfer(payu_tax, no=uuid.uuid1().hex,
+                         dest_account=service.account)
+    order.status = 'completed'
+    order.save()  
+    
 
 def __create_order(building, user):
     ts = __timestamp(building)
@@ -52,7 +77,6 @@ def __create_order(building, user):
                                        order=order).save
     order.save()
     
-    logger.info('Online payment order %d for building %s on behalf of %s worth %d' % (order.id, building, user, amount))
     return order, amount
 
 def __sign(key, order):
@@ -78,6 +102,7 @@ def payform(building, user):
     if pending_payments(building, user):
         raise Exception(u'Nu mai pot fi efectuate plăți până când nu se proceseaza cele în derulare')
     order, amount = __create_order(building, user)
+    logger.info('Online payment order %d for building %s on behalf of %s worth %d' % (order.id, building, user, amount))
     l = License.for_building(building)
     
     if not l.payu_available() or building.payments_service() == None:
