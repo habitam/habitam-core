@@ -23,8 +23,9 @@ Created on Jul 18, 2013
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
+from os import path
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4, cm, landscape
+from reportlab.lib.pagesizes import A4, cm, portrait
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -32,11 +33,10 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, \
     Paragraph, KeepInFrame
 from reportlab.platypus.flowables import PageBreak
 import logging
-from os import path
 import tempfile
 
 
-pdfmetrics.registerFont(TTFont('Helvetica', path.join(settings.BASE_DIR, 'fonts', 'Arial.ttf' )))
+pdfmetrics.registerFont(TTFont('Helvetica', path.join(settings.BASE_DIR, 'fonts', 'Arial.ttf')))
 MARGIN_SIZE = 0.2 * cm
 PAGE_SIZE = A4
 
@@ -174,7 +174,10 @@ def to_data(building, d_list, day):
 def __to_pdf(tempFile, data, building, title):
     elements = []
    
-    doc = SimpleDocTemplate(tempFile, rightMargin=MARGIN_SIZE, leftMargin=MARGIN_SIZE, topMargin=MARGIN_SIZE, bottomMargin=0, encoding='utf8')
+    doc = SimpleDocTemplate(tempFile, rightMargin=MARGIN_SIZE,
+                            leftMargin=MARGIN_SIZE, topMargin=MARGIN_SIZE,
+                            bottomMargin=MARGIN_SIZE, pagesize=PAGE_SIZE,
+                            encoding='utf8')
         
 
     table = Table(data, repeatRows=1)
@@ -188,19 +191,17 @@ def __to_pdf(tempFile, data, building, title):
     I = Image(header_logo_path)
     I.hAlign = 'LEFT'
     styleSheet = getSampleStyleSheet()
-    P0 = Paragraph(u'<para align=right spaceb=3><b>' +
-        title + '</b>' +
-        u'</para>',
+    P0 = Paragraph(u'<para align=right spaceb=3><b>%s</b></para>' % title,
         styleSheet["BodyText"])
-    P1 = Paragraph((u'<para align=right spaceb=3>' +
+    P1 = Paragraph((u'<para align=right spaceb=3>' + 
         u'Asociația de proprietari <b>%s</b>' + 
         u'</para>') % building.name,
         styleSheet["BodyText"])
     
     headerTableData = [(I, P0), ('www.habitam.ro', P1)]  
-    headerTable = Table(headerTableData, colWidths=(landscape(PAGE_SIZE)[0] - 2 * MARGIN_SIZE) / 2)
+    headerTable = Table(headerTableData, colWidths=(portrait(PAGE_SIZE)[0] - 2 * MARGIN_SIZE) / 2)
     
-    main_frame = KeepInFrame(maxWidth=landscape(PAGE_SIZE)[0] - 2 * MARGIN_SIZE, maxHeight=landscape(PAGE_SIZE)[1] - 2 * MARGIN_SIZE, content=[headerTable, table], mode='shrink', name='main_frame')
+    main_frame = KeepInFrame(maxWidth=portrait(PAGE_SIZE)[0] - 2 * MARGIN_SIZE, maxHeight=portrait(PAGE_SIZE)[1] - 2 * MARGIN_SIZE, content=[headerTable, table], mode='shrink', name='main_frame')
 
     elements.append(main_frame)
     elements.append(PageBreak())
