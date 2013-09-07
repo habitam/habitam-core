@@ -134,9 +134,35 @@ INSTALLED_APPS = (
     'habitam.payu',
     'registration',
     'captcha',
+    'social_auth',
+    'habitam.social'
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+)
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_auth.backends.pipeline.social.social_auth_user',
+    'social_auth.backends.pipeline.associate.associate_by_email',
+    'social_auth.backends.pipeline.user.get_username',
+    'social_auth.backends.pipeline.user.create_user',
+    'social_auth.backends.pipeline.social.associate_user',
+    'habitam.social.auth.notify',
+    'social_auth.backends.pipeline.social.load_extra_data',
+    'social_auth.backends.pipeline.user.update_user_details'
+)
+
+GOOGLE_OAUTH2_CLIENT_ID = None
+GOOGLE_OAUTH2_CLIENT_SECRET = None
+
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/ui'
+SOCIAL_AUTH_COMPLETE_URL_NAME = 'socialauth_complete'
+SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
+SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
@@ -226,10 +252,10 @@ COUNTIES_TUPLE = (('Alba', 'Alba'), ('Arad', 'Arad'), ('Arges', u'Argeș'),
     ('Calarasi', u'Călărași'), ('Caras-Severin', u'Caraș-Severin'),
     ('Cluj', 'Cluj'), ('Constanta', u'Constanța'), ('Covasna', 'Covasna'),
     ('Dambovita', u'Dâmbovița'), ('Dolj', u'Dolj'), ('Galati', u'Galați'),
-    ('Giurgiu', 'Giurgiu'), ('Gorj', 'Gorj'), ('Harghita', 'Harghita'), 
+    ('Giurgiu', 'Giurgiu'), ('Gorj', 'Gorj'), ('Harghita', 'Harghita'),
     ('Hunedoara', 'Hunedoara'), ('Ialomita', u'Ialomița'), ('Iasi', u'Iasi'),
     ('Ilfov', 'Ilfov'), ('Maramures', u'Maramureș'),
-    ('Mehedinti', u'Mehedinți'), ('Mures', u'Mureș'), ('Neamt', u'Neamț'), 
+    ('Mehedinti', u'Mehedinți'), ('Mures', u'Mureș'), ('Neamt', u'Neamț'),
     ('Olt', 'Olt'), ('Prahova', 'Prahova'), ('Salaj', u'Sălaj'),
     ('Satu-Mare', 'Satu-Mare'), ('Sibiu', 'Sibiu'), ('Suceava', 'Suceava'),
     ('Teleorman', 'Teleorman'), ('Timis', u'Timiș'), ('Tulcea', 'Tulcea'),

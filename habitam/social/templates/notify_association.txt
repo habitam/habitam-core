@@ -1,0 +1,8 @@
+Bună ziua,
+
+Contul dumneavoastră {{ email }} folosit în aplicația Habitam a fost legat cu succes la contul dumneavostră {{ provider }}.
+
+Dacă bănuiți că aceasta este o greșeală, vă rugăm să luați legătura cu noi.
+
+Vă mulțumim,
+Echipa Habitam.ro 

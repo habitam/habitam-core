@@ -1,0 +1,6 @@
+Bună ziua,
+
+Bun venit în aplicația Habitam! Vă puteți autentifica în orice moment la aplicația noastră folosind contul dumneavostră {{ provider }} asociat adresei de email {{ email }}.
+
+Vă mulțumim,
+Echipa Habitam.ro 

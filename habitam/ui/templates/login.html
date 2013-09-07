@@ -1,46 +1,53 @@
 {% extends 'left_base.html' %} 
 
 {% block inner_content %}
-<div>
-	<form class="form-horizontal" method="post" action="{% url 'django.contrib.auth.views.login' %}">
-    	{% csrf_token %}
-    	<legend>Autentificare</legend>
-		{% if form.errors %}
-			<div class="alert alert-error">
-				Nu am putut verifica credențialele. Încercați din nou.
+<div class="row-fluid">
+	<div class="span7">
+		<legend>Autentificare</legend>
+		<form class="form-horizontal" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+	    	{% csrf_token %}
+			{% if form.errors %}
+				<div class="alert alert-error">
+					Nu am putut verifica credențialele. Încercați din nou.
+				</div>
+			{% endif %}
+			<div class="control-group">
+				<label class="control-label" for="id_username">Email</label>
+				<div class="controls">
+					<div class="input-append">
+				    {{ form.username }}
+				    <span class="add-on"><i class="icon-envelope"></i></span>
+				    </div>
+				</div>
 			</div>
-		{% endif %}
-		<div class="control-group">
-			<label class="control-label" for="id_username">Email</label>
-			<div class="controls">
-				<div class="input-append">
-			    {{ form.username }}
-			    <span class="add-on"><i class="icon-envelope"></i></span>
+			<div class="control-group">
+				<label class="control-label" for="id_password">Parola</label>
+				<div class="controls">
+					<div class="input-append">
+				    {{ form.password }}
+				    <span class="add-on"><i class="icon-lock"></i></span>
+				    </div>
+				</div>
+	        </div>
+	        <div class="control-group">
+	        	<div class="controls">
+	        		<a href="{% url 'registration' %}">Cont nou?</a>
+	        		<br>
+	        		<a href="{% url 'password_reset' %}">Ați uitat parola?</a>
+	        		
+	        	</div>
+	        </div>
+	        <div class="control-group">
+	        	<div class="controls">
+			        <button class="btn btn-primary" type="submit">Intră</button>
+			        <input type="hidden" name="next" value="{{ next }}" />
 			    </div>
 			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label" for="id_password">Parola</label>
-			<div class="controls">
-				<div class="input-append">
-			    {{ form.password }}
-			    <span class="add-on"><i class="icon-lock"></i></span>
-			    </div>
-			</div>
-        </div>
-        <div class="control-group">
-        	<div class="controls">
-        		<a href="{% url 'registration' %}">Cont nou?</a>
-        		<br>
-        		<a href="{% url 'password_reset' %}">Ați uitat parola?</a>
-        	</div>
-        </div>
-        <div class="control-group">
-        	<div class="controls">
-		        <button class="btn btn-primary" type="submit">Intră</button>
-		        <input type="hidden" name="next" value="{{ next }}" />
-		    </div>
-		</div>
-    </form>
+	    </form>
+	</div>
+	<div class="span4 offset1">
+	<legend>... sau folosiți</legend>
+	<a class="btn btn-google-plus input-block-level" href="{% url 'socialauth_begin' 'google-oauth2' %}" style="text-align:left;"><i class="icon-google-plus"></i> | Autentificare cu Google</a>
+	</div>
 </div>
 {% endblock %}
