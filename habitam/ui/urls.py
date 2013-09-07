@@ -150,10 +150,15 @@ urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^buildings/(?P<building_id>\d+)/list/(?P<month>\d{4}-\d{2})?$',
         views.download_list, name='download_list'),
 
-    url(r'^buildings/(?P<building_id>\d+)/register/(?P<month>\d{4}-\d{2})?$',
+    url(r'^buildings/(?P<building_id>\d+)/register/bank/(?P<month>\d{4}-\d{2})?$',
         views.download_report,
-        {'name': 'registru', 'generator': register.download_register},
-        name='download_register'),
+        {'name': 'registru_banca_', 'generator': register.download_bank_register},
+        name='download_bank_register'),
+
+    url(r'^buildings/(?P<building_id>\d+)/register/cash/(?P<month>\d{4}-\d{2})?$',
+        views.download_report,
+        {'name': 'registru_casa_', 'generator': register.download_cash_register},
+        name='download_cash_register'),
 
     url(r'^buildings/(?P<building_id>\d+)/upload_initial_operations$',
         views.upload_initial_operations, name='upload_initial_operations'),

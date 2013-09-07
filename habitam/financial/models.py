@@ -278,7 +278,8 @@ class Account(models.Model):
         
         self.save()
         
-    def operation_list(self, month, month_end, source_only=False, dest_only=False):
+    def operation_list(self, month, month_end, source_only=False,
+                       dest_only=False, money_type=None):
         assert(not(source_only & dest_only))
         result = []
         
@@ -286,10 +287,15 @@ class Account(models.Model):
                    Q(date__lt=month_end.strftime('%Y-%m-%d')))
         if source_only:
             q_accnt_link = Q(src=self)
+            if money_type != None:
+                q_accnt_link = Q(q_accnt_link & Q(operation__dest__money_type=money_type))
         elif dest_only:
             q_accnt_link = Q(operation__dest=self)
+            if money_type != None:
+                q_accnt_link = Q(q_accnt_link & Q(src__money_type=money_type))
         else:    
             q_accnt_link = Q(Q(src=self) | Q(operation__dest=self))
+                            
         q = Q(q_time & q_accnt_link)
         qs = OperationDoc.objects.filter(q)
         docs = qs.annotate(total_amount=Sum('operation__amount')).order_by(

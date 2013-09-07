@@ -71,11 +71,10 @@ class ApartmentGroup(Entity):
     
     
     def __billable(self, billable_type):
-        result = []
-        result.extend(billable_type.objects.filter(billed=self))
-        for ag in self.apartmentgroup_set.all():
-            result.extend(ag.__billable(billable_type))
-        return result
+        qd = Q(billed=self)
+        qc = Q(billed__parent = self)
+        q = Q(qd | qc)
+        return billable_type.objects.filter(q)
         
     
     def __init__(self, *args, **kwargs):       
@@ -154,7 +153,7 @@ class ApartmentGroup(Entity):
         return result
     
     
-    def collecting_funds(self):
+    def collecting_funds(self):        
         return self.__billable(CollectingFund)
 
     

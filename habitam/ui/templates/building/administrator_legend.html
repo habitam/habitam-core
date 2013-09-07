@@ -18,11 +18,21 @@
 	{% endcomment %}
 	
 	<div class="btn-group">
-		<a class="btn" href="{% url 'download_register' building_id=building.id %}">Registru</a>
+		<a class="btn" href="{% url 'download_bank_register' building_id=building.id %}">Registru bancă</a>
 		<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
   		<ul class="dropdown-menu">
 		{% for m in alm %}
-			<li><a href="{% url 'download_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
+			<li><a href="{% url 'download_bank_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
+		{% endfor %}
+  		</ul>
+	</div>
+	
+	<div class="btn-group">
+		<a class="btn" href="{% url 'download_cash_register' building_id=building.id %}">Registru casă</a>
+		<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+  		<ul class="dropdown-menu">
+		{% for m in alm %}
+			<li><a href="{% url 'download_cash_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
 		{% endfor %}
   		</ul>
 	</div>

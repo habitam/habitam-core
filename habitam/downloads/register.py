@@ -44,17 +44,38 @@ PAGE_SIZE = A4
 logger = logging.getLogger(__name__)
 
 
-def __balance(building, d):
-    s = reduce(lambda s, l: s + l.account.balance(d),
-                 building.accountlink_set.all(), 0)
-    s = reduce(lambda s, cf: s + cf.account.balance(d),
-                 building.collecting_funds(), s)
+def __balance(building, d, money_type):
+    funds = building.accountlink_set.filter(account__money_type=money_type)
+    s = reduce(lambda s, l: s + l.account.balance(d), funds, 0)
+    collecting_funds = building.collecting_funds().filter(account__money_type=money_type)
+    s = reduce(lambda s, cf: s + cf.account.balance(d), collecting_funds, s)
     return s
 
 
-def __operations(entity, d, source_only, dest_only):
+def __download_register(building, day, money_type, title):
+    d = date(day.year, day.month, 1)
+    
+    day_before = d - relativedelta(days=1)
+    initial_balance = __balance(building, day_before, money_type)
+    d_elem = {'day': day}
+    while d <= day:
+        d_elem[d], initial_balance = __register(building, d, initial_balance,
+                                                money_type)
+        d = d + relativedelta(days=1)
+    
+    logger.debug('Register is %s' % d_elem)
+    
+    temp = tempfile.NamedTemporaryFile()
+
+    __to_pdf(temp, to_data(building, d_elem, day), building, title)
+
+    return temp  
+
+
+def __operations(entity, d, money_type, source_only, dest_only):
     next_day = d + relativedelta(days=1)
-    ops = entity.account.operation_list(d, next_day, source_only, dest_only)
+    ops = entity.account.operation_list(d, next_day, source_only, dest_only,
+                                        money_type)
     for op in ops:
         op.total_amount = op.total_amount * -1
         p = op.penalties()
@@ -62,9 +83,9 @@ def __operations(entity, d, source_only, dest_only):
     return ops
 
 
-def __register(building, d, initial_balance):
-    ml = map(lambda ap: __operations(ap, d, True, False), building.apartments()) + \
-         map(lambda svc: __operations(svc, d, False, True), building.services())
+def __register(building, d, initial_balance, money_type):
+    ml = map(lambda ap: __operations(ap, d, money_type, True, False), building.apartments()) + \
+         map(lambda svc: __operations(svc, d, money_type, False, True), building.services())
     ops = []
     for ol in ml:
         if ol:
@@ -80,7 +101,7 @@ def to_data(building, d_list, day):
     data = [] 
     header = []
     header.append('Nr. Crt.')
-    header.append(u'Nr. Act. Casă')
+    header.append(u'Nr. Act')
     header.append(u'Nr. Anexă')
     header.append(u'Explicații')
     header.append(u'Încasări')
@@ -150,7 +171,7 @@ def to_data(building, d_list, day):
         d = d + relativedelta(days=1)   
     return data
         
-def to_pdf(tempFile, data, building):
+def __to_pdf(tempFile, data, building, title):
     elements = []
    
     doc = SimpleDocTemplate(tempFile, rightMargin=MARGIN_SIZE, leftMargin=MARGIN_SIZE, topMargin=MARGIN_SIZE, bottomMargin=0, encoding='utf8')
@@ -168,7 +189,7 @@ def to_pdf(tempFile, data, building):
     I.hAlign = 'LEFT'
     styleSheet = getSampleStyleSheet()
     P0 = Paragraph(u'<para align=right spaceb=3><b>' +
-        u'Registru casă</b>' +
+        title + '</b>' +
         u'</para>',
         styleSheet["BodyText"])
     P1 = Paragraph((u'<para align=right spaceb=3>' +
@@ -187,23 +208,11 @@ def to_pdf(tempFile, data, building):
     doc.build(elements) 
 
 
-def download_register(building, day):
-    d = date(day.year, day.month, 1)
-    
-    day_before = d - relativedelta(days=1)
-    initial_balance = __balance(building, day_before)
-    d_elem = {'day': day}
-    while d <= day:
-        d_elem[d], initial_balance = __register(building, d, initial_balance)
-        d = d + relativedelta(days=1)
-    
-    logger.debug('Register is %s' % d_elem)
-    
-    temp = tempfile.NamedTemporaryFile()
+def download_bank_register(building, day):
+    return __download_register(building, day, 'bank', 'Registru banca') 
 
-    to_pdf(temp, to_data(building, d_elem, day), building)
-
-    return temp   
+def download_cash_register(building, day):
+    return __download_register(building, day, 'cash', 'Registru casa')   
 
 
 
