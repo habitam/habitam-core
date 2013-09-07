@@ -39,6 +39,7 @@ def __create_payu_supplier(l):
     supplier = Supplier.objects.create(**PAYU_DETAILS)
     supplier.save()
     l.add_entity(supplier, Supplier)
+    return supplier
     
 def __create_payu_service(l, building, supplier):
     service = Service.objects.create(name=u'plăți online',
