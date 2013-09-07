@@ -143,6 +143,7 @@ INSTALLED_APPS = (
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'social_auth.backends.google.GoogleOAuth2Backend',
+    'social_auth.backends.facebook.FacebookBackend'
 )
 
 SOCIAL_AUTH_PIPELINE = (
@@ -158,6 +159,9 @@ SOCIAL_AUTH_PIPELINE = (
 
 GOOGLE_OAUTH2_CLIENT_ID = None
 GOOGLE_OAUTH2_CLIENT_SECRET = None
+FACEBOOK_APP_ID = None
+FACEBOOK_API_SECRET = None
+FACEBOOK_EXTENDED_PERMISSIONS = ['email']
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/ui'
 SOCIAL_AUTH_COMPLETE_URL_NAME = 'socialauth_complete'
