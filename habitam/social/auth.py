@@ -28,6 +28,8 @@ from habitam.settings import DEFAULT_FROM_EMAIL
 PROVIDERS = {
     'google-oauth2': 'Google',
     'facebook': 'Facebook',
+    'twitter': 'Twitter',
+    'yahoo': 'Yahoo',
 }
 
 
