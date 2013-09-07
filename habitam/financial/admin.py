@@ -31,7 +31,7 @@ class QuotaAdmin(admin.ModelAdmin):
     list_display = ('src', 'dest', 'ratio')
 
 class OperationDocAdmin(admin.ModelAdmin):
-    list_display = ('date', 'no', 'src', 'billed', 'type', 'created')
+    list_display = ('date', 'description', 'src', 'billed', 'type', 'created')
 
 class OperationAdmin(admin.ModelAdmin):
     list_display = ('doc', 'dest', 'amount', 'loss')
@@ -40,7 +40,7 @@ class InvoiceAdmin(admin.ModelAdmin):
     list_display = ('operationdoc', 'fiscal_id', 'registration_id', 'series', 'no')
         
 class ReceiptAdmin(admin.ModelAdmin):
-    list_display = ('operationdoc', 'description', 'payer_name', 'no')
+    list_display = ('operationdoc', 'payer_name', 'no')
     
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Quota, QuotaAdmin)

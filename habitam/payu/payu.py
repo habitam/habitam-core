@@ -30,7 +30,6 @@ from habitam.payu.models import Order, ApartmentAmount, OrderComplete
 from habitam.settings import PAYU_TIMEOUT, PAYU_DEBUG, PAYU_TRANSACTION_CHARGE
 import hmac
 import logging
-import uuid
 
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -50,15 +49,18 @@ def complete_order(order_id):
     account = order.building.payments_account()
     service = order.building.payments_service()
     for aa in ApartmentAmount.objects.filter(order=order):
-        doc = aa.apartment.new_inbound_operation(no=uuid.uuid1().hex,
+        description = u'Plată întreținere online %s' % aa.apartment.name
+        doc = aa.apartment.new_inbound_operation(description=description,
                     amount=aa.amount, receipt=None, dest_account=account)
         OrderComplete.objects.create(apartment_amount=aa,
                                      operation_doc=doc).save()
         amount = amount + aa.amount
     
     payu_tax = PAYU_TRANSACTION_CHARGE * amount
-    service.new_inbound_operation(payu_tax, no=uuid.uuid1().hex)
-    account.new_transfer(payu_tax, no=uuid.uuid1().hex,
+    description = u'Comision tranzacție online'
+    service.new_inbound_operation(payu_tax, description=description)
+    description = u'Plată comision tranzacție online'
+    account.new_transfer(payu_tax, description=description,
                          dest_account=service.account)
     order.status = 'completed'
     order.save()  

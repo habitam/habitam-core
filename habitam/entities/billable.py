@@ -76,16 +76,16 @@ class Billable(SingleAccountEntity):
     def __change_billed(self):
         return self._old_billed != self.billed and self._old_billed != None
     
-    def __new_charge_with_quotas(self, amount, no, date, invoice):
+    def __new_charge_with_quotas(self, amount, description, date, invoice):
         accounts = [] 
         for ap in self.billed.apartments():
             accounts.append(ap.account)
         mine = self.billed.default_account
         account = mine if mine != None else self.building().default_account
-        self.account.new_charge(amount, date, no, account, accounts,
+        self.account.new_charge(amount, date, description, account, accounts,
                                 self.charge_type(), invoice)
         
-    def __new_charge_with_consumptions(self, amount, no, ap_consumptions,
+    def __new_charge_with_consumptions(self, amount, description, ap_consumptions,
                                        consumption, date, invoice):
         ops = []
         db_ap_consumptions = []
@@ -104,7 +104,7 @@ class Billable(SingleAccountEntity):
             ops.append((ap.account, total_ap, loss))
             db_ap_consumptions.append(apartment_consumption(v, ap))
             
-        doc = self.account.new_multi_transfer(no, self.billed.default_account,
+        doc = self.account.new_multi_transfer(description, self.billed.default_account,
                                         ops, date, self.charge_type(),
                                         invoice=invoice)
         
@@ -116,12 +116,12 @@ class Billable(SingleAccountEntity):
             ap_consumption.save()
         
          
-    def __new_charge_without_quotas(self, ap_sums, no, date, invoice):
+    def __new_charge_without_quotas(self, ap_sums, description, date, invoice):
         ops = []
         for k, v in ap_sums.items():
             ap = apartment_by_pk(k)
             ops.append((ap.account, v))
-        self.account.new_multi_transfer(no, self.billed.default_account, ops,
+        self.account.new_multi_transfer(description, self.billed.default_account, ops,
                                         date, self.charge_type(),
                                         invoice=invoice)
         
@@ -151,18 +151,18 @@ class Billable(SingleAccountEntity):
     def initial_operation(self):
         return {'amount': 0}
     
-    def new_inbound_operation(self, amount, no, invoice=None, ap_sums=None,
+    def new_inbound_operation(self, amount, description, invoice=None, ap_sums=None,
                         ap_consumptions=None, consumption=None,
                         date=timezone.now()):
-        logger.info(u'new inbound op for %s amount=%f no=%s ap_sums=%s ap_consumptions=%s consumption=%s date=%s' % 
-                    (self, amount, no, ap_sums, ap_consumptions, consumption, date))
+        logger.info(u'new inbound op for %s amount=%f description=%s ap_sums=%s ap_consumptions=%s consumption=%s date=%s' % 
+                    (self, amount, description, ap_sums, ap_consumptions, consumption, date))
         if ap_consumptions != None:
-            self.__new_charge_with_consumptions(amount, no, ap_consumptions,
+            self.__new_charge_with_consumptions(amount, description, ap_consumptions,
                                                 consumption, date, invoice)
         elif ap_sums != None: 
-            self.__new_charge_without_quotas(ap_sums, no, date, invoice)
+            self.__new_charge_without_quotas(ap_sums, description, date, invoice)
         else:
-            self.__new_charge_with_quotas(amount, no, date, invoice)
+            self.__new_charge_with_quotas(amount, description, date, invoice)
 
     def delete(self):
         if not self.can_delete():

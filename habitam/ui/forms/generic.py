@@ -47,7 +47,7 @@ class NewDocPaymentForm(forms.Form):
     amount = forms.DecimalField(label='Suma')
     date = forms.DateField(label='Data', initial=datetime.date.today,
                         widget=BootstrapDateInput(input_format='yyyy-mm-dd'))
-    no = forms.CharField(label='Număr document')
+    description = forms.CharField(label='Descriere')
     
     def __init__(self, *args, **kwargs):
         if 'entity' in kwargs.keys():
@@ -82,15 +82,12 @@ class NewInvoice(NewDocPaymentForm):
                 continue
             invoice[fn] = cleaned_data[label]
             del cleaned_data[label]
-        if 'no' in cleaned_data and not 'no' in invoice:
-            invoice['no'] = cleaned_data['no']
         cleaned_data['invoice'] = invoice
         return cleaned_data
 
 
 class NewReceipt(NewDocPaymentForm):
-    no = forms.CharField(label='Număr chitanță')
-    receipt_description = forms.CharField(label='Descriere chitanță', max_length=200, required=False)
+    receipt_no = forms.CharField(label='Număr chitanță')
     receipt_fiscal_id = forms.CharField(label='Nr. înreg. fiscală plătitor', max_length=30, required=False)
     receipt_registration_id = forms.CharField(label='Nr. reg. com. plătitor', max_length=30, required=False)
     receipt_payer_name = forms.CharField(label='Plătit de', max_length=200, required=False)
@@ -108,8 +105,6 @@ class NewReceipt(NewDocPaymentForm):
                 continue
             receipt[fn] = cleaned_data[label]
             del cleaned_data[label]
-        if not 'no' in receipt:
-            receipt['no'] = cleaned_data['no']
         cleaned_data['receipt'] = receipt
         return cleaned_data 
     

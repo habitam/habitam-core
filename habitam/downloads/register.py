@@ -52,6 +52,13 @@ def __balance(building, d, money_type):
     return s
 
 
+def __document_number(op_doc):
+    if op_doc.receipt:
+        return op_doc.receipt.no
+    if op_doc.invoice:
+        return op_doc.invoice.series + '/' + op_doc.invoice.no
+    return ''
+
 def __download_register(building, day, money_type, title):
     d = date(day.year, day.month, 1)
     
@@ -132,9 +139,9 @@ def to_data(building, d_list, day):
                 amount = op_doc.total_amount
                 row = []
                 row.append(increment)
-                row.append(op_doc.no)
-                row.append(op_doc.date)
-                row.append(op_doc.register_details())
+                row.append(__document_number(op_doc))
+                row.append('')
+                row.append(op_doc.description)
                 if amount >= 0:
                     row.append(amount)
                     row.append('')

@@ -127,9 +127,8 @@ class NewBuildingCharge(NewDocPaymentForm):
 
 class NewServiceInvoice(NewInvoice, NewBuildingCharge):
     def __init__(self, *args, **kwargs):
-        super(NewServiceInvoice, self).__init__(*args, **kwargs)   
-        self.fields['no'].label = 'Număr factură'     
-        del self.fields['invoice_no']
+        super(NewServiceInvoice, self).__init__(*args, **kwargs)
+        self.fields['description'].initial = self.service.name   
         self.fields['invoice_fiscal_id'].initial = self.service.supplier.fiscal_id
         self.fields['invoice_registration_id'].initial = self.service.supplier.registration_id
         

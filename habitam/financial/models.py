@@ -55,7 +55,7 @@ class Quota(models.Model):
 class OperationDoc(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     date = models.DateField()
-    no = models.CharField(max_length=100)
+    description = models.CharField(max_length=100, blank=True, null=True)
     src = models.ForeignKey('Account', related_name='doc_src_set')
     billed = models.ForeignKey('Account', related_name='doc_billed_set')
     type = models.CharField(max_length=10)
@@ -65,27 +65,11 @@ class OperationDoc(models.Model):
         OperationDoc.objects.get(pk=op_id).delete()
         
     def __unicode__(self):
-        return self.no
-    
-    def list_description(self):
-        try:
-            return self.invoice.series + '/' + self.invoice.no
-        except:
-            return self.no
+        return self.description
     
     def penalties(self):
         penalty_ops = self.operation_set.filter(dest__type='penalties').aggregate(total_amount=Sum('amount'))
         return penalty_ops['total_amount']
-    
-    def register_details(self):
-        details = None
-        try:
-            details = self.receipt.description.strip()
-        except:
-            pass
-        if details == None or details == '':
-            details = self.list_description()
-        return details
             
    
 class Operation(models.Model):
@@ -119,13 +103,6 @@ class Account(models.Model):
     class LicenseMeta:
         license_accessor = 'for_fund'
         license_collection = 'available_funds'
-        
-    def __assert_doc_not_exists(self, no):
-        try:
-            OperationDoc.objects.get(no=no, src=self)
-            raise NameError('Document already exists')
-        except OperationDoc.DoesNotExist:
-            pass
         
     def __unicode__(self):
         if self.type in ['apart', 'std']:
@@ -205,12 +182,11 @@ class Account(models.Model):
     def has_quotas(self):
         return Quota.objects.filter(Q(dest=self) | Q(src=self)).count() > 0
     
-    def new_transfer(self, amount, no, dest_account, date=timezone.now(),
+    def new_transfer(self, amount, description, dest_account, date=timezone.now(),
                      receipt=None, invoice=None):
-        self.__assert_doc_not_exists(no)
-        
-        doc = OperationDoc.objects.create(date=date, no=no, src=self,
-                                          type='transfer', billed=dest_account)
+        doc = OperationDoc.objects.create(date=date, description=description,
+                                          src=self, type='transfer',
+                                          billed=dest_account)
         Operation.objects.create(amount=amount, doc=doc, dest=dest_account)
                 
         if receipt != None:
@@ -223,12 +199,11 @@ class Account(models.Model):
             
         self.save()
         
-    def new_multi_transfer(self, no, billed, ops, date=timezone.now(),
+    def new_multi_transfer(self, description, billed, ops, date=timezone.now(),
                            transfer_type='transfer', receipt=None,
                            invoice=None):
-        self.__assert_doc_not_exists(no)
-        doc = OperationDoc.objects.create(date=date, no=no, src=self,
-                                          type=transfer_type, billed=billed)
+        doc = OperationDoc.objects.create(date=date, description=description,
+                                          src=self, type=transfer_type, billed=billed)
         for op in ops:
             loss = None
             if len(op) == 3:
@@ -247,12 +222,11 @@ class Account(models.Model):
         self.save()
         return doc
         
-    def new_charge(self, amount, date, no, billed, dest_accounts,
+    def new_charge(self, amount, date, description, billed, dest_accounts,
                     charge_type, invoice):
-        self.__assert_doc_not_exists(no)
-        
-        new_charge = OperationDoc.objects.create(date=date, no=no,
-                            billed=billed, src=self, type=charge_type)
+        new_charge = OperationDoc.objects.create(date=date,
+                            description=description, billed=billed, src=self,
+                            type=charge_type)
         
         if invoice != None:
             inv = Invoice.objects.create(operationdoc=new_charge, **invoice)
@@ -332,7 +306,6 @@ class Account(models.Model):
 
 class Receipt(models.Model):
     operationdoc = models.OneToOneField(OperationDoc)
-    description = models.CharField(max_length=200, blank=True, null=True)
     fiscal_id = models.CharField(max_length=30, blank=True, null=True)
     no = models.CharField(max_length=100)
     registration_id = models.CharField(max_length=200, blank=True, null=True)

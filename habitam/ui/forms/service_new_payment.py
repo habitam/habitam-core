@@ -42,7 +42,7 @@ class BasicServicePayment(NewReceipt):
             self.fields['receipt_registration_id'].initial = building.buildingdetails.registration_id
         except:
             pass
-        self.fields['receipt_description'].initial = u'Plată serviciu'
+        self.fields['description'].initial = u'Plată serviciu'
         
 
 class NewOtherServicePayment(BasicServicePayment, NewInvoice):
@@ -55,7 +55,6 @@ class NewOtherServicePayment(BasicServicePayment, NewInvoice):
         del kwargs['account']
         del kwargs['user']
         super(NewOtherServicePayment, self).__init__(*args, **kwargs)
-        self.fields['no'].label = 'Număr chitanță'
         
         
 class NewServicePayment(BasicServicePayment):

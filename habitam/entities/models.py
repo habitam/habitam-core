@@ -367,6 +367,7 @@ class Apartment(SingleAccountEntity):
     
     def debt(self, ts):
         until = timezone.now() + relativedelta(days=1)
+        logger.info('debt %s -> %s %d' %(ts, until, self.balance(ts)))
         b = -apartment_payments(self, ts, until) - self.balance(ts)
         return 0 if b < 0 else b
    
@@ -397,7 +398,7 @@ class Apartment(SingleAccountEntity):
         return getattr(self, quota_type)
 
 
-    def new_inbound_operation(self, no, amount, receipt, dest_account,
+    def new_inbound_operation(self, description, amount, receipt, dest_account,
                               date=timezone.now()):
         building = self.building()
         penalties = self.penalties(date)
@@ -406,8 +407,8 @@ class Apartment(SingleAccountEntity):
         else:
             penalties = 0
         logger.info('New payment %s from %s worth %f + %f penalties' % 
-                    (no, self, amount, penalties))
-        return self.account.new_multi_transfer(no, dest_account,
+                    (description, self, amount, penalties))
+        return self.account.new_multi_transfer(description, dest_account,
                                 [(dest_account, amount - penalties),
                                  (building.penalties_account, penalties)],
                                 date, 'transfer', receipt)
