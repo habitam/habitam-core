@@ -3,8 +3,8 @@
 {% include 'checks/available_suppliers.html' %}
 
 {% if not license.payu_available %}
-<div class="alert">
-<a class="close" data-dismiss="alert" href="#">&times;</a>
+<div class="alert habitam-alert" id="admin-online-payments">
+<a class="close habitam-alert-close" href="#">&times;</a>
 Plata online pentru întreținere nu a fost configurată pentru clădirile
 administrate de dumneavostră. Vă rugăm luați legătura cu noi.
 <br>
@@ -15,8 +15,8 @@ administrate de dumneavostră. Vă rugăm luați legătura cu noi.
 {% if license.available_buildings %}
 
 {% if license.apartment_count >= license.max_apartments %}
-<div class="alert">
-<a class="close" data-dismiss="alert" href="#">&times;</a>
+<div class="alert habitam-alert" id="admin-license-full">
+<a class="close habitam-alert-close" data-dismiss="alert" href="#">&times;</a>
 Licența dumneavoastră nu mai permite adăguarea de apartamente noi. Vă rugăm
 luați legătura cu noi.
 <br>
