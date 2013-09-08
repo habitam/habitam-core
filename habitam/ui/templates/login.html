@@ -1,10 +1,10 @@
 {% extends 'left_base.html' %} 
 
 {% block inner_content %}
-<div class="row-fluid">
+
 	<div class="span7">
 		<legend>Autentificare</legend>
-		<form class="form-horizontal" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+		<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
 	    	{% csrf_token %}
 			{% if form.errors %}
 				<div class="alert alert-error">
@@ -47,11 +47,11 @@
 	</div>
 	<div class="span4 offset1">
 	<legend>... sau folosiți</legend>
-	<p><a class="btn btn-google-plus input-block-level" href="{% url 'socialauth_begin' 'google-oauth2' %}" style="text-align:left;"><i class="icon-google-plus"></i> | autentificare cu Google</a></p>
-	<p><a class="btn btn-facebook input-block-level" href="{% url 'socialauth_begin' 'facebook' %}" style="text-align:left;"><i class="icon-facebook"></i> | autentificare cu Facebook</a></p>
-	<p><a class="btn btn-twitter input-block-level" href="{% url 'socialauth_begin' 'twitter' %}" style="text-align:left;"><i class="icon-twitter"></i> | autentificare cu Twitter</a></p>
-	<p><a class="btn btn-yahoo btn-info input-block-level" href="{% url 'socialauth_begin' 'yahoo' %}" style="text-align:left;">autentificare cu Yahoo!</a></p>
+	<p><a class="btn btn-google-plus input-block-level" href="{% url 'socialauth_begin' 'google-oauth2' %}" style="text-align:left;"><i class="icon-google-plus"></i> | Google</a></p>
+	<p><a class="btn btn-facebook input-block-level" href="{% url 'socialauth_begin' 'facebook' %}" style="text-align:left;"><i class="icon-facebook"></i> | Facebook</a></p>
+	<p><a class="btn btn-twitter input-block-level" href="{% url 'socialauth_begin' 'twitter' %}" style="text-align:left;"><i class="icon-twitter"></i> | Twitter</a></p>
+	<p><a class="btn btn-yahoo btn-info input-block-level" href="{% url 'socialauth_begin' 'yahoo' %}" style="text-align:left;">Yahoo!</a></p>
 	
 	</div>
-</div>
+
 {% endblock %}
