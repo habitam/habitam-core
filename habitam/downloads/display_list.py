@@ -186,7 +186,21 @@ def to_pdf(tempFile, breakdown, building, begin_ts, end_ts):
         headerTableData=[(I, P0),('http://www.habitam.ro',P1)]  
         headerTable=Table(headerTableData, colWidths=(landscape(PAGE_SIZE)[0]-2*MARGIN_SIZE)/2)
         
-        main_frame = KeepInFrame(maxWidth=landscape(PAGE_SIZE)[0] - 2 * MARGIN_SIZE, maxHeight=landscape(PAGE_SIZE)[1] - 2 * MARGIN_SIZE, content=[headerTable, table], mode='shrink', name='main_frame')
+        P2 = Paragraph ('''
+            <para align=left spaceb=3><b>
+            <font color=black> Presedinte </font></b></para>''', styleSheet["BodyText"])
+        
+        P3 = Paragraph ('''
+            <para align=center spaceb=3><b>
+            <font color=black> Cenzor </font></b></para>''', styleSheet["BodyText"])
+     
+        P4 = Paragraph ('''
+            <para align=right spaceb=3><b>
+            <font color=black> Contabil </font></b></para>''', styleSheet["BodyText"])  
+        footerTableData=[('Presedinte', 'Cenzor', 'Contabil'), ('...........','...........','...........')]
+        footerTable=Table(footerTableData, colWidths=(landscape(PAGE_SIZE)[0]-2*MARGIN_SIZE)/3)
+         
+        main_frame = KeepInFrame(maxWidth=landscape(PAGE_SIZE)[0] - 2 * MARGIN_SIZE, maxHeight=landscape(PAGE_SIZE)[1] - 2 * MARGIN_SIZE, content=[headerTable, table, footerTable], mode='shrink', name='main_frame')
 
         elements.append(main_frame)
         elements.append(PageBreak())
@@ -200,26 +214,60 @@ def to_data(ap_group, d_billed, building_services):
     data = [] 
     header = []
     header.append('Ap')
+    header.append('Numele')
+    header.append('Nr Pers')
+    
+    totalRow = []
+    totalRow.append('')
+    totalRow.append('Total Scara')
+    totalRow.append('')
+    
+    totalDict = {}
+    
     data.append(header)
     firstTime = True
     for ap in ap_group.apartments():
         apname = ap.__unicode__()
+        ownername = ap.owner.name
+        inhabitance = ap.inhabitance
         
         row = []
         row.append(apname)
+        row.append(ownername)
+        row.append(inhabitance)
+        total_amount=0
+        
         for service in building_services:
             sname = service.__unicode__()
             if firstTime is True:
                 header.append(sname + ' cost')
+                totalDict[sname]=0
+            total_amount=total_amount+d_billed[apname][sname]['amount']
             row.append(str(d_billed[apname][sname]['amount']))
+            #calculate total cost for a service/staircase
+            totalDict[sname]=totalDict[sname]+d_billed[apname][sname]['amount']
+            
             if firstTime is True:
-                header.append(sname + ' consum')
+                if service.quota_type == 'consumption':
+                    header.append(sname + ' consum')
             consValue = '-'
             logger.info('[toData] - ap=%s service=%s cost=%s' % (apname, sname, d_billed[apname][sname]['amount']))
             if service.quota_type == 'consumption':
                 consValue = str(d_billed[apname][sname]['consumed'])
-            row.append(consValue)
+                row.append(consValue)
+                
+        if firstTime is True:
+            header.append('Total')
+        row.append(total_amount) 
         data.append(row)
         firstTime = False
+        
+    for service in building_services:
+        sname = service.__unicode__()
+        totalRow.append(totalDict[sname])
+        if service.quota_type == 'consumption':
+            totalRow.append('')
+    data.append(totalRow)
+    
     return data
 
