@@ -1,57 +1,84 @@
-{% extends 'left_base.html' %} 
+{% load staticfiles %}
+{% load ui_extras %}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
 
-{% block inner_content %}
+<html class="no-js">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Habitam</title>
+<meta name="viewport" content="width=device-width">
 
-	<div class="span7">
-		<legend>Autentificare</legend>
-		<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
-	    	{% csrf_token %}
-			{% if form.errors %}
-				<div class="alert alert-error">
-					Nu am putut verifica credențialele. Încercați din nou.
-				</div>
-			{% endif %}
-			<div class="control-group">
-				<label class="control-label" for="id_username">Email</label>
-				<div class="controls">
-					<div class="input-append">
-				    {{ form.username }}
-				    <span class="add-on"><i class="icon-envelope"></i></span>
-				    </div>
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="id_password">Parola</label>
-				<div class="controls">
-					<div class="input-append">
-				    {{ form.password }}
-				    <span class="add-on"><i class="icon-lock"></i></span>
-				    </div>
-				</div>
-	        </div>
-	        <div class="control-group">
-	        	<div class="controls">
-	        		<a href="{% url 'registration' %}">Cont nou?</a>
-	        		<br>
-	        		<a href="{% url 'password_reset' %}">Ați uitat parola?</a>
-	        		
-	        	</div>
-	        </div>
-	        <div class="control-group">
-	        	<div class="controls">
-			        <button class="btn btn-primary" type="submit">Intră</button>
-			        <input type="hidden" name="next" value="{{ next }}" />
-			    </div>
-			</div>
-	    </form>
-	</div>
-	<div class="span4 offset1">
-	<legend>... sau folosiți</legend>
-	<p><a class="btn btn-google-plus input-block-level" href="{% url 'socialauth_begin' 'google-oauth2' %}" style="text-align:left;"><i class="icon-google-plus"></i> | Google</a></p>
-	<p><a class="btn btn-facebook input-block-level" href="{% url 'socialauth_begin' 'facebook' %}" style="text-align:left;"><i class="icon-facebook"></i> | Facebook</a></p>
-	<p><a class="btn btn-twitter input-block-level" href="{% url 'socialauth_begin' 'twitter' %}" style="text-align:left;"><i class="icon-twitter"></i> | Twitter</a></p>
-	<p><a class="btn btn-yahoo btn-info input-block-level" href="{% url 'socialauth_begin' 'yahoo' %}" style="text-align:left;">Yahoo!</a></p>
-	
-	</div>
+<link rel="stylesheet" href="{% static 'ui/css/bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/main.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/social-buttons.css' %}">
 
-{% endblock %}
+
+<script src="{% static 'ui/js/jquery.min.js' %}"></script>
+<script src="{% static 'ui/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'ui/js/bootstrap.js' %}"></script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push([ '_setAccount', '{{ GA_ACCOUNT_ID }}' ]);
+	_gaq.push([ '_setDomainName', '{{ GA_URL }}' ]);
+	_gaq.push([ '_setAllowLinker', true ]);
+	_gaq.push([ '_trackPageview' ]);
+
+	(function() {
+		var ga = document.createElement('script');
+		ga.type = 'text/javascript';
+		ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl'
+				: 'http://www')
+				+ '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(ga, s);
+	})();
+</script>
+
+</head>
+<body style="background-color: #f5f5f5;">
+	<!--[if lt IE 7]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+
+
+<div class="login-box">	
+	<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+    	{% csrf_token %}
+		<img class="logo" src="{% static 'ui/img/habitam-logo-header.png' %}">
+		{% if form.errors %}
+		<div class="alert alert-error">
+			Nu am putut verifica parola.
+		</div>
+		{% endif %}
+		
+		<div class="input-append ">
+			<input type="text" placeholder="Email" name="{{ form.username.html_name }}">
+			<span class="add-on"><i class="icon-envelope"></i></span>
+		</div>
+		<div class="input-append">
+			<input type="password" placeholder="Parola" name="{{ form.password.html_name }}">
+			<span class="add-on"><i class="icon-lock"></i></span>
+		</div>
+		<button class="btn btn-success auth-button" type="submit" style="margin-bottom: 10px;">Autentificare</button>
+		<a href="{% url 'password_reset' %}">Ați uitat parola?</a>
+		<input type="hidden" name="next" value="{{ next }}" />
+		<hr/>
+		<p>sau folosiți contul dumneavostră</p>
+		<a class="btn btn-google-plus social" href="{% url 'socialauth_begin' 'google-oauth2' %}">Google</a>
+		<a class="btn btn-facebook social" href="{% url 'socialauth_begin' 'facebook' %}" style="float: right;">Facebook</i></a> 
+		<hr/>
+	</form>
+	<form action="{% url 'registration' %}" style="margin: 0;">
+		<button class="btn auth-button">Cont nou</button>
+	</form>
+</div>
+
+</body>
+</html>

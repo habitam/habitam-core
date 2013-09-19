@@ -60,6 +60,41 @@ input[id^="id_captcha"] {
 	margin-top: -5px;
 }
 
+.login-box {
+	position: relative;
+	margin-right: auto;
+	margin-left: auto;
+	width: 240px;
+	border: 1px solid #e5e5e5;
+	padding: 20px;
+	background-color: #fff;
+	-webkit-border-radius: 4px 0 0 4px;
+	-moz-border-radius: 4px 0 0 4px;
+	border-radius: 4px 0 0 4px
+}
+
+.login-box .auth-button {
+	width: 240px;
+}
+
+.login-box input {
+	width: 199px;
+}
+
+.login-box .logo {
+	margin-bottom: 20px;
+	margin-left: 50px;
+}
+
+.login-box p {
+	color: #a5a5a5;
+	text-align: center;	
+}
+
+.login-box .social {
+	width: 80px;
+}
+
 .navbar-inner {
 	padding-top: 5px;
 }
