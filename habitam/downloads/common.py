@@ -38,10 +38,11 @@ def habitam_footer(canvas):
     canvas.drawString(cm, cm, 'www.habitam.ro')
     canvas.linkURL('http://www.habitam.ro', (cm, cm, 3.35 * cm, 2.2 * cm), relative=1)
     
-def signatures():
+def signatures(font_size=None):
     d = [[u'PREȘEDINTE\n(numele și semnătura)', u'CENZOR\n(numele și semnătura)', u'ADMINISTRATOR\n(numele și semnătura)']]
     table = Table(d, colWidths=[7 * cm, 7 * cm, 7 * cm])
-    table.setStyle(TableStyle([
-                        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-                        ]))
+    style = [('ALIGN', (0, 0), (-1, 0), 'CENTER'), ]
+    if font_size:
+        style.append(('FONTSIZE', (0, 0), (-1, -1), font_size))
+    table.setStyle(TableStyle(style))
     return table
