@@ -22,24 +22,20 @@ Created on Jul 18, 2013
 '''
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
-from os import path
+from habitam.downloads.common import MARGIN, habitam_brand
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4, cm, portrait
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, \
-    Paragraph, KeepInFrame
-from reportlab.platypus.flowables import PageBreak
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+from reportlab.lib.pagesizes import A4, cm
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.platypus.flowables import Spacer
 import logging
 import tempfile
 
 
-pdfmetrics.registerFont(TTFont('Helvetica', path.join(settings.BASE_DIR, 'fonts', 'Arial.ttf')))
-MARGIN_SIZE = 0.2 * cm
-PAGE_SIZE = A4
-
+__HEIGHT__ = A4[1]
+__WIDTH__ = A4[0]
+__FONT_SIZE__ = 9
 
 logger = logging.getLogger(__name__)
 
@@ -103,18 +99,38 @@ def __register(building, d, initial_balance, money_type):
             'operations': ops,
             'end_balance':end_balance}, end_balance
 
+
+def __register_format(canvas, doc):
+    canvas.saveState()
+    building_style = ParagraphStyle(name='building_title')
+    t = doc.habitam_building.name
+    p = Paragraph(t, building_style)
+    p.wrapOn(canvas, 5 * cm, 2 * cm)
+    p.drawOn(canvas, .5 * cm, __HEIGHT__ - 1 * cm)
+    habitam_brand(canvas, __WIDTH__, __HEIGHT__)
+    canvas.restoreState()
+
+
 def to_data(building, d_list, day):
     d = date(day.year, day.month, 1)
+    
     data = [] 
     header = []
     header.append('Nr. Crt.')
     header.append(u'Nr. Act')
-    header.append(u'Nr. Anexă')
-    header.append(u'Explicații')
-    header.append(u'Încasări')
-    header.append(u'Plăți')
-    header.append('Simbol cont')
+    header.append(u'Nr.\nAnexa')
+    header.append(u'Explicatii')
+    header.append(u'Incasari')
+    header.append(u'Plati')
+    header.append('Simbol\ncont')
     data.append(header)
+    
+    details_style = ParagraphStyle(name='details',
+                                   fontSize=__FONT_SIZE__)
+    day_item_style = ParagraphStyle(name='day_item',
+                                    fontSize=__FONT_SIZE__,
+                                    alignment=TA_RIGHT)
+        
     while d <= day:
 
         if d_list[d]['operations'] is not None and len(d_list[d]['operations']) > 0:
@@ -126,7 +142,7 @@ def to_data(building, d_list, day):
             first_row.append('')
             first_row.append('')
             first_row.append('')
-            first_row.append(u'Sold inițial la %s' % d)
+            first_row.append(Paragraph(u'Sold inițial la %s' % d, day_item_style))
             first_row.append(initial_balance)
             first_row.append('')
             first_row.append('')      
@@ -141,7 +157,7 @@ def to_data(building, d_list, day):
                 row.append(increment)
                 row.append(__document_number(op_doc))
                 row.append('')
-                row.append(op_doc.description)
+                row.append(Paragraph(op_doc.description, details_style))
                 if amount >= 0:
                     row.append(amount)
                     row.append('')
@@ -159,7 +175,7 @@ def to_data(building, d_list, day):
             sum_row.append('')
             sum_row.append('')
             sum_row.append('')
-            sum_row.append('RULAJ ZI')
+            sum_row.append(Paragraph('RULAJ ZI', day_item_style))
             sum_row.append(inbound)
             sum_row.append(outbound)
             sum_row.append('')
@@ -169,7 +185,7 @@ def to_data(building, d_list, day):
             last_row.append('')
             last_row.append('')
             last_row.append('')
-            last_row.append('SOLD FINAL')
+            last_row.append(Paragraph('SOLD FINAL', day_item_style))
             last_row.append(end_balance)
             last_row.append('')
             last_row.append('')
@@ -179,48 +195,39 @@ def to_data(building, d_list, day):
     return data
         
 def __to_pdf(tempFile, data, building, title):
-    elements = []
+    
    
-    doc = SimpleDocTemplate(tempFile, rightMargin=MARGIN_SIZE,
-                            leftMargin=MARGIN_SIZE, topMargin=MARGIN_SIZE,
-                            bottomMargin=MARGIN_SIZE, pagesize=PAGE_SIZE,
-                            encoding='utf8')
-        
+    doc = SimpleDocTemplate(tempFile, pagesize=A4, leftMargin=MARGIN,
+                            rightMargin=MARGIN, topMargin=MARGIN,
+                            bottomMargin=MARGIN,
+                            title=title,
+                            author='www.habitam.ro')    
+    
+    register_title_style = ParagraphStyle(name='register_title', alignment=TA_CENTER)
+    register_title = Paragraph(title, register_title_style)
+    
+    table = Table(data, colWidths=[1.3 * cm, 3 * cm, 1.2 * cm, 7.5 * cm, 2 * cm, 2 * cm, 1.7 * cm])
+    table.setStyle(TableStyle([
+                        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('FONTSIZE', (0, 0), (-1, -1), __FONT_SIZE__),
+                        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+                        ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+                        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+                        ('BOX', (0, 0), (-1, -1), 0.25, colors.black)
+                        ]))
 
-    table = Table(data, repeatRows=1)
-    table.setStyle(TableStyle([('VALIGN', (0, 0), (0, -1), 'TOP'),
-                   ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
-                   ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
-                   ]))
+    flowables = [Spacer(1, 1.5 * cm), register_title, Spacer(1, cm), table]
     
-    # TODO Ionut: fix image load. I don't like it
-    header_logo_path = settings.BASE_DIR + '/habitam/ui/static/ui/img/habitam-logo-header.jpg'
-    I = Image(header_logo_path)
-    I.hAlign = 'LEFT'
-    styleSheet = getSampleStyleSheet()
-    P0 = Paragraph(u'<para align=right spaceb=3><b>%s</b></para>' % title,
-        styleSheet["BodyText"])
-    P1 = Paragraph((u'<para align=right spaceb=3>' + 
-        u'Asociația de proprietari <b>%s</b>' + 
-        u'</para>') % building.name,
-        styleSheet["BodyText"])
-    
-    headerTableData = [(I, P0), ('www.habitam.ro', P1)]  
-    headerTable = Table(headerTableData, colWidths=(portrait(PAGE_SIZE)[0] - 2 * MARGIN_SIZE) / 2)
-    
-    main_frame = KeepInFrame(maxWidth=portrait(PAGE_SIZE)[0] - 2 * MARGIN_SIZE, maxHeight=portrait(PAGE_SIZE)[1] - 2 * MARGIN_SIZE, content=[headerTable, table], mode='shrink', name='main_frame')
-
-    elements.append(main_frame)
-    elements.append(PageBreak())
-      
-    doc.build(elements) 
+    doc.habitam_building = building  
+    doc.build(flowables, onFirstPage=__register_format, onLaterPages=__register_format)
 
 
 def download_bank_register(building, day):
-    return __download_register(building, day, 'bank', 'Registru banca') 
+    return __download_register(building, day, 'bank', u'Registru de bancă') 
 
 def download_cash_register(building, day):
-    return __download_register(building, day, 'cash', 'Registru casa')   
+    return __download_register(building, day, 'cash', u'Registru de casă')   
 
 
 
