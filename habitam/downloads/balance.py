@@ -24,7 +24,7 @@ from habitam.downloads.common import habitam_footer, signatures
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch, cm
+from reportlab.lib.units import cm
 from reportlab.platypus.doctemplate import SimpleDocTemplate
 from reportlab.platypus.flowables import Spacer
 from reportlab.platypus.paragraph import Paragraph
