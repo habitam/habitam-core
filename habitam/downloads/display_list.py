@@ -24,7 +24,7 @@ Created on Apr 30, 2013
 from datetime import date
 from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
-from habitam.downloads.common import signatures, habitam_footer
+from habitam.downloads.common import signatures, habitam_brand
 from habitam.entities.models import ApartmentConsumption, ServiceConsumption
 from habitam.financial.models import Quota
 from reportlab.lib import colors
@@ -103,8 +103,8 @@ def __list_format(canvas, doc):
                                               doc.habitam_month)
     p = Paragraph(t, building_style)
     p.wrapOn(canvas, 5 * cm, 2 * cm)
-    p.drawOn(canvas, .5 * cm, __HEIGHT - 1.5 * cm)
-    habitam_footer(canvas)
+    p.drawOn(canvas, .5 * cm, __HEIGHT - 1.7 * cm)
+    habitam_brand(canvas, __WIDTH, __HEIGHT)
     canvas.restoreState()
             
 

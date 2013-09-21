@@ -31,12 +31,13 @@ def __habitam_logo():
     base = os.path.dirname(current_module.__file__)
     return os.path.join(base, 'habitam-logo.jpg')
    
-def habitam_footer(canvas):
+def habitam_brand(canvas, width, height):
+    x, y = width - 3 * cm, height - 1.5 * cm
     canvas.setFontSize(9)
     canvas.setFillColorRGB(.07, .48, .23)
-    canvas.drawImage(__habitam_logo(), cm, cm, width=2.3 * cm, preserveAspectRatio=True)
-    canvas.drawString(cm, cm, 'www.habitam.ro')
-    canvas.linkURL('http://www.habitam.ro', (cm, cm, 3.35 * cm, 2.2 * cm), relative=1)
+    canvas.drawImage(__habitam_logo(), x, y, width=2.3 * cm, preserveAspectRatio=True)
+    canvas.drawString(x, y, 'www.habitam.ro')
+    canvas.linkURL('http://www.habitam.ro', (x, y, 3.35 * cm, 2.2 * cm), relative=1)
     
 def signatures(font_size=None):
     d = [[u'PREȘEDINTE\n(numele și semnătura)', u'CENZOR\n(numele și semnătura)', u'ADMINISTRATOR\n(numele și semnătura)']]

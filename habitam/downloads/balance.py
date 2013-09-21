@@ -20,7 +20,7 @@ Created on Jul 21, 2013
 
 @author: Stefan Guna
 '''
-from habitam.downloads.common import habitam_footer, signatures
+from habitam.downloads.common import habitam_brand, signatures
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import getSampleStyleSheet
@@ -88,7 +88,7 @@ def __balance_format(canvas, doc):
     t = u'Situația soldurilor elementelor de activ și pasiv pentru %s la %s'
     canvas.drawCentredString(__WIDTH / 2.0, __HEIGHT - 100,
                              t % (doc.habitam_data['building'].name, doc.habitam_data['day']))
-    habitam_footer(canvas)
+    habitam_brand(canvas, __WIDTH, __HEIGHT)
     canvas.restoreState()
 
 def __format_data(data):
