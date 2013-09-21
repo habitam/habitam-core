@@ -24,7 +24,7 @@ Created on Apr 30, 2013
 from datetime import date
 from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
-from habitam.downloads.common import signatures, habitam_brand
+from habitam.downloads.common import signatures, habitam_brand, MARGIN
 from habitam.entities.models import ApartmentConsumption, ServiceConsumption
 from habitam.financial.models import Quota
 from reportlab.lib import colors
@@ -39,10 +39,10 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-__HEIGHT = A4[0]
-__WIDTH = A4[1]
+__HEIGHT__ = A4[0]
+__WIDTH__ = A4[1]
 
-__FONT_SIZE = 9
+__FONT_SIZE__ = 9
 
 
 def __add_amounts(breakdown, service_info, service, op_docs):
@@ -96,14 +96,14 @@ def __add_quotas(billed, service):
 def __list_format(canvas, doc):
     canvas.saveState()
     building_style = ParagraphStyle(name='building_title',
-                                    fontSize=__FONT_SIZE)
+                                    fontSize=__FONT_SIZE__)
     t = u'%s<br/>Data afișării: %s<br/>Luna: %s' % (doc.habitam_building.name,
                                               doc.habitam_display,
                                               doc.habitam_month)
     p = Paragraph(t, building_style)
     p.wrapOn(canvas, 5 * cm, 2 * cm)
-    p.drawOn(canvas, .5 * cm, __HEIGHT - 1.7 * cm)
-    habitam_brand(canvas, __WIDTH, __HEIGHT)
+    p.drawOn(canvas, .5 * cm, __HEIGHT__ - 1.7 * cm)
+    habitam_brand(canvas, __WIDTH__, __HEIGHT__)
     canvas.restoreState()
             
 
@@ -191,14 +191,14 @@ def __to_pdf(tempFile, breakdown, building, begin_ts, end_ts):
         table.setStyle(TableStyle([
                         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
                         ('VALIGN', (0, 0), (0, -1), 'TOP'),
-                        ('FONTSIZE', (0, 0), (-1, -1), __FONT_SIZE),
+                        ('FONTSIZE', (0, 0), (-1, -1), __FONT_SIZE__),
                         ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
                         ('BOX', (0, 0), (-1, -1), 0.25, colors.black)
                        ]))
 
         flowables.extend([Spacer(1, .5 * cm), sc_title,
                           Spacer(1, cm), table,
-                          Spacer(1, .5 * cm), signatures(__FONT_SIZE),
+                          Spacer(1, .5 * cm), signatures(__FONT_SIZE__),
                           PageBreak()])
     
     doc.habitam_building = building

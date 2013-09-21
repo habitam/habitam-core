@@ -22,17 +22,23 @@ Created on Sep 21, 2013
 '''
 
 from reportlab.lib.units import cm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus.tables import Table, TableStyle
 import os
 import sys
 
-MARGIN = .2 * cm
-
-
-def __habitam_logo():
+def __my_path__():
     current_module = sys.modules[__name__]
     base = os.path.dirname(current_module.__file__)
-    return os.path.join(base, 'habitam-logo.jpg')
+    return base
+
+pdfmetrics.registerFont(TTFont('Helvetica', os.path.join(__my_path__(), 'Arial.ttf')))
+
+MARGIN = .2 * cm
+
+def __habitam_logo(): 
+    return os.path.join(__my_path__(), 'habitam-logo.jpg')
 
    
 def habitam_brand(canvas, width, height):
@@ -41,7 +47,7 @@ def habitam_brand(canvas, width, height):
     canvas.setFillColorRGB(.07, .48, .23)
     canvas.drawImage(__habitam_logo(), x, y, width=2.3 * cm, preserveAspectRatio=True)
     canvas.drawString(x, y, 'www.habitam.ro')
-    canvas.linkURL('http://www.habitam.ro', (x, y, 3.35 * cm, 2.2 * cm), relative=1)
+    canvas.linkURL('http://www.habitam.ro', (x, y, x + 2.3 * cm, y + 1.3 * cm), relative=1)
 
     
 def signatures(font_size=None):
