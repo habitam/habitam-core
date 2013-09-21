@@ -35,7 +35,6 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-__MARGIN = .2 * cm
 __HEIGHT = A4[0]
 __WIDTH = A4[1]
 
@@ -125,9 +124,9 @@ def __format_data(data):
     return table
 
 def __to_pdf(temp, data):
-    doc = SimpleDocTemplate(temp, pagesize=landscape(A4), leftMargin=__MARGIN,
-                            rightMargin=__MARGIN, topMargin=__MARGIN,
-                            bottomMargin=__MARGIN,
+    doc = SimpleDocTemplate(temp, pagesize=landscape(A4), leftMargin=MARGIN,
+                            rightMargin=MARGIN, topMargin=MARGIN,
+                            bottomMargin=MARGIN,
                             title=u'Situația activ/pasiv pentru %s' % data['building'].name,
                             author='www.habitam.ro')
      

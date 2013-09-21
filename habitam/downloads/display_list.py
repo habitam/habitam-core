@@ -39,7 +39,6 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-__MARGIN = .2 * cm
 __HEIGHT = A4[0]
 __WIDTH = A4[1]
 
@@ -173,9 +172,9 @@ def download_display_list(building, begin_ts, end_ts):
 
 
 def __to_pdf(tempFile, breakdown, building, begin_ts, end_ts):
-    doc = SimpleDocTemplate(tempFile, pagesize=landscape(A4), leftMargin=__MARGIN,
-                            rightMargin=__MARGIN, topMargin=__MARGIN,
-                            bottomMargin=__MARGIN,
+    doc = SimpleDocTemplate(tempFile, pagesize=landscape(A4), leftMargin=MARGIN,
+                            rightMargin=MARGIN, topMargin=MARGIN,
+                            bottomMargin=MARGIN,
                             title=u'Lista de întreținere %s' % building.name,
                             author='www.habitam.ro')
     flowables = []
