@@ -5,40 +5,51 @@
 <span class="btn-group pull-right hidden-phone">
 	{% available_list_months building as alm %}
 	
-	{% comment %}
 	<div class="btn-group">
-		<a class="btn" href="{% url 'download_balance' building_id=building.id %}">Sold</a>
-		<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
-  			<ul class="dropdown-menu">
-			{% for m in alm %}
-				<li><a href="{% url 'download_balance' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
-			{% endfor %}
-  			</ul>
-	</div>
-	{% endcomment %}
-	
-	<div class="btn-group">
-		<a class="btn" href="{% url 'download_bank_register' building_id=building.id %}">Registru bancă</a>
-		<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
-  		<ul class="dropdown-menu">
-		{% for m in alm %}
-			<li><a href="{% url 'download_bank_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
-		{% endfor %}
-  		</ul>
-	</div>
-	
-	<div class="btn-group">
-		<a class="btn" href="{% url 'download_cash_register' building_id=building.id %}">Registru casă</a>
-		<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
-  		<ul class="dropdown-menu">
-		{% for m in alm %}
-			<li><a href="{% url 'download_cash_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
-		{% endfor %}
-  		</ul>
+		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+			<i class="icon-download-alt"></i>
+			Rapoarte contabile
+			<span class="caret"></span>
+		</a>
+		<ul class="dropdown-menu">
+			<li class="dropdown-submenu pull-left">
+				<a href="#">Solduri</a>
+				<ul class="dropdown-menu">
+					<li><a href="{% url 'download_balance' building_id=building.id %}">de azi</a></li>
+					<li class="divider"></li>
+					{% for m in alm %}
+					<li><a href="{% url 'download_balance' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
+					{% endfor %}
+				</ul>
+			</li>
+			
+			<li class="dropdown-submenu pull-left">
+				<a href="#">Registru casă</a>
+				<ul class="dropdown-menu">
+					<li><a href="{% url 'download_cash_register' building_id=building.id %}">de azi</a></li>
+					<li class="divider"></li>
+					{% for m in alm %}
+					<li><a href="{% url 'download_cash_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
+					{% endfor %}
+				</ul>
+			</li>
+			
+			<li class="dropdown-submenu pull-left">
+				<a href="#">Registru bancă</a>
+				<ul class="dropdown-menu">
+					<li><a href="{% url 'download_bank_register' building_id=building.id %}">de azi</a></li>
+					<li class="divider"></li>
+					{% for m in alm %}
+					<li><a href="{% url 'download_bank_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
+					{% endfor %}					
+				</ul>
+			</li>
+		</ul>
 	</div>
 	
 	<div class="btn-group">
 		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+			<i class="icon-list-alt"></i>
 	    	Listă	
 	    	<span class="caret"></span>
 	  	</a>
