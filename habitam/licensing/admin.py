@@ -31,11 +31,12 @@ class AdministratorInline(admin.StackedInline):
     verbose_name_plural = 'administratori'
 
 class UserAdmin(UserAdmin):
-    inlines = (AdministratorInline, )
+    inlines = (AdministratorInline,)
     
 class LicenseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'valid_until', 'max_apartments', 'months_back',
-                    'payu_merchant_id', 'payu_merchant_key')
+    list_display = ('id', 'users', 'valid_until', 'apartment_count',
+                    'max_apartments', 'months_back', 'payu_merchant_id',
+                    'payu_merchant_key')
     fieldsets = (
                     ('License', {
                         'fields': ('valid_until', 'max_apartments', 'months_back')

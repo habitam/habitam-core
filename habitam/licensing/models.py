@@ -122,6 +122,10 @@ class License(models.Model):
     def usage_ratio(self):
         return self.apartment_count() * 100 / self.max_apartments
     
+    def users(self):
+        admins = self.administrator_set.all()
+        return ','.join([admin.user.email for admin in admins])
+    
     def validate_month(self, building, month):
         crnt = date.today()
         if month > crnt:
