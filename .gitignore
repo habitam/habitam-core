@@ -1,4 +1,5 @@
 *.pyc
+*.mo
 sqlite.db
 /.project
 /.pydevproject
