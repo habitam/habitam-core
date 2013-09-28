@@ -19,206 +19,208 @@ msgstr ""
 
 #: habitam/entities/billable.py:38
 msgid "în mod egal"
-msgstr ""
+msgstr "equally"
 
 #: habitam/entities/billable.py:39
 msgid "după număr persoane"
-msgstr ""
+msgstr "by number of persons"
 
 #: habitam/entities/billable.py:40
 msgid "după suprafață"
-msgstr ""
+msgstr "by area"
 
 #: habitam/entities/billable.py:41
 msgid "după număr camere"
-msgstr ""
+msgstr "by number of rooms"
 
 #: habitam/entities/billable.py:42
 msgid "după consum"
-msgstr ""
+msgstr "by consumption"
 
 #: habitam/entities/billable.py:43
 msgid "cotă indiviză"
-msgstr ""
+msgstr "undivided share"
 
 #: habitam/entities/billable.py:44
 msgid "la fiecare introducere"
-msgstr ""
+msgstr "for each entry"
 
 #: habitam/entities/billable.py:95
 msgid ""
 "Ceva e ciudat cu consumul declarat! E mai mare decat cel de pe document! "
 "Declarat de locatari="
 msgstr ""
+""
+""
 
 #: habitam/entities/billable.py:170
 msgid "Acest serviciu nu se poate șterge"
-msgstr ""
+msgstr "This service cannot be deleted"
 
 #: habitam/entities/billable.py:205 habitam/entities/billable.py:219
 msgid "Tipul de cotă este invalid"
-msgstr ""
+msgstr "Invalid share type"
 
 #: habitam/entities/bootstrap_building.py:101
 msgid "Fond reparații"
-msgstr ""
+msgstr "Maintenance funds"
 
 #: habitam/entities/bootstrap_building.py:108
 msgid "Fond rulment"
-msgstr ""
+msgstr "Working capital"
 
 #: habitam/entities/models.py:88
 msgid "Bloc"
-msgstr ""
+msgstr "Building"
 
 #: habitam/entities/models.py:90 habitam/ui/urls.py:103
 #: habitam/ui/forms/apartment.py:38
 #: habitam/ui/templates/apartment_list.html:27
 #: habitam/ui/templates/apartment_list.html:30
 msgid "Scara"
-msgstr ""
+msgstr "Entrance"
 
 #: habitam/entities/models.py:269 habitam/ui/forms/supplier.py:31
 msgid "Adresa"
-msgstr ""
+msgstr "Address"
 
 #: habitam/entities/models.py:270 habitam/ui/forms/supplier.py:35
 msgid "Nr. înregistrare fiscală"
-msgstr ""
+msgstr "VAT number"
 
 #: habitam/entities/models.py:271 habitam/ui/forms/supplier.py:39
 msgid "Nr. registrul comerțului"
-msgstr ""
+msgstr "Registered number"
 
 #: habitam/entities/models.py:272 habitam/ui/forms/building.py:41
 msgid "Observații"
-msgstr ""
+msgstr "Observations"
 
 #: habitam/financial/models.py:86 habitam/ui/forms/fund.py:34
 msgid "bani lichizi"
-msgstr ""
+msgstr "Cash"
 
 #: habitam/financial/models.py:87 habitam/ui/forms/fund.py:35
 msgid "bancă"
-msgstr ""
+msgstr "Bank"
 
 #: habitam/financial/models.py:88
 msgid "terță parte"
-msgstr ""
+msgstr "third party"
 
 #: habitam/financial/models.py:91
 msgid "apartment"
-msgstr ""
+msgstr "appartment"
 
 #: habitam/financial/models.py:92 habitam/ui/forms/fund.py:38
 msgid "standard"
-msgstr ""
+msgstr "standard"
 
 #: habitam/financial/models.py:93
 msgid "penalties"
-msgstr ""
+msgstr "penalties"
 
 #: habitam/financial/models.py:94 habitam/ui/forms/fund.py:39
 msgid "repairs"
-msgstr ""
+msgstr "maintenance"
 
 #: habitam/financial/models.py:95 habitam/ui/forms/fund.py:40
 msgid "rulment"
-msgstr ""
+msgstr "working capital"
 
 #: habitam/financial/models.py:96 habitam/ui/forms/fund.py:41
 msgid "special"
-msgstr ""
+msgstr "special"
 
 #: habitam/licensing/trial_license.py:37
-msgid "Sunteți deja un administrator!"
-msgstr ""
+msgid "Sunteți deja administrator!"
+msgstr "You are already an administrator!"
 
 #: habitam/payu/payu.py:53
 #, python-format
 msgid "Plată întreținere online %s"
-msgstr ""
+msgstr "Online payment %s"
 
 #: habitam/payu/payu.py:61
 msgid "Comision tranzacție online"
-msgstr ""
+msgstr "Online transaction fee"
 
 #: habitam/payu/payu.py:63
 msgid "Plată comision tranzacție online"
-msgstr ""
+msgstr "Online transaction fee payment"
 
 #: habitam/payu/payu.py:106
 msgid ""
 "Nu mai pot fi efectuate plăți până când nu se proceseaza cele în derulare"
-msgstr ""
+msgstr "New payments cannot be initiated until the pending ones have been processed"
 
 #: habitam/payu/payu.py:112
 msgid "Nu a fost configurată plata pentru această clădire"
-msgstr ""
+msgstr "Payment for this building has not been configured"
 
 #: habitam/payu/setup.py:46
 msgid "plăți online"
-msgstr ""
+msgstr "online payments"
 
 #: habitam/ui/supplier_views.py:57 habitam/ui/templates/base.html:99
 msgid "Furnizori predefiniți"
-msgstr ""
+msgstr "Predefined suppliers"
 
 #: habitam/ui/urls.py:61
 msgid "Clădiri disponibile"
-msgstr ""
+msgstr "Available buildings"
 
 #: habitam/ui/urls.py:78 habitam/ui/templates/apartment_list.html:87
 msgid "Apartament nou"
-msgstr ""
+msgstr "New appartment"
 
 #: habitam/ui/urls.py:92
 #: habitam/ui/templates/upload_initial_operations.html:47
 msgid "Solduri inițiale"
-msgstr ""
+msgstr "Initial balance"
 
 #: habitam/ui/urls.py:98 habitam/ui/templates/apartment_list.html:90
 msgid "Scară nouă"
-msgstr ""
+msgstr "New entrance"
 
 #: habitam/ui/urls.py:126 habitam/ui/templates/fund_list.html:63
 #: habitam/ui/templates/login.html:80
 msgid "Cont nou"
-msgstr ""
+msgstr "New account"
 
 #: habitam/ui/urls.py:170
 msgid "Colectare pentru"
-msgstr ""
+msgstr "Collect for"
 
 #: habitam/ui/urls.py:180
 msgid "Factură pentru"
-msgstr ""
+msgstr "Invoice for"
 
 #: habitam/ui/urls.py:185
 msgid "Apartamentul"
-msgstr ""
+msgstr "Appartment"
 
 #: habitam/ui/urls.py:191
 msgid "Încasare de la"
-msgstr ""
+msgstr "Received from"
 
 #: habitam/ui/urls_suppliers.py:32 habitam/ui/templates/base.html:101
 #: habitam/ui/templates/checks/available_suppliers.html:14
 msgid "Furnizor nou"
-msgstr ""
+msgstr "New supplier"
 
 #: habitam/ui/urls_suppliers.py:39
 msgid "Editare furnizor"
-msgstr ""
+msgstr "Edit supplier"
 
 #: habitam/ui/urls_suppliers.py:44 habitam/ui/urls_suppliers.py:51
 msgid "Furnizori disponibili"
-msgstr ""
+msgstr "Available suppliers"
 
 #: habitam/ui/views.py:115 habitam/ui/templates/base.html:83
 #: habitam/ui/templates/home/administrator.html:81
 msgid "Clădire nouă"
-msgstr ""
+msgstr "New building"
 
 #: habitam/ui/forms/apartment.py:34 habitam/ui/forms/billable_edit_form.py:41
 #: habitam/ui/forms/building.py:40 habitam/ui/forms/building.py:82
@@ -226,405 +228,407 @@ msgstr ""
 #: habitam/ui/templates/fund_list.html:9
 #: habitam/ui/templates/service_list.html:10
 msgid "Nume"
-msgstr ""
+msgstr "Name"
 
 #: habitam/ui/forms/apartment.py:35
 #: habitam/ui/templates/apartment_list.html:10
 msgid "Etaj"
-msgstr ""
+msgstr "Floor"
 
 #: habitam/ui/forms/apartment.py:36
 msgid "Locatari"
-msgstr ""
+msgstr "Tenants"
 
 #: habitam/ui/forms/apartment.py:37
 #: habitam/ui/templates/apartment_list.html:14
 msgid "Suprafață"
-msgstr ""
+msgstr "Area"
 
 #: habitam/ui/forms/apartment.py:39
 msgid "Camere"
-msgstr ""
+msgstr "Rooms"
 
 #: habitam/ui/forms/apartment.py:63 habitam/ui/forms/building.py:197
 msgid "Prea multe apartamente"
-msgstr ""
+msgstr "Too many appartments"
 
 #: habitam/ui/forms/apartment.py:90
 msgid "Cont"
-msgstr ""
+msgstr "Account"
 
 #: habitam/ui/forms/apartment.py:109
-msgid "Plată întreținere apartament "
-msgstr ""
+msgid "Plată întreținere apartament"
+msgstr "Apartment expenses payment"
 
 #: habitam/ui/forms/billable_edit_form.py:42
 #: habitam/ui/templates/service_list.html:12
 msgid "Clienți"
-msgstr ""
+msgstr "Clients"
 
 #: habitam/ui/forms/billable_edit_form.py:43
 msgid "Distribuie costuri"
-msgstr ""
+msgstr "Cost allocation"
 
 #: habitam/ui/forms/billable_edit_form.py:45 habitam/ui/forms/supplier.py:32
 msgid "Arhivat"
-msgstr ""
+msgstr "Archived"
 
 #: habitam/ui/forms/billable_edit_form.py:73
 #: habitam/ui/forms/billable_edit_form.py:85
 msgid "Cota"
-msgstr ""
+msgstr "Share"
 
 #: habitam/ui/forms/billable_edit_form.py:94
 msgid "Suma cotelor trebuie să fie 1"
-msgstr ""
+msgstr "Shares' sum must equal 1"
 
 #: habitam/ui/forms/billable_edit_form.py:124 habitam/ui/forms/fund.py:45
 #: habitam/ui/templates/collecting_fund_list.html:11
 #: habitam/ui/templates/fund_list.html:11
 msgid "Tip bani"
-msgstr ""
+msgstr "Money type"
 
 #: habitam/ui/forms/billable_edit_form.py:125 habitam/ui/forms/fund.py:46
 #: habitam/ui/templates/collecting_fund_list.html:10
 #: habitam/ui/templates/fund_list.html:10
 msgid "Tip"
-msgstr ""
+msgstr "Type"
 
 #: habitam/ui/forms/billable_edit_form.py:133
 #: habitam/ui/templates/collecting_fund_list.html:71
 msgid "Fond nou"
-msgstr ""
+msgstr "New fund"
 
 #: habitam/ui/forms/billable_edit_form.py:141
 msgid "Fond"
-msgstr ""
+msgstr "Fund"
 
 #: habitam/ui/forms/billable_edit_form.py:152
 msgid "Nume contact"
-msgstr ""
+msgstr "Contact name"
 
 #: habitam/ui/forms/billable_edit_form.py:153
 msgid "ID client"
-msgstr ""
+msgstr "Client ID"
 
 #: habitam/ui/forms/billable_edit_form.py:154
 msgid "Data contractului"
-msgstr ""
+msgstr "Contract date"
 
 #: habitam/ui/forms/billable_edit_form.py:156
 msgid "Detalii contract"
-msgstr ""
+msgstr "Contract details"
 
 #: habitam/ui/forms/billable_edit_form.py:157
 msgid "ID contract"
-msgstr ""
+msgstr "Contract ID"
 
 #: habitam/ui/forms/billable_edit_form.py:158
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: habitam/ui/forms/billable_edit_form.py:159
 msgid "Ziua facturării"
-msgstr ""
+msgstr "Invoice date"
 
 #: habitam/ui/forms/billable_edit_form.py:160
 #: habitam/ui/forms/service_new_payment.py:50
 #: habitam/ui/templates/service_list.html:11
 msgid "Furnizor"
-msgstr ""
+msgstr "Supplier"
 
 #: habitam/ui/forms/billable_edit_form.py:161
 msgid "Telefon"
-msgstr ""
+msgstr "Phone number"
 
 #: habitam/ui/forms/billable_edit_form.py:162
 msgid "Telefon suport"
-msgstr ""
+msgstr "Support phone number"
 
 #: habitam/ui/forms/billable_edit_form.py:192
 #: habitam/ui/templates/building.html:29
 #: habitam/ui/templates/service_list.html:64
 msgid "Serviciu nou"
-msgstr ""
+msgstr "New service"
 
 #: habitam/ui/forms/billable_edit_form.py:200
 msgid "Serviciul"
-msgstr ""
+msgstr "Service"
 
 #: habitam/ui/forms/building.py:38
 msgid "Adresă"
-msgstr ""
+msgstr "Address"
 
 #: habitam/ui/forms/building.py:39
 msgid "CIF"
-msgstr ""
+msgstr "VAT"
 
 #: habitam/ui/forms/building.py:43
 msgid "Nr.Reg.Comerțului"
-msgstr ""
+msgstr "Registration number"
 
 #: habitam/ui/forms/building.py:85
 msgid "Clădire"
-msgstr ""
+msgstr "Building"
 
 #: habitam/ui/forms/building.py:126
 msgid "Fără sold inițial pentru"
-msgstr ""
+msgstr "No initial balance for"
 
 #: habitam/ui/forms/building.py:151
 msgid "Introduceți o valoare"
-msgstr ""
+msgstr "Insert value"
 
 #: habitam/ui/forms/building.py:156
 msgid "Nu a fost introdusă nici o valoare"
-msgstr ""
+msgstr "No value has been inserted"
 
 #: habitam/ui/forms/building.py:168
 msgid "Număr apartamente"
-msgstr ""
+msgstr "Number of appartments"
 
 #: habitam/ui/forms/building.py:170
 msgid "Primul apartament"
-msgstr ""
+msgstr "First appartment"
 
 #: habitam/ui/forms/building.py:172
 msgid "Data închidere listă"
-msgstr ""
+msgstr "Month closing"
 
 #: habitam/ui/forms/building.py:175
 msgid "Penalitate (procent zilnic)"
-msgstr ""
+msgstr "Daily penalty percentage"
 
 #: habitam/ui/forms/building.py:178
 msgid "Zile de scadență"
-msgstr ""
+msgstr "Due dates"
 
 #: habitam/ui/forms/building.py:182
 msgid "Număr scări"
-msgstr ""
+msgstr "Entrances"
 
 #: habitam/ui/forms/contact.py:35
 msgid "Subiect"
-msgstr ""
+msgstr "Subject"
 
 #: habitam/ui/forms/contact.py:36
 msgid "Mesaj"
-msgstr ""
+msgstr "Message"
 
 #: habitam/ui/forms/contact.py:37
 msgid "Trimite-mi o copie"
-msgstr ""
+msgstr "Send me a copy"
 
 #: habitam/ui/forms/fund.py:85
 msgid "Destinație"
-msgstr ""
+msgstr "Recipient"
 
 #: habitam/ui/forms/generic.py:48 habitam/ui/forms/service_new_invoice.py:70
 #: habitam/ui/templates/operation_list.html:25
 msgid "Suma"
-msgstr ""
+msgstr "Ammount"
 
 #: habitam/ui/forms/generic.py:49 habitam/ui/templates/operation_list.html:21
 msgid "Data"
-msgstr ""
+msgstr "Date"
 
 #: habitam/ui/forms/generic.py:51 habitam/ui/templates/operation_list.html:24
 msgid "Descriere"
-msgstr ""
+msgstr "Description"
 
 #: habitam/ui/forms/generic.py:70
 msgid "Serie factură"
-msgstr ""
+msgstr "Invoice serial number"
 
 #: habitam/ui/forms/generic.py:71
 msgid "Număr factură"
-msgstr ""
+msgstr "Invoice number"
 
 #: habitam/ui/forms/generic.py:72
 msgid "Referință factură"
-msgstr ""
+msgstr "Invoice reference"
 
 #: habitam/ui/forms/generic.py:73
 msgid "Nr. înreg. fiscală furnizor"
-msgstr ""
+msgstr "Supplier VAT ID"
 
 #: habitam/ui/forms/generic.py:74
 msgid "Nr. reg. com. furnizor"
-msgstr ""
+msgstr "Supplier registration number"
 
 #: habitam/ui/forms/generic.py:91
 msgid "Număr chitanță"
-msgstr ""
+msgstr "Receipt number"
 
 #: habitam/ui/forms/generic.py:92
 msgid "Nr. înreg. fiscală plătitor"
-msgstr ""
+msgstr "Payer VAT ID"
 
 #: habitam/ui/forms/generic.py:93
 msgid "Nr. reg. com. plătitor"
-msgstr ""
+msgstr "Payer registration number"
 
 #: habitam/ui/forms/generic.py:94
 msgid "Plătit de"
-msgstr ""
+msgstr "Paid by"
 
 #: habitam/ui/forms/generic.py:95
 msgid "Adresa plătitor"
-msgstr ""
+msgstr "Payer address"
 
 #: habitam/ui/forms/generic.py:100
 msgid "Te rog să introduci o sumă mai ca zero"
-msgstr ""
+msgstr "Please insert an amount above zero"
 
 #: habitam/ui/forms/service_new_invoice.py:66
 msgid "Distribuie costurile manual"
-msgstr ""
+msgstr "Manual cost allocation"
 
 #: habitam/ui/forms/service_new_invoice.py:73
 msgid "Cantitate"
-msgstr ""
+msgstr "Quantity"
 
 #: habitam/ui/forms/service_new_invoice.py:85
 msgid "Suma "
-msgstr ""
+msgstr "Amount"
 
 #: habitam/ui/forms/service_new_invoice.py:88
 msgid "Consum nedeclarat"
-msgstr ""
+msgstr "Undeclared consumption"
 
 #: habitam/ui/forms/service_new_invoice.py:91
 msgid "Consum"
-msgstr ""
+msgstr "Consumption"
 
 #: habitam/ui/forms/service_new_payment.py:46
 msgid "Plată serviciu"
-msgstr ""
+msgstr "Service payment"
 
 #: habitam/ui/forms/service_new_payment.py:51
 #: habitam/ui/forms/service_new_payment.py:62
 #: habitam/ui/templates/collecting_fund_list.html:51
 #: habitam/ui/templates/fund_list.html:47
 msgid "Serviciu"
-msgstr ""
+msgstr "Service"
 
 #: habitam/ui/forms/supplier.py:33
 msgid "Banca"
-msgstr ""
+msgstr "Bank"
 
 #: habitam/ui/forms/supplier.py:34
 msgid "Județ"
-msgstr ""
+msgstr "County"
 
 #: habitam/ui/forms/supplier.py:36
 msgid "IBAN"
-msgstr ""
+msgstr "IBAN"
 
 #: habitam/ui/forms/supplier.py:37
 msgid "Reprezentant legal"
-msgstr ""
+msgstr "Legal representative"
 
 #: habitam/ui/forms/supplier.py:66
 #, python-format
 msgid "Numele %s mai exista in lista de furnizori"
-msgstr ""
+msgstr "Supplier %s has already been defined"
 
 #: habitam/ui/forms/supplier.py:78
 msgid "Alege unul sau mai mulți furnizori:"
-msgstr ""
+msgstr "Choose one or more suppliers:"
 
 #: habitam/ui/forms/trial_registration.py:30
 msgid "Rescrieți textul"
-msgstr ""
+msgstr "Rewrite the text"
 
 #: habitam/ui/forms/trial_registration.py:36
 #: habitam/ui/templates/user_popup.html:38
 msgid "Parola"
-msgstr ""
+msgstr "Password"
 
 #: habitam/ui/forms/trial_registration.py:37
 msgid "Parola (din nou)"
-msgstr ""
+msgstr "Reinsert password"
 
 #: habitam/ui/templates/404.html:8
 msgid "Credem că nu căutați ceea ce trebuie."
-msgstr ""
+msgstr "You're in the wrong place"
 
 #: habitam/ui/templates/500.html:6
 msgid "razna"
-msgstr ""
+msgstr "nuts"
 
 #: habitam/ui/templates/500.html:8
 msgid "Ne pare rău, dar serverul nostru a luat-o razna."
-msgstr ""
+msgstr "We are sorry, but our server went nuts."
 
 #: habitam/ui/templates/500.html:9
 msgid ""
 "Vă putem ajuta dacă ne contactați la <a href=\"mailto:office@habitam.ro"
 "\">office@habitam.ro</a>."
 msgstr ""
+"For further assistance please contact us via <a href=\"mailto:office@habitam.ro\">"
+"office@habitam.ro</a>."
 
 #: habitam/ui/templates/apartment_list.html:9
 msgid "Apartament"
-msgstr ""
+msgstr "Appartment"
 
 #: habitam/ui/templates/apartment_list.html:11
 msgid "Proprietar"
-msgstr ""
+msgstr "Tenant"
 
 #: habitam/ui/templates/apartment_list.html:12
 msgid "Nr. camere"
-msgstr ""
+msgstr "Number of rooms"
 
 #: habitam/ui/templates/apartment_list.html:13
 msgid "Nr. persoane"
-msgstr ""
+msgstr "Number of persons"
 
 #: habitam/ui/templates/apartment_list.html:15
 #: habitam/ui/templates/collecting_fund_list.html:14
 #: habitam/ui/templates/fund_list.html:12
 #: habitam/ui/templates/service_list.html:13
 msgid "Balanță"
-msgstr ""
+msgstr "Balance"
 
 #: habitam/ui/templates/apartment_list.html:61
 #: habitam/ui/templates/operation_list.html:38
 #: habitam/ui/templates/operation_list.html:55
 #: habitam/ui/templates/operation_row.html:23
 msgid "și"
-msgstr ""
+msgstr "and"
 
 #: habitam/ui/templates/apartment_list.html:61
 #: habitam/ui/templates/operation_list.html:38
 #: habitam/ui/templates/operation_list.html:55
 #: habitam/ui/templates/operation_row.html:23
 msgid "penalități"
-msgstr ""
+msgstr "penalties"
 
 #: habitam/ui/templates/apartment_list.html:68
 msgid "Încasează"
-msgstr ""
+msgstr "Collect"
 
 #: habitam/ui/templates/base.html:80
 msgid "Clădiri"
-msgstr ""
+msgstr "Buildings"
 
 #: habitam/ui/templates/base.html:86
 msgid "Toate clădirile"
-msgstr ""
+msgstr "All buildings"
 
 #: habitam/ui/templates/base.html:96
 msgid "Furnizori"
-msgstr ""
+msgstr "Suppliers"
 
 #: habitam/ui/templates/base.html:103
 msgid "Toți furnizorii"
-msgstr ""
+msgstr "All suppliers"
 
 #: habitam/ui/templates/base.html:114
 msgid "Instrucțiuni"
-msgstr ""
+msgstr "Instructions"
 
 #: habitam/ui/templates/base.html:117 habitam/ui/templates/contact.html:5
 #: habitam/ui/templates/contact_thanks.html:5
@@ -632,31 +636,31 @@ msgstr ""
 #: habitam/ui/templates/home/administrator.html:14
 #: habitam/ui/templates/home/administrator.html:28
 msgid "Contact"
-msgstr ""
+msgstr "Contact"
 
 #: habitam/ui/templates/base.html:130
 msgid "Termeni și condiții"
-msgstr ""
+msgstr "Terms and conditions"
 
 #: habitam/ui/templates/base.html:143 habitam/ui/templates/building.html:83
 msgid "Anulează"
-msgstr ""
+msgstr "Cancel"
 
 #: habitam/ui/templates/base.html:144
 msgid "Salvează"
-msgstr ""
+msgstr "Save"
 
 #: habitam/ui/templates/base.html:150
 msgid "Sunteți sigur că vreți să ștergeți?"
-msgstr ""
+msgstr "Are you sure you want to delete this?"
 
 #: habitam/ui/templates/base.html:153
 msgid "Nu"
-msgstr ""
+msgstr "No"
 
 #: habitam/ui/templates/base.html:154
 msgid "Da"
-msgstr ""
+msgstr "Yes"
 
 #: habitam/ui/templates/building.html:23
 msgid ""
@@ -667,6 +671,11 @@ msgid ""
 "\t\ttrebuie să definiți câteva servicii.\n"
 "\t\t"
 msgstr ""
+"\n"
+"\t\tNo service has been defined for this building (i.e., \"hot water\")."
+"\t\tYou must define at least one service before adding entries to the\n"
+"\t\texpenses list.\n"
+"\t\t"
 
 #: habitam/ui/templates/building.html:35
 #, python-format
@@ -678,42 +687,46 @@ msgid ""
 "\t\tintroduceți soldurile inițiale?\n"
 "\t\t"
 msgstr ""
+"\n"
+"\t\tThere are no operations for this building. Is <em>%(building_name)s</em>\n"
+"\t\ta new building and you need to insert the initial balance??\n"
+"\t\t"
 
 #: habitam/ui/templates/building.html:41
 msgid "Importați din Excel"
-msgstr ""
+msgstr "Import from Excel"
 
 #: habitam/ui/templates/building.html:43
 msgid "Introduceți"
-msgstr ""
+msgstr "Insert"
 
 #: habitam/ui/templates/building.html:49
 msgid "Despre"
-msgstr ""
+msgstr "About"
 
 #: habitam/ui/templates/building.html:50
 msgid "Apartamente"
-msgstr ""
+msgstr "Apartments"
 
 #: habitam/ui/templates/building.html:51
 msgid "Conturi"
-msgstr ""
+msgstr "Accounts"
 
 #: habitam/ui/templates/building.html:52
 msgid "Fonduri"
-msgstr ""
+msgstr "Funds"
 
 #: habitam/ui/templates/building.html:53
 msgid "Servicii"
-msgstr ""
+msgstr "Services"
 
 #: habitam/ui/templates/building.html:63
 msgid "Sunteți sigur?"
-msgstr ""
+msgstr "Are you sure?"
 
 #: habitam/ui/templates/building.html:67
 msgid "Sunteți sigur că vreți să descărcați lista?"
-msgstr ""
+msgstr "Are you sure you want to download the expenses list?"
 
 #: habitam/ui/templates/building.html:71
 #, python-format
@@ -723,98 +736,102 @@ msgid ""
 "\t\t%(penalty_collect)s zile, altfel vom începe aplicarea de penalități.\n"
 "\t\t"
 msgstr ""
+"\n"
+"\t\tIf so, the apartments will have to pay their expenses in\n"
+"\t\t%(penalty_collect)s days, otherwise penalties will occur.\n"
+"\t\t"
 
 #: habitam/ui/templates/building.html:82
 msgid "Sunt sigur"
-msgstr ""
+msgstr "I'm sure"
 
 #: habitam/ui/templates/building_about.html:20
 msgid "Nu a fost introdusă încă nici o informație despre această clădire."
-msgstr ""
+msgstr "There are no details for this building"
 
 #: habitam/ui/templates/building_about.html:26
 msgid "Editare"
-msgstr ""
+msgstr "Edit"
 
 #: habitam/ui/templates/collecting_fund_list.html:12
 msgid "Colectare de la"
-msgstr ""
+msgstr "Collect from"
 
 #: habitam/ui/templates/collecting_fund_list.html:13
 msgid "De colectat"
-msgstr ""
+msgstr "To collect"
 
 #: habitam/ui/templates/collecting_fund_list.html:42
 #: habitam/ui/templates/fund_list.html:39
 msgid "Transferă bani într-un alt cont sau fond"
-msgstr ""
+msgstr "Transfer money to another account or fund"
 
 #: habitam/ui/templates/collecting_fund_list.html:43
 msgid "Definește un nou obiectiv de colectare"
-msgstr ""
+msgstr "Define a new collection target"
 
 #: habitam/ui/templates/collecting_fund_list.html:43
 msgid "Colectare"
-msgstr ""
+msgstr "Collect"
 
 #: habitam/ui/templates/collecting_fund_list.html:47
 #: habitam/ui/templates/fund_list.html:43
 msgid "Plată"
-msgstr ""
+msgstr "Payment"
 
 #: habitam/ui/templates/collecting_fund_list.html:52
 #: habitam/ui/templates/fund_list.html:48
 msgid "Terț"
-msgstr ""
+msgstr "Third party"
 
 #: habitam/ui/templates/collecting_fund_list.html:69
 msgid "Toate fondurile"
-msgstr ""
+msgstr "All funds"
 
 #: habitam/ui/templates/contact.html:7
 msgid ""
 "Vă rugăm luați legătura cu noi prin intermediul formularului de mai jos dacă "
 "aveți întrebări sau sugestii."
-msgstr ""
+msgstr "Please send you suggestions and questions using the form below."
 
 #: habitam/ui/templates/contact.html:13
 #: habitam/ui/templates/password_reset.html:18
 msgid "Trimite"
-msgstr ""
+msgstr "Send"
 
 #: habitam/ui/templates/contact_thanks.html:7
 msgid ""
 "Vă mulțumim. Vom lua legătura cu dumneavostră în cel mai scurt timp posibil."
-msgstr ""
+msgstr "Thanks! We'll get back to you as soon as possible."
 
 #: habitam/ui/templates/edit_ok.html:3
 msgid "Salvez, așteptați vă rog!"
-msgstr ""
+msgstr "Saving, please wait!"
 
 #: habitam/ui/templates/edit_redirect.html:3
 msgid "Salvez..."
-msgstr ""
+msgstr "Saving..."
 
 #: habitam/ui/templates/general_list.html:17
 #, python-format
 msgid "Clădirea %(name)s are %(ap_count)s apartamente"
-msgstr ""
+msgstr "There are %(ap_count)s apartments in %(name)s"
 
 #: habitam/ui/templates/general_list.html:25
 msgid "Modifică"
-msgstr ""
+msgstr "Change"
 
 #: habitam/ui/templates/general_list.html:37
 msgid "Arată tot"
-msgstr ""
+msgstr "Show all"
 
 #: habitam/ui/templates/general_list.html:43
 msgid "Adaugă predefinit"
-msgstr ""
+msgstr "Add default"
 
 #: habitam/ui/templates/general_list.html:50
 msgid "Adaugă"
-msgstr ""
+msgstr "Add"
 
 #: habitam/ui/templates/home.html:8
 msgid ""
@@ -824,6 +841,9 @@ msgid ""
 "vă\n"
 "muțumim pentru orice sugestie de îmbunătățire aveți pentru noi.\n"
 msgstr ""
+"\n"
+"We are working on the last details of our service. We are sorry\n"
+"for any incovenience and we welcome any suggestion you might have for us.\n"
 
 #: habitam/ui/templates/home.html:19
 msgid ""
@@ -832,20 +852,23 @@ msgid ""
 "aplicației\n"
 "nu sunt disponibile la această rezoluție.\n"
 msgstr ""
+"\n"
+"Some features of the application are not available at this resolution.\n"
 
 #: habitam/ui/templates/license_expired.html:5
 msgid "Licența a expirat"
-msgstr ""
+msgstr "Expired license"
 
 #: habitam/ui/templates/license_expired.html:7
 msgid ""
 "Licența dumneavostră a expirat. Vă rugăm contactați-ne pentru o eventuală "
 "prelungire."
-msgstr ""
+msgstr "You license has expired. Please contact us to renew it."
+
 
 #: habitam/ui/templates/login.html:58
 msgid "Nu am putut verifica parola."
-msgstr ""
+msgstr "We could not validate your credentials"
 
 #: habitam/ui/templates/login.html:70
 msgid "Autentificare"
@@ -865,46 +888,46 @@ msgstr "or use"
 
 #: habitam/ui/templates/logout.html:5
 msgid "La revedere"
-msgstr ""
+msgstr "Bye"
 
 #: habitam/ui/templates/logout.html:6
 msgid "Pentru a vă autentifica, apăsați"
-msgstr ""
+msgstr "To login, press"
 
 #: habitam/ui/templates/logout.html:6
 #: habitam/ui/templates/registration/registration.html:7
 msgid "aici"
-msgstr ""
+msgstr "here"
 
 #: habitam/ui/templates/operation_list.html:6
 #, python-format
 msgid "Operațiuni pentru %(name)s în"
-msgstr ""
+msgstr "Operations for %(name)s in"
 
 #: habitam/ui/templates/operation_list.html:9
 msgid "Luna"
-msgstr ""
+msgstr "Month"
 
 #: habitam/ui/templates/operation_list.html:22
 msgid "Ordinator"
-msgstr ""
+msgstr "From"
 
 #: habitam/ui/templates/operation_list.html:23
 msgid "Document"
-msgstr ""
+msgstr "Document"
 
 #: habitam/ui/templates/operation_list.html:33
 msgid "Balanță inițială"
-msgstr ""
+msgstr "Initial balance"
 
 #: habitam/ui/templates/operation_list.html:50
 msgid "Balanță finală"
-msgstr ""
+msgstr "Final balance"
 
 #: habitam/ui/templates/password_change.html:5
 #: habitam/ui/templates/password_change_complete.html:5
 msgid "Schimbați parola"
-msgstr ""
+msgstr "Change password"
 
 #: habitam/ui/templates/password_change.html:8
 msgid ""
@@ -912,15 +935,19 @@ msgid ""
 "Introduceți vechea parolă, apoi noua parolă mai jos de două ori pentru a vă\n"
 "asigura ca nu faceți nici o greșeală.\n"
 msgstr ""
+"\n"
+"Enter your old password, and then the new password twice to make sure there\n"
+"are no mistakes.\n"
+
 
 #: habitam/ui/templates/password_change.html:18
 #: habitam/ui/templates/password_reset_confirm.html:18
 msgid "Salvați"
-msgstr ""
+msgstr "Save"
 
 #: habitam/ui/templates/password_change_complete.html:7
 msgid "Am schimbat parola dumneavostră."
-msgstr ""
+msgstr "We changed your password."
 
 #: habitam/ui/templates/password_reset.html:8
 msgid ""
@@ -928,16 +955,21 @@ msgid ""
 "Completați adresa dumneavostră de email mai jos, iar noi vă vom trimite\n"
 "instrucțiunile pe care trebuie să le urmați pentru a vă reseta parola.\n"
 msgstr ""
+"\n"
+"Enter your email below and we will send you instructions on how you can\n"
+"reset your password.\n"
 
 #: habitam/ui/templates/password_reset_complete.html:8
 msgid ""
 "\n"
 "Am resetat parola dumneavostră. Puteți acum să intrați în sistem.\n"
 msgstr ""
+"\n"
+"Your password was reset. You can now log in.\n"
 
 #: habitam/ui/templates/password_reset_complete.html:13
 msgid "Intrați"
-msgstr ""
+msgstr "Login"
 
 #: habitam/ui/templates/password_reset_confirm.html:8
 msgid ""
@@ -946,20 +978,24 @@ msgid ""
 "faceți\n"
 "nici o greșeală.\n"
 msgstr ""
+"\n"
+"Insert your new password below to make sure there are no mistakes.\n"
 
 #: habitam/ui/templates/password_reset_done.html:8
 msgid ""
 "\n"
 "V-am trimis instructiunile pentru resetarea parolei prin email.\n"
 msgstr ""
+"\n"
+"We send an email with instructions on how you can reset your password.\n"
 
 #: habitam/ui/templates/service_list.html:45
 msgid "Factură"
-msgstr ""
+msgstr "Invoice"
 
 #: habitam/ui/templates/service_list.html:62
 msgid "Toate serviciile"
-msgstr ""
+msgstr "All services"
 
 #: habitam/ui/templates/upload_initial_operations.html:16
 #, python-format
@@ -970,64 +1006,69 @@ msgid ""
 "\t\tpași:\n"
 "\t\t"
 msgstr ""
+"\n"
+"\t\tYou can upload the initial balance of your apartments in\n"
+"\t\t<em>%(name)s</em> from an Excel file in three steps:\n"
+"\t\t"
+
 
 #: habitam/ui/templates/upload_initial_operations.html:23
 msgid "Descărcați un șablon pentru fișierul Excel."
-msgstr ""
+msgstr "Download an Excel template."
 
 #: habitam/ui/templates/upload_initial_operations.html:24
 msgid "Descarcă șablon"
-msgstr ""
+msgstr "Download template"
 
 #: habitam/ui/templates/user_popup.html:14
 msgid "Valabilitate:"
-msgstr ""
+msgstr "Valid until:"
 
 #: habitam/ui/templates/user_popup.html:18
 msgid "Folosiți:"
-msgstr ""
+msgstr "Using:"
 
 #: habitam/ui/templates/user_popup.html:19
 msgid "din"
-msgstr ""
+msgstr "of"
 
 #: habitam/ui/templates/user_popup.html:19
 msgid "apartamente"
-msgstr ""
+msgstr "apartments"
 
 #: habitam/ui/templates/user_popup.html:40
 msgid "Deconectare"
-msgstr ""
+msgstr "Logout"
 
 #: habitam/ui/templates/user_popup.html:42
 msgid "Evaluare"
-msgstr ""
+msgstr "Evaluation"
 
 #: habitam/ui/templates/building/administrator_legend.html:12
 msgid "Rapoarte contabile"
-msgstr ""
+msgstr "Reports"
 
 #: habitam/ui/templates/building/administrator_legend.html:17
 msgid "Solduri"
-msgstr ""
+msgstr "Balance"
 
 #: habitam/ui/templates/building/administrator_legend.html:19
 #: habitam/ui/templates/building/administrator_legend.html:30
 #: habitam/ui/templates/building/administrator_legend.html:41
 msgid "de azi"
-msgstr ""
+msgstr "today"
 
 #: habitam/ui/templates/building/administrator_legend.html:28
 msgid "Registru casă"
-msgstr ""
+msgstr "Cash register"
 
 #: habitam/ui/templates/building/administrator_legend.html:39
 msgid "Registru bancă"
-msgstr ""
+msgstr "Bank register"
 
 #: habitam/ui/templates/building/administrator_legend.html:54
 msgid "Listă"
-msgstr ""
+msgstr "Expense list"
 
 #: habitam/ui/templates/checks/available_suppliers.html:7
 msgid ""
@@ -1037,10 +1078,15 @@ msgid ""
 "câțiva\n"
 "dintre cei predefiniți sau să definiți unul nou.\n"
 msgstr ""
+"\n"
+"There are no suppliers configured for your account. You cannot\n"
+"define the services used by a building without one. You can select\n"
+"one of the default suppliers or start with a new one.\n"
+
 
 #: habitam/ui/templates/checks/available_suppliers.html:13
 msgid "Furnizor predefiniți"
-msgstr ""
+msgstr "Predefined suppliers"
 
 #: habitam/ui/templates/home/administrator.html:9
 msgid ""
@@ -1048,6 +1094,8 @@ msgid ""
 "Plata online pentru întreținere nu a fost configurată pentru clădirile\n"
 "administrate de dumneavostră. Vă rugăm luați legătura cu noi.\n"
 msgstr ""
+"\n"
+"The online payment was not configured for your building. Please contact us.\n"
 
 #: habitam/ui/templates/home/administrator.html:23
 msgid ""
@@ -1055,51 +1103,56 @@ msgid ""
 "Licența dumneavoastră nu mai permite adăguarea de apartamente noi. Vă rugăm\n"
 "luați legătura cu noi.\n"
 msgstr ""
+"\n"
+"You cannot add any more apartments to your license. Please contact us.\n"
+
 
 #: habitam/ui/templates/home/administrator.html:37
 msgid "top clădiri"
-msgstr ""
+msgstr "top buildings"
 
 #: habitam/ui/templates/home/administrator.html:43
 #, python-format
 msgid "Clădirea %(building_name)s are %(ap_count)s apartamente"
-msgstr ""
+msgstr "There are %(ap_count)s apartments in building %(building_name)s"
 
 #: habitam/ui/templates/home/administrator.html:56
 msgid "top furnizori"
-msgstr ""
+msgstr "top suppliers"
 
 #: habitam/ui/templates/home/administrator.html:63
 #, python-format
 msgid "Furnizorul %(supplier_name)s este folosit de %(service_count)s servicii"
-msgstr ""
+msgstr "The supplier %(supplier_name)s provides %(service_count)s services"
 
 #: habitam/ui/templates/home/administrator.html:77
 msgid ""
 "\n"
 "Nu ați definit nici o clădire de administrat.\n"
 msgstr ""
+"\n"
+"You are not managing any building yet.\n"
 
 #: habitam/ui/templates/home/owner.html:12
 msgid "apartamentele mele"
-msgstr ""
+msgstr "my apartments"
 
 #: habitam/ui/templates/home/owner.html:29
 #: habitam/ui/templates/home/owner.html:36
 msgid "de plată"
-msgstr ""
+msgstr "to pay"
 
 #: habitam/ui/templates/home/owner.html:32
 msgid "plată indisponibilă"
-msgstr ""
+msgstr "payment unavailable"
 
 #: habitam/ui/templates/home/owner.html:42
 msgid "Plătește online"
-msgstr ""
+msgstr "Pay online"
 
 #: habitam/ui/templates/home/owner.html:47
 msgid "nimic de plată"
-msgstr ""
+msgstr "nothing to pay"
 
 #: habitam/ui/templates/home/owner.html:62
 msgid ""
@@ -1109,10 +1162,13 @@ msgid ""
 "mai\n"
 "jos.\n"
 msgstr ""
+"\n"
+"Are you a building manager and want to try us out? You can get\n"
+"get a free evaluation license by clicking the button below.\n"
 
 #: habitam/ui/templates/home/owner.html:68
 msgid "Începeți evaluarea"
-msgstr ""
+msgstr "Begin evaluation"
 
 #: habitam/ui/templates/home/owner.html:72
 #, python-format
@@ -1124,6 +1180,10 @@ msgid ""
 "unui\n"
 "apartament adresa dumneavostră de email <strong>%(email)s</strong>.\n"
 msgstr ""
+"\n"
+"You don't have an apartment managed though this application. Please "
+"ask your building manager to link your email address"
+"<strong>%(email)s</strong>\n to an appartment.\n"
 
 #: habitam/ui/templates/registration/activate.html:5
 #: habitam/ui/templates/registration/registration.html:5
@@ -1133,15 +1193,15 @@ msgstr ""
 #: habitam/ui/templates/registration/registration_form.html:18
 #: habitam/ui/templates/registration/registration_success.html:5
 msgid "Înregistrare"
-msgstr ""
+msgstr "Register"
 
 #: habitam/ui/templates/registration/activate.html:7
 msgid "Vă mulțumim pentru înregistrarea pe aplicația noastră."
-msgstr ""
+msgstr "Thank you for registering"
 
 #: habitam/ui/templates/registration/registration.html:7
 msgid "Doriți un cont? Creați unul"
-msgstr ""
+msgstr "Would you like an accout? Create one"
 
 #: habitam/ui/templates/registration/registration_activation_complete.html:8
 #, python-format
@@ -1152,14 +1212,19 @@ msgid ""
 "o\n"
 "puteți folosi pentru a administra %(max_apartments)s apartamente.\n"
 msgstr ""
+"\n"
+"Your account has been activated. After you log in, you can apply for \n"
+"an evalution license valid for %(days_valid)s days "
+"o\n"
+"that you can use for %(max_apartments)s apartments.\n"
 
 #: habitam/ui/templates/registration/registration_activation_complete.html:15
 msgid "Access aplicație"
-msgstr ""
+msgstr "Login here"
 
 #: habitam/ui/templates/registration/registration_disallowed.html:7
 msgid "Ne pare rău, dar nu vă mai putem înregistra încă un cont."
-msgstr ""
+msgstr "We are sorry, but we cannot register another account"
 
 #: habitam/ui/templates/registration/registration_form.html:8
 msgid ""
@@ -1167,6 +1232,9 @@ msgid ""
 "Completează detaliile de mai jos pentru a primi access la aplicație. În\n"
 "câteva momente, vă vom trimite un email cu instrucțiuni suplimentare.\n"
 msgstr ""
+"\n"
+"Fill in the details below. You will receive an email with further instrctions\n"
+"in a few moments.\n"
 
 #: habitam/ui/templates/registration/registration_success.html:8
 msgid ""
@@ -1176,6 +1244,11 @@ msgid ""
 "verificați folderul \"Spam\" sau luați legătura cu\n"
 "<a href=\"mailto:office@habitam.ro\">noi</a>.\n"
 msgstr ""
+"\n"
+"Please wait for an email with further instructions. If you do not get it\n"
+"within the next five minutes, please check the \"Spam\" folder\n"
+"and contact\n"
+"<a href=\"mailto:office@habitam.ro\">us</a>.\n"
 
 #: habitam/ui/templates/registration/trial_request.html:14
 #, python-format
@@ -1186,7 +1259,12 @@ msgid ""
 "\t\tadministrați %(max_apartments)s apartamente.</p>\n"
 "\t\t"
 msgstr ""
+"\n"
+"\t\tIf you would like to evaluate our application, you can sign up for an\n"
+"\t\tevaluation license. This allows you to manage %(max_apartments)s for\n"
+"\t\t%(days_valid)s days.</p>\n"
+"\t\t"
 
 #: habitam/ui/templates/registration/trial_request.html:25
 msgid "Licență evaluare"
-msgstr ""
+msgstr "Evaluation license"
