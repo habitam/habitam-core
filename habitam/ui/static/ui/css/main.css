@@ -60,17 +60,45 @@ input[id^="id_captcha"] {
 	margin-top: -5px;
 }
 
+form.language {
+	width: 100px;
+	margin: auto;
+}
+
+select.language {
+	font-size: 10px;
+	width: 100px;
+	height: 20px;
+}
+
+.language-container {
+	margin-right: 0;
+	margin-left: auto;
+	width: 100px;
+}
+
+.footer .language-container {
+	margin-top: -20px;
+}
+
+.login-box .language-container {
+	margin-bottom: 0;
+	margin-top: auto;
+	padding-top: 20px;
+}
+
 .login-box {
 	position: relative;
 	margin-right: auto;
 	margin-left: auto;
 	width: 240px;
 	border: 1px solid #e5e5e5;
-	padding: 20px;
+	padding: 20px 20px 0 20px;
 	background-color: #fff;
 	-webkit-border-radius: 4px 0 0 4px;
 	-moz-border-radius: 4px 0 0 4px;
-	border-radius: 4px 0 0 4px
+	border-radius: 4px 0 0 4px;
+	background-color: #fff;
 }
 
 .login-box .auth-button {
@@ -88,7 +116,7 @@ input[id^="id_captcha"] {
 
 .login-box p {
 	color: #a5a5a5;
-	text-align: center;	
+	text-align: center;
 }
 
 .login-box .social {

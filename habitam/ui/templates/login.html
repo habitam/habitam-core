@@ -79,7 +79,10 @@
 	<form action="{% url 'registration' %}" style="margin: 0;">
 		<button class="btn auth-button">{% trans 'Cont nou' %}</button>
 	</form>
+	
+	<div class="language-container">
+		{% include 'language.html' %}
+	</div>
 </div>
-
 </body>
 </html>

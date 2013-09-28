@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 11:09+0300\n"
+"POT-Creation-Date: 2013-09-28 12:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -213,6 +213,11 @@ msgstr ""
 
 #: habitam/ui/urls_suppliers.py:44 habitam/ui/urls_suppliers.py:51
 msgid "Furnizori disponibili"
+msgstr ""
+
+#: habitam/ui/views.py:115 habitam/ui/templates/base.html:83
+#: habitam/ui/templates/home/administrator.html:81
+msgid "Clădire nouă"
 msgstr ""
 
 #: habitam/ui/forms/apartment.py:34 habitam/ui/forms/billable_edit_form.py:41
@@ -605,11 +610,6 @@ msgstr ""
 msgid "Clădiri"
 msgstr ""
 
-#: habitam/ui/templates/base.html:83
-#: habitam/ui/templates/home/administrator.html:81
-msgid "Clădire nouă"
-msgstr ""
-
 #: habitam/ui/templates/base.html:86
 msgid "Toate clădirile"
 msgstr ""
@@ -634,23 +634,27 @@ msgstr ""
 msgid "Contact"
 msgstr ""
 
-#: habitam/ui/templates/base.html:138 habitam/ui/templates/building.html:83
+#: habitam/ui/templates/base.html:130
+msgid "Termeni și condiții"
+msgstr ""
+
+#: habitam/ui/templates/base.html:143 habitam/ui/templates/building.html:83
 msgid "Anulează"
 msgstr ""
 
-#: habitam/ui/templates/base.html:139
+#: habitam/ui/templates/base.html:144
 msgid "Salvează"
 msgstr ""
 
-#: habitam/ui/templates/base.html:145
+#: habitam/ui/templates/base.html:150
 msgid "Sunteți sigur că vreți să ștergeți?"
 msgstr ""
 
-#: habitam/ui/templates/base.html:148
+#: habitam/ui/templates/base.html:153
 msgid "Nu"
 msgstr ""
 
-#: habitam/ui/templates/base.html:149
+#: habitam/ui/templates/base.html:154
 msgid "Da"
 msgstr ""
 

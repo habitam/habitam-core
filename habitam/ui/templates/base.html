@@ -124,6 +124,14 @@
 
 <div class="container">
 {% block body %}{% endblock %}
+
+	<hr>
+	<div class="footer">
+	    <span>© 2013 Habitam · <a href="#">{% trans 'Termeni și condiții' %}</a></span>
+		<div class="language-container">
+			{% include 'language.html' %}
+		</div>
+	</div>
 </div>
 
 <div id="editModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editLabel" aria-hidden="true">
