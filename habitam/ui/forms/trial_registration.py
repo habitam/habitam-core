@@ -22,18 +22,19 @@ Created on Aug 3, 2013
 '''
 from captcha.fields import CaptchaField
 from django import forms
+from django.utils.translation import ugettext as _
 from registration.forms import RegistrationFormUniqueEmail
 
 
 class HabitamRegistrationForm(RegistrationFormUniqueEmail):
-    captcha = CaptchaField(label='Rescrieți textul')
+    captcha = CaptchaField(label=_(u'Rescrieți textul'))
     
     def __init__(self, *args, **kwargs):
         super(HabitamRegistrationForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget = forms.HiddenInput()
         self.fields['username'].required = False
-        self.fields['password1'].label = 'Parola'
-        self.fields['password2'].label = 'Parola (din nou)'
+        self.fields['password1'].label = _('Parola')
+        self.fields['password2'].label = _('Parola (din nou)')
         
     def clean(self):
         cleaned_data = super(HabitamRegistrationForm, self).clean()

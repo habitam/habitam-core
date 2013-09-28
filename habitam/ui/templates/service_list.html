@@ -1,15 +1,16 @@
 {% extends 'building.html' %}
 {% load staticfiles %}  
 {% load ui_extras %}
+{% load i18n %} 
 
 {% block building_body %}
 <table class="table table-hover table-condensed">
 	<thead>
 		<tr>
-			<th>Nume</th>
-			<th class="hidden-phone">Furnizor</th>
-			<th class="hidden-phone">Clienți</th>
-			<th>Balanță</th>
+			<th>{% trans 'Nume' %}</th>
+			<th class="hidden-phone">{% trans 'Furnizor' %}</th>
+			<th class="hidden-phone">{% trans 'Clienți' %}</th>
+			<th>{% trans 'Balanță' %}</th>
 			{% if is_administrator %}
 			<th class="hidden-phone">&nbsp;</th>
 			{% endif %}
@@ -41,7 +42,7 @@
 				<td class="hidden-phone">
 					{% if not service.archived %}
 					<div class="btn-group">
-						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_invoice' entity_id=service.id %}')"><i class="icon-plus-sign icon-white"></i> Factură</button>
+						<button class="btn btn-mini btn-inverse" type="button" onclick="editDialog('{% url 'new_invoice' entity_id=service.id %}')"><i class="icon-plus-sign icon-white"></i> {% trans 'Factură' %}</button>
 					</div>
 					{% endif %}
 					<div class="btn-group">
@@ -58,9 +59,9 @@
 </table>
 <div class="container hidden-phone">
 	<div class="pull-right">
-		<a href="{% if show_all %}{% url 'service_list' building.id %}{% else %}{% url 'all_service_list' building.id %}{% endif %}" class="btn{% if show_all %} active{% endif %}">Toate serviciile</a>
+		<a href="{% if show_all %}{% url 'service_list' building.id %}{% else %}{% url 'all_service_list' building.id %}{% endif %}" class="btn{% if show_all %} active{% endif %}">{% trans 'Toate serviciile' %}</a>
 		{% if is_administrator and license.available_suppliers %}
-		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_billable_general' building.id %}')">Serviciu nou</button>
+		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_billable_general' building.id %}')">{% trans 'Serviciu nou' %}</button>
 		{% endif %}
 	</div>
 </div>

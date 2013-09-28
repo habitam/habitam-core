@@ -1,5 +1,7 @@
 {% load staticfiles %}
 {% load ui_extras %}
+{% load i18n %}
+
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -75,13 +77,13 @@
 				        {% with license=user.administrator.license %}
 				        {% if license %}
 			            <li class="dropdown">
-				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clădiri <b class="caret"></b></a>
+				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Clădiri' %} <b class="caret"></b></a>
 				            <ul class="dropdown-menu">
 				            {% if license.apartment_count < license.max_apartments %}
-					            <li class="hidden-phone"><a href="javascript:editDialog('{% url 'new_building' %}');">Clădire nouă</a> 
+					            <li class="hidden-phone"><a href="javascript:editDialog('{% url 'new_building' %}');">{% trans 'Clădire nouă' %}</a> 
 					        {% endif %}
 					        	{% if license.available_buildings %}
-					            <li><a href="{% url 'buildings' %}">Toate clădirile</a></li>
+					            <li><a href="{% url 'buildings' %}">{% trans 'Toate clădirile' %}</a></li>
 					            <li class="divider"></li>
 					            {% top_entities license.top_buildings 5 as top_buildings %}
 					            {% for building in top_buildings %}
@@ -91,14 +93,14 @@
 				            </ul>
 			            </li>
 			            <li class="dropdown">
-				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Furnizori <b class="caret"></b></a>
+				            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Furnizori' %} <b class="caret"></b></a>
 				            <ul class="dropdown-menu">
 				            	{% if license|remaining_std_suppliers %}
-				            	<li class="hidden-phone"><a href="javascript:editDialog('{% url 'select_std_suppliers' %}');">Furnizori predefiniți</a></li>					        	
+				            	<li class="hidden-phone"><a href="javascript:editDialog('{% url 'select_std_suppliers' %}');">{% trans 'Furnizori predefiniți' %}</a></li>					        	
 				            	{% endif %}
-				            	<li class="hidden-phone"><a href="javascript:editDialog('{% url 'new_supplier' %}');">Furnizor nou</a></li>
+				            	<li class="hidden-phone"><a href="javascript:editDialog('{% url 'new_supplier' %}');">{% trans 'Furnizor nou' %}</a></li>
 					        	{% if license.available_suppliers %}				            	
-					        	<li><a href="{% url 'suppliers' %}">Toți furnizorii</a></li>
+					        	<li><a href="{% url 'suppliers' %}">{% trans 'Toți furnizorii' %}</a></li>
 				            	<li class="divider"></li>
 				            	{% top_entities license.top_suppliers 5 as top_suppliers %}
 					            {% for supplier in top_suppliers %}
@@ -109,10 +111,10 @@
 				            	{% endif %}
 				            </ul>
 				        </li>
-				        <li class="hidden-phone"><a href="#">Instrucțiuni</a></li>
+				        <li class="hidden-phone"><a href="#">{% trans 'Instrucțiuni' %}</a></li>
 				        {% endif %}
 					    {% endwith %}				        
-				        <li><a href="{% url 'contact' %}">Contact</a></li>
+				        <li><a href="{% url 'contact' %}">{% trans 'Contact' %}</a></li>
 		            </ul>
 		        </div>
 	        {% endif %}
@@ -133,18 +135,18 @@
 	</div>
 
 	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal" aria-hidden="true">Anulează</button>
-		<button id="submitButton" class="btn btn-success">Salvează</button>
+		<button class="btn" data-dismiss="modal" aria-hidden="true">{% trans 'Anulează' %}</button>
+		<button id="submitButton" class="btn btn-success">{% trans 'Salvează' %}</button>
 	</div>	
 </div>
 
 <div id="deleteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="deleteLabel" aria-hidden="true">
 	<div class="modal-body">
-		<p>Sunteți sigur că vreți să ștergeți?</p>
+		<p>{% trans 'Sunteți sigur că vreți să ștergeți?'%}</p>
 	</div>
 	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal" aria-hidden="true">Nu</button>
-		<button id="deleteButton" class="btn btn-danger">Da</button>
+		<button class="btn" data-dismiss="modal" aria-hidden="true">{% trans 'Nu' %}</button>
+		<button id="deleteButton" class="btn btn-danger">{% trans 'Da' %}</button>
 	</div>	
 </div>
 

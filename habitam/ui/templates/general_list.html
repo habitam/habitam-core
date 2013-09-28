@@ -1,5 +1,6 @@
 {% extends 'left_base.html' %}
 {% load ui_extras %}
+{% load i18n %}  
 
 {% block inner_content %}
 <legend>
@@ -13,7 +14,7 @@
 		<tr>
 			<td {% if entity.archived %}class="archived"{% endif %}>
 			{% if entity_cls|class_name == 'ApartmentGroup'  %}
-			<span class="badge badge-info pull-right" title="Clădirea {{ entity.name }} are {{ entity.apartment_count }} apartamente">{{ entity.apartment_count }}</span>
+			<span class="badge badge-info pull-right" title="{% blocktrans with name=entity.name ap_count=entity.apartment_count %}Clădirea {{ name }} are {{ ap_count }} apartamente{% endblocktrans %}">{{ entity.apartment_count }}</span>
 			{% endif %}			
 			<a href="{% url entity_view_name entity.id %}">{{ entity.name }}
 			</a>
@@ -21,7 +22,7 @@
 			<td>
 				<div class="btn-group">
 					{% if entity.can_delete %}<button class="btn btn-mini btn-danger hidden-phone" data-target="#deleteModal" data-toggle="modal" role="buton" onclick="delete_click('{% url edit_name entity_id=entity.id %}', '{% url view_name %}');"><i class="icon-trash icon-white"></i></button>{% endif %}
-					<button class="btn btn-mini" type="button" onclick="editDialog('{% url edit_name entity_id=entity.id %}')"><i class="icon-edit"></i> Modifică</button>
+					<button class="btn btn-mini" type="button" onclick="editDialog('{% url edit_name entity_id=entity.id %}')"><i class="icon-edit"></i> {% trans 'Modifică' %}</button>
 				</div>
 			</td>
 		</tr>
@@ -33,20 +34,20 @@
 <div class="pull-right">
 	{% capability entity_cls user.administrator.license 'can_archive' as can_archive %}
 	{% if can_archive %}
-	<a href="{% url alt_view_name %}" class="btn{% if show_all %} active{% endif %} hidden-phone">Arată tot</a>
+	<a href="{% url alt_view_name %}" class="btn{% if show_all %} active{% endif %} hidden-phone">{% trans 'Arată tot' %}</a>
 	{% endif %}
 	
 	{% if entity_cls|class_name == 'Supplier' %}
 	{% with license=user.administrator.license %}
 	{% if  license|remaining_std_suppliers %}
-	<button class="btn btn-info hidden-phone" type="button" onclick="javascript:editDialog('{% url 'select_std_suppliers' %}');">Adaugă predefinit</button>
+	<button class="btn btn-info hidden-phone" type="button" onclick="javascript:editDialog('{% url 'select_std_suppliers' %}');">{% trans 'Adaugă predefinit' %}</button>
 	{% endif %}
 	{% endwith %}
 	{% endif %}
 	
 	{% capability entity_cls user.administrator.license 'can_add' as can_add %}
 	{% if can_add %}
-	<button class="btn btn-info hidden-phone" type="button" onclick="javascript:editDialog('{% url new_name %}');">Adaugă</button>
+	<button class="btn btn-info hidden-phone" type="button" onclick="javascript:editDialog('{% url new_name %}');">{% trans 'Adaugă' %}</button>
 	{% endif %}
 </div>
 {% endblock %}

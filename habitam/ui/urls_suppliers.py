@@ -21,6 +21,7 @@ Created on Aug 11, 2013
 @author: Stefan Guna
 '''
 from django.conf.urls import patterns, url
+from django.utils.translation import ugettext as _
 from habitam.entities.models import Supplier
 from habitam.ui import views, supplier_views
 from habitam.ui.forms.supplier import EditSupplierForm
@@ -28,26 +29,26 @@ from habitam.ui.forms.supplier import EditSupplierForm
 urlpatterns = patterns('',
     url(r'^suppliers/new$', views.new_simple_entity,
         {'entity_cls': Supplier, 'form_cls': EditSupplierForm,
-         'target': 'new_supplier', 'title': 'Furnizor nou'}, 'new_supplier'),
+         'target': 'new_supplier', 'title': _(u'Furnizor nou')}, 'new_supplier'),
     
     url(r'^suppliers/select_std_suppliers$',
         supplier_views.select_std_suppliers, name='select_std_suppliers'),
                        
     url(r'^suppliers/(?P<entity_id>\d+)/edit$', views.edit_simple_entity,
         {'entity_cls': Supplier, 'form_cls': EditSupplierForm,
-         'target': 'edit_supplier', 'title': 'Editare furnizor'},
+         'target': 'edit_supplier', 'title': _(u'Editare furnizor')},
         'edit_supplier'),
                        
     url(r'^suppliers$', views.general_list,
         {'license_subtype': 'suppliers', 'entity_cls' : Supplier,
-         'title': 'Furnizori disponibili', 'edit_name': 'edit_supplier',
+         'title': _(u'Furnizori disponibili'), 'edit_name': 'edit_supplier',
          'new_name' :'new_supplier', 'view_name': 'suppliers',
          'entity_view_name': 'supplier_view', 'alt_view_name': 'all_suppliers'},
         name='suppliers'),
 
     url(r'^suppliers/all$', views.general_list,
         {'license_subtype': 'suppliers', 'entity_cls' : Supplier,
-         'title': 'Furnizori disponibili', 'edit_name': 'edit_supplier',
+         'title': _(u'Furnizori disponibili'), 'edit_name': 'edit_supplier',
          'new_name' :'new_supplier', 'view_name': 'all_suppliers',
          'alt_view_name': 'suppliers', 'entity_view_name': 'supplier_view',
          'show_all': True},

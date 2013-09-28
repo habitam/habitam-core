@@ -1,4 +1,5 @@
 {% load ui_extras %}
+{% load i18n %}
 
 <a href="javascript:editDialog('{% url 'edit_building' entity_id=building.id %}')">{{ building.name }}</a>
 
@@ -8,14 +9,14 @@
 	<div class="btn-group">
 		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 			<i class="icon-download-alt"></i>
-			Rapoarte contabile
+			{% trans 'Rapoarte contabile' %}
 			<span class="caret"></span>
 		</a>
 		<ul class="dropdown-menu">
 			<li class="dropdown-submenu pull-left">
-				<a href="#">Solduri</a>
+				<a href="#">{% trans 'Solduri' %}</a>
 				<ul class="dropdown-menu">
-					<li><a href="{% url 'download_balance' building_id=building.id %}">de azi</a></li>
+					<li><a href="{% url 'download_balance' building_id=building.id %}">{% trans 'de azi' %}</a></li>
 					<li class="divider"></li>
 					{% for m in alm %}
 					<li><a href="{% url 'download_balance' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
@@ -24,9 +25,9 @@
 			</li>
 			
 			<li class="dropdown-submenu pull-left">
-				<a href="#">Registru casă</a>
+				<a href="#">{% trans 'Registru casă' %}</a>
 				<ul class="dropdown-menu">
-					<li><a href="{% url 'download_cash_register' building_id=building.id %}">de azi</a></li>
+					<li><a href="{% url 'download_cash_register' building_id=building.id %}">{% trans 'de azi' %}</a></li>
 					<li class="divider"></li>
 					{% for m in alm %}
 					<li><a href="{% url 'download_cash_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
@@ -35,9 +36,9 @@
 			</li>
 			
 			<li class="dropdown-submenu pull-left">
-				<a href="#">Registru bancă</a>
+				<a href="#">{% trans 'Registru bancă' %}</a>
 				<ul class="dropdown-menu">
-					<li><a href="{% url 'download_bank_register' building_id=building.id %}">de azi</a></li>
+					<li><a href="{% url 'download_bank_register' building_id=building.id %}">{% trans 'de azi' %}</a></li>
 					<li class="divider"></li>
 					{% for m in alm %}
 					<li><a href="{% url 'download_bank_register' building_id=building.id month=m|date:"Y-m" %}">{{ m|date:"F Y" }}</a></li>
@@ -50,7 +51,7 @@
 	<div class="btn-group">
 		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 			<i class="icon-list-alt"></i>
-	    	Listă	
+	    	{% trans 'Listă' %}	
 	    	<span class="caret"></span>
 	  	</a>
 		<ul class="dropdown-menu">

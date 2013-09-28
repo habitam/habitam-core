@@ -23,6 +23,7 @@ Created on Apr 21, 2013
 from django import forms
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
+from django.utils.translation import ugettext as _
 from habitam.entities.bootstrap_building import initial_operations
 from habitam.entities.models import ApartmentGroup, BuildingDetails
 from habitam.settings import MAX_CLOSE_DAY, MAX_PAYMENT_DUE_DAYS, \
@@ -34,12 +35,12 @@ import datetime
 
 
 class EditBuildingForm(forms.ModelForm):
-    address = forms.CharField(label='Adresă', required=False)
-    fiscal_id = forms.CharField(label='CIF', max_length=30, required=False)
-    name = forms.CharField(label='Nume')
-    notes = forms.CharField(label='Observații', widget=forms.Textarea,
+    address = forms.CharField(label=_(u'Adresă'), required=False)
+    fiscal_id = forms.CharField(label=_('CIF'), max_length=30, required=False)
+    name = forms.CharField(label=_('Nume'))
+    notes = forms.CharField(label=_(u'Observații'), widget=forms.Textarea,
                             required=False)
-    registration_id = forms.CharField(label='Nr.Reg.Comerțului',
+    registration_id = forms.CharField(label=_(u'Nr.Reg.Comerțului'),
                             max_length=200, required=False)
 
     class Meta:
@@ -78,10 +79,10 @@ class EditBuildingForm(forms.ModelForm):
 
 
 class EditStaircaseForm(forms.ModelForm):
-    name = forms.CharField(label='Nume')
+    name = forms.CharField(label=_('Nume'))
     type = forms.CharField(label='Type',
                         widget=forms.HiddenInput())
-    parent = forms.ModelChoiceField(label='Cladirea',
+    parent = forms.ModelChoiceField(label=_(u'Clădire'),
                         queryset=ApartmentGroup.objects.all(),
                         widget=forms.HiddenInput())
     
@@ -122,7 +123,7 @@ class InitialOperations(forms.Form):
         
         super(InitialOperations, self).__init__(*args, **kwargs)
         for ap in self.building.apartments():
-            f = forms.BooleanField(label='Fără sold inițial pentru ' + str(ap), \
+            f = forms.BooleanField(label=_(u'Fără sold inițial pentru') + ' ' + str(ap), \
                                     required=False)
             self.fields['undeclared_ap_' + str(ap.pk)] = f
             f = forms.DecimalField(label='Suma ' + str(ap), required=False)
@@ -147,12 +148,12 @@ class InitialOperations(forms.Form):
             del(sums[k])
             del(dates[k])
        
-        msg = u'Introduceți o valoare'
+        msg = _(u'Introduceți o valoare')
         for k, v in sums.iteritems():
             if not v:
                 self._errors['sum_ap_' + str(k)] = self.error_class([msg])
         if not sums:
-            raise forms.ValidationError(u'Nu a fost introdusă nici o valoare')
+            raise forms.ValidationError(_(u'Nu a fost introdusă nici o valoare'))
         drop_skip_checkboxes('undeclared_ap_', cleaned_data)
         
         cleaned_data['sums'] = sums
@@ -164,21 +165,21 @@ class InitialOperations(forms.Form):
          
          
 class NewBuildingForm(forms.Form):
-    apartments = forms.IntegerField(label='Număr apartamente', initial=1, min_value=1,
+    apartments = forms.IntegerField(label=_(u'Număr apartamente'), initial=1, min_value=1,
                                     max_value=1000)
-    apartment_offset = forms.IntegerField(label='Primul apartament',
+    apartment_offset = forms.IntegerField(label=_('Primul apartament'),
                                     initial=1, min_value=1, max_value=1000)
-    close_day = forms.IntegerField(label='Data închidere listă',
+    close_day = forms.IntegerField(label=_(u'Data închidere listă'),
                                     initial=1, min_value=1,
                                     max_value=MAX_CLOSE_DAY)
-    daily_penalty = forms.DecimalField(label='Penalitate (procent zilnic)',
+    daily_penalty = forms.DecimalField(label=_('Penalitate (procent zilnic)'),
                                     initial=MAX_PENALTY_PER_DAY, min_value=0,
                                     max_value=MAX_PENALTY_PER_DAY)
-    payment_due_days = forms.IntegerField(label='Zile de scadență',
+    payment_due_days = forms.IntegerField(label=_(u'Zile de scadență'),
                                     initial=MAX_PAYMENT_DUE_DAYS, min_value=1,
                                     max_value=MAX_PAYMENT_DUE_DAYS)
-    name = forms.CharField(label='Nume', max_length=100)
-    staircases = forms.IntegerField(label='Număr scări', initial=1,
+    name = forms.CharField(label=_('Nume'), max_length=100)
+    staircases = forms.IntegerField(label=_(u'Număr scări'), initial=1,
                                     min_value=1, max_value=100)
 
     def __init__(self, user, *args, **kwargs):
@@ -193,7 +194,7 @@ class NewBuildingForm(forms.Form):
             l = self.user.administrator.license
             a = l.max_apartments - l.apartment_count()
             if a < self.cleaned_data['apartments']:
-                raise forms.ValidationError('Prea multe apartamente')
+                raise forms.ValidationError(_('Prea multe apartamente'))
         return self.cleaned_data
 
     def spinners(self):

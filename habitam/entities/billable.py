@@ -24,6 +24,7 @@ from datetime import datetime
 from decimal import Decimal
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import ugettext as _
 from habitam.entities.accessor import apartment_by_pk, apartment_consumption, \
     service_consumption
 from habitam.entities.base import SingleAccountEntity
@@ -34,13 +35,13 @@ logger = logging.getLogger(__name__)
 
 class Billable(SingleAccountEntity):
     QUOTA_TYPES = (
-        ('equally', 'în mod egal'),
-        ('inhabitance', 'după număr persoane'),
-        ('area', 'după suprafață'),
-        ('rooms', 'după număr camere'),
-        ('consumption', 'după consum'),
-        ('manual', 'cotă indiviză'),
-        ('noquota', 'la fiecare introducere'),
+        ('equally', _(u'în mod egal')),
+        ('inhabitance', _(u'după număr persoane')),
+        ('area', _(u'după suprafață')),
+        ('rooms', _(u'după număr camere')),
+        ('consumption', _(u'după consum')),
+        ('manual', _(u'cotă indiviză')),
+        ('noquota', _('la fiecare introducere')),
     )
     
     archived = models.BooleanField(default=False)
@@ -91,7 +92,7 @@ class Billable(SingleAccountEntity):
         db_ap_consumptions = []
         declared = sum(ap_consumptions.values())
         if declared > consumption:
-            raise NameError('Ceva e ciudat cu consumul declarat! E mai mare decat cel de pe document! ;) Declarat de locatari=' + str(declared))
+            raise NameError(_('Ceva e ciudat cu consumul declarat! E mai mare decat cel de pe document! Declarat de locatari=') + str(declared))
         per_unit = amount / consumption
         logger.info('Declared consumption is %f, price per unit is %f' % 
                     (declared, per_unit))
@@ -166,7 +167,7 @@ class Billable(SingleAccountEntity):
 
     def delete(self):
         if not self.can_delete():
-            raise ValueError('Cannot delete this service')
+            raise ValueError(_(u'Acest serviciu nu se poate șterge'))
         Quota.del_quota(self.account)
         self.account.delete()
         super(Billable, self).delete()
@@ -201,7 +202,7 @@ class Billable(SingleAccountEntity):
                      self)
         if self.quota_type != 'manual':
             logger.error('Quota type %s is invalid', self.quota_type)
-            raise NameError('Invalid quota type')
+            raise NameError(_(u'Tipul de cotă este invalid'))
         
         for k, v in ap_quotas.items():
             a = apartment_by_pk(k)
@@ -215,7 +216,7 @@ class Billable(SingleAccountEntity):
                 found = True
         if self.quota_type in ['manual', 'noquota'] or not found:
             logger.error('Quota type %s is invalid', self.quota_type)
-            raise NameError('Invalid quota type')
+            raise NameError(_(u'Tipul de cotă este invalid'))
         
         apartments = self.billed.apartments()
         total = reduce(lambda t, a: t + a.weight(self.quota_type), apartments,

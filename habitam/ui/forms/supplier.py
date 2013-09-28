@@ -23,19 +23,20 @@ Created on Jun 6, 2013
 from django import forms
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
+from django.utils.translation import ugettext as _
 from habitam.entities.bootstrap_suppliers import remaining_suppliers
 from habitam.entities.models import Supplier
 
 class EditSupplierForm(forms.ModelForm):
-    address = forms.CharField(label='Adresa', max_length=200, required=False)
-    archived = forms.BooleanField(label='Arhivat', required=False)
-    bank = forms.CharField(label='Banca', max_length=30, required=False)
-    county = forms.CharField(label=u'Județ', max_length=30, required=False)
-    fiscal_id = forms.CharField(label=u'Nr. înregistrare fiscală', max_length=30, required=False)
-    iban = forms.CharField(label='IBAN', max_length=30, required=False)
-    legal_representative = forms.CharField(label='Reprezentant legal', max_length=200, required=False)
-    name = forms.CharField(label='Nume')   
-    registration_id = forms.CharField(label=u'Nr. registrul comerțului', max_length=30, required=False)
+    address = forms.CharField(label=_('Adresa'), max_length=200, required=False)
+    archived = forms.BooleanField(label=_('Arhivat'), required=False)
+    bank = forms.CharField(label=_('Banca'), max_length=30, required=False)
+    county = forms.CharField(label=_(u'Județ'), max_length=30, required=False)
+    fiscal_id = forms.CharField(label=_(u'Nr. înregistrare fiscală'), max_length=30, required=False)
+    iban = forms.CharField(label=_('IBAN'), max_length=30, required=False)
+    legal_representative = forms.CharField(label=_('Reprezentant legal'), max_length=200, required=False)
+    name = forms.CharField(label=_('Nume'))   
+    registration_id = forms.CharField(label=_(u'Nr. registrul comerțului'), max_length=30, required=False)
 
     class Meta:
         model = Supplier 
@@ -62,7 +63,7 @@ class EditSupplierForm(forms.ModelForm):
             if self.instance.pk == None:
                 for ss in slist.all():
                     if ss.name == n:
-                        raise forms.ValidationError('Numele %s mai exista in lista de furnizori' % (n))
+                        raise forms.ValidationError(_('Numele %s mai exista in lista de furnizori') % (n))
         return self.cleaned_data
     
     def add_form_error(self, error_message):
@@ -74,7 +75,7 @@ class EditSupplierForm(forms.ModelForm):
 
 
 class SelectSuppliersForm(forms.Form):
-    suppliers = forms.MultipleChoiceField(label='Alege unul sau mai mulți furnizori:', widget=forms.CheckboxSelectMultiple)
+    suppliers = forms.MultipleChoiceField(label=_(u'Alege unul sau mai mulți furnizori:'), widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, existing_suppliers, *args, **kwargs):
         super(SelectSuppliersForm, self).__init__(*args, **kwargs)

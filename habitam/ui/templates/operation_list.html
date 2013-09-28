@@ -1,11 +1,12 @@
 {% extends 'building.html' %} 
+{% load i18n %} 
 
 {% block building_body %}
 <h3>
-Operațiuni pentru {{ account.name }} în {{ month|date:"F Y" }}
+{% blocktrans with name=account.name %}Operațiuni pentru {{ name }} în{% endblocktrans %} {{ month|date:"F Y" }}
 <span class="btn-group pull-right" style="display: inline-block;">
 	<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-    	Luna	
+    	{% trans 'Luna' %}	
     	<span class="caret"></span>
   	</a>
   	<ul class="dropdown-menu">
@@ -17,11 +18,11 @@ Operațiuni pentru {{ account.name }} în {{ month|date:"F Y" }}
 </h3>
 <table class="table table-hover table-condensed">
 	<thead>
-		<th>Data</th>
-		<th>Ordinator</th>
-		<th>Document</th>
-		<th>Descriere</th>
-		<th>Suma</th>
+		<th>{% trans 'Data' %}</th>
+		<th>{% trans 'Ordinator' %}</th>
+		<th>{% trans 'Document' %}</th>
+		<th>{% trans 'Descriere' %}</th>
+		<th>{% trans 'Suma' %}</th>
 		{% if is_administrator %}
 		<th></th>
 		{% endif %}
@@ -29,12 +30,12 @@ Operațiuni pentru {{ account.name }} în {{ month|date:"F Y" }}
 	<tbody>
 	<tr>
 		<td><em>{{ month|date:"d-m-Y" }}</em></td>
-		<td><em>Balanță inițială</em></td>
+		<td><em>{% trans 'Balanță inițială' %}</em></td>
 		<td></td>
 		<td class="{% if initial_balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">
 			<em>
 				{{ initial_balance|floatformat:2 }}
-		  		{% if initial_penalties != None %} și {{ initial_penalties|floatformat:2 }} penalități{% endif %}
+		  		{% if initial_penalties != None %} {% trans 'și' %} {{ initial_penalties|floatformat:2 }} {% trans 'penalități' %}{% endif %}
 			</em>
 		</td>
 		{% if is_administrator %}
@@ -46,12 +47,12 @@ Operațiuni pentru {{ account.name }} în {{ month|date:"F Y" }}
 	{% endfor %}
 	<tr>
 		<td><em>{{ month_end|date:"d-m-Y" }}</em></td>
-		<td><em>Balanță finală</em></td>
+		<td><em>{% trans 'Balanță finală' %}</em></td>
 		<td></td>
 		<td class="{% if final_balance < 0 %}negative_balance{% else %}positive_balance{% endif %}">
 			<em>
 		  		{{ final_balance|floatformat:2 }}
-		  		{% if final_penalties != None %} și {{ final_penalties|floatformat:2 }} penalități{% endif %}
+		  		{% if final_penalties != None %} {% trans 'și' %} {{ final_penalties|floatformat:2 }} {% trans 'penalități' %}{% endif %}
 		  	</em>
 		</td>
 		{% if is_administrator %}

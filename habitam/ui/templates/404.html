@@ -1,9 +1,10 @@
 {% extends 'left_base.html' %} 
+{% load i18n %}
 
 {% block inner_content %}
 <div class="hero-unit">
- 	<h1>404 lumânare</h1>
+ 	<h1>404</h1>
  	<p>&nbsp;</p>
- 	<p>Credem că nu căutați ceea ce trebuie.</p>
+ 	<p>{% trans 'Credem că nu căutați ceea ce trebuie.' %}</p>
 </div>
 {% endblock %}

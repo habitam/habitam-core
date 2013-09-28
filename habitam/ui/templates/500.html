@@ -1,10 +1,11 @@
 {% extends 'left_base.html' %} 
+{% load i18n %}
 
 {% block inner_content %}
 <div class="hero-unit">
-	<h1>500 razna :(</h1>
+	<h1>500 {% trans 'razna' %} :(</h1>
 	<p>&nbsp;</p>
-	<p>Ne pare rău, dar serverul nostru a luat-o razna.</p>
-	<p>Vă putem ajuta dacă ne contactați la <a href="mailto:office@habitam.ro">office@habitam.ro</a>.</p>
+	<p>{% trans 'Ne pare rău, dar serverul nostru a luat-o razna.' %}</p>
+	<p>{% trans 'Vă putem ajuta dacă ne contactați la <a href="mailto:office@habitam.ro">office@habitam.ro</a>.' %}</p>
 </div>
 {% endblock %}

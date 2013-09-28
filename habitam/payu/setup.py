@@ -20,6 +20,7 @@ Created on Sep 5, 2013
 
 @author: Stefan Guna
 '''
+from django.utils.translation import ugettext as _
 from habitam.entities.models import Supplier, Service
 
 
@@ -42,7 +43,7 @@ def __create_payu_supplier(l):
     return supplier
     
 def __create_payu_service(l, building, supplier):
-    service = Service.objects.create(name=u'plăți online',
+    service = Service.objects.create(name=_(u'plăți online'),
                         supplier=supplier, one_time=False,
                         billed=building, quota_type='equally')    
     service.save(money_type='3rd party', account_type='special')

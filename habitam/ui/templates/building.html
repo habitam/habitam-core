@@ -1,5 +1,6 @@
 {% extends 'base.html' %} 
 {% load ui_extras %}
+{% load i18n %}
 
 {% block body %}
 {% license_allowed user.administrator.license building as is_administrator %}
@@ -19,33 +20,37 @@
 	{% if license.available_suppliers and not building.services %}
 	<div class="alert hidden-phone">
 		<a class="close" data-dismiss="alert" href="#">&times;</a>
+		{% blocktrans %}
 		Nu există nici un serviciu (de ex., "apă caldă") definit pentru această
 		clădire. Înainte de a putea adăuga intrări la lista de întreținere,
 		trebuie să definiți câteva servicii.
+		{% endblocktrans %}
 		<br>
-		<a class="btn btn-warning btn-small" href="javascript:editDialog('{% url 'new_billable_general' building.id %}')">Serviciu nou</a>
+		<a class="btn btn-warning btn-small" href="javascript:editDialog('{% url 'new_billable_general' building.id %}')">{% trans 'Serviciu nou' %}</a>
 	</div>
 	{% endif %}
 	{% if building.needs_bootstrap %}
 	<div class="alert alert-info hidden-phone">
 		<a class="close" data-dismiss="alert" href="#">&times;</a>
+		{% blocktrans with building_name=building.name %}
 		Nu există nici o operațiune înregistrată pentru apartamentele din
-		această clădire. <em>{{ building.name }}</em> este un bloc nou și doriți să
+		această clădire. <em>{{ building_name }}</em> este un bloc nou și doriți să
 		introduceți soldurile inițiale?
+		{% endblocktrans %}
 		<br>
-		<a class="btn btn-info btn-small" href="javascript:editDialog('{% url 'upload_initial_operations' building.id %}')">Importați din Excel</a>	
+		<a class="btn btn-info btn-small" href="javascript:editDialog('{% url 'upload_initial_operations' building.id %}')">{% trans 'Importați din Excel' %}</a>	
 		{% if building.apartments|length < 10 %}
-		<a class="btn btn-info btn-small" href="javascript:editDialog('{% url 'initial_operations' building.id %}')">Introduceți</a>
+		<a class="btn btn-info btn-small" href="javascript:editDialog('{% url 'initial_operations' building.id %}')">{% trans 'Introduceți' %}</a>
 		{% endif %}
 	</div>
 	{% endif %}
 	{% endif %}
 	<ul class="nav nav-tabs">
-		<li {% if active_tab = 'building_view' %}class="active"{% endif %}><a href="{% url 'building_view' building.id %}">Despre</a></li>
-		<li {% if active_tab = 'apartment_list' %}class="active"{% endif %}><a href="{% url 'apartment_list' building.id %}">Apartamente</a></li>
-		<li {% if active_tab = 'fund_list' %}class="active"{% endif %}><a href="{% url 'fund_list' building.id %}">Conturi</a></li>
-		<li {% if active_tab = 'collecting_fund_list' %}class="active"{% endif %}><a href="{% url 'collecting_fund_list' building.id %}">Fonduri</a></li>
-		<li {% if active_tab = 'service_list' %}class="active"{% endif %}><a href="{% url 'service_list' building.id %}">Servicii</a></li>
+		<li {% if active_tab = 'building_view' %}class="active"{% endif %}><a href="{% url 'building_view' building.id %}">{% trans 'Despre' %}</a></li>
+		<li {% if active_tab = 'apartment_list' %}class="active"{% endif %}><a href="{% url 'apartment_list' building.id %}">{% trans 'Apartamente' %}</a></li>
+		<li {% if active_tab = 'fund_list' %}class="active"{% endif %}><a href="{% url 'fund_list' building.id %}">{% trans 'Conturi' %}</a></li>
+		<li {% if active_tab = 'collecting_fund_list' %}class="active"{% endif %}><a href="{% url 'collecting_fund_list' building.id %}">{% trans 'Fonduri' %}</a></li>
+		<li {% if active_tab = 'service_list' %}class="active"{% endif %}><a href="{% url 'service_list' building.id %}">{% trans 'Servicii' %}</a></li>
 	</ul>
 	<div class="tab-content tab-content-building">
 		{% block building_body %}
@@ -55,24 +60,27 @@
 
 <div id="listDownloadDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="listConfirmLabel" aria-hidden="true"> 
 	<div class="modal-header">
-		<h3><span id="listConfirmTitle">Sunteți sigur?</span></h3>
+		<h3><span id="listConfirmTitle">{% trans 'Sunteți sigur?' %}</span></h3>
 	</div>
   
 	<div class="modal-body">
-		<p>Sunteți sigur că vreți să descărcați lista?</p>
+		<p>{% trans 'Sunteți sigur că vreți să descărcați lista?' %}</p>
 		
 		{% if building.payment_due_days != None and building.payment_due_days > 0 %}
-		<p>Dacă da, apartamentele vor avea obligația să plătească întreținerea în 
-		{{building|penalty_collect}} zile, altfel vom începe 
-		aplicarea de penalități.</p>
+		<p>
+		{% blocktrans with penalty_collect=building|penalty_collect %}
+		Dacă da, apartamentele vor avea obligația să plătească întreținerea în 
+		{{penalty_collect}} zile, altfel vom începe aplicarea de penalități.
+		{% endblocktrans %}
+		</p>
 		{% endif %}
 		
 		<span class="services-without-invoice"></span>
 	</div>
 
 	<div class="modal-footer">
-		<button id="downloadListButton" class="btn btn-success">Sunt sigur</button>
-		<button class="btn" data-dismiss="modal" aria-hidden="true">Anulează</button>
+		<button id="downloadListButton" class="btn btn-success">{% trans 'Sunt sigur' %}</button>
+		<button class="btn" data-dismiss="modal" aria-hidden="true">{% trans 'Anulează' %}</button>
 	</div>	
 </div>
 

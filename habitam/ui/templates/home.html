@@ -1,20 +1,25 @@
 {% extends 'left_base.html' %} 
 {% load ui_extras %}
+{% load i18n %}  
 
 {% block inner_content %}
 <div class="alert alert-info habitam-alert" id="beta-warning">
 <a class="close habitam-alert-close" href="#">&times;</a>
+{% blocktrans %}
 Punem la punct ultimele detalii ale serviciului nostru. Ne cerem
 scuze pentru eventualele disfuncționalități care pot apărea între timp și vă
 muțumim pentru orice sugestie de îmbunătățire aveți pentru noi.
-<a class="btn btn-mini btn-info" href="{% url 'contact' %}">Contact</a>
+{% endblocktrans %}
+<a class="btn btn-mini btn-info" href="{% url 'contact' %}">{% trans 'Contact' %}</a>
 </div>
 
 <div class="visible-phone">
 <div class="alert alert-info habitam-alert" id="resolution-warning">
 <a class="close habitam-alert-close" href="#">&times;</a>
+{% blocktrans %}
 Pentru a asigura o experiență optimă, anumite funcționalități ale aplicației
-nu sunt disponibile la această rezoluție. 
+nu sunt disponibile la această rezoluție.
+{% endblocktrans %} 
 </div>
 </div>
 

@@ -1,16 +1,21 @@
 {% extends 'left_base.html' %} 
+{% load i18n %}
 
 {% block inner_content %}
-<legend>Înregistrare</legend>
+<legend>{% trans 'Înregistrare' %}</legend>
 
-<p>Completează detaliile de mai jos pentru a primi access la aplicație. În
-câteva momente, vă vom trimite un email cu instrucțiuni suplimentare.</p>
+<p>
+{% blocktrans %}
+Completează detaliile de mai jos pentru a primi access la aplicație. În
+câteva momente, vă vom trimite un email cu instrucțiuni suplimentare.
+{% endblocktrans %}
+</p>
 
 <form class="form-horizontal" action="" method="post">
 {% include 'form.html' %}
 	<div class="control-group">
     	<div class="controls">
-			<button class="btn btn-primary" type="submit">Înregistrare</button>
+			<button class="btn btn-primary" type="submit">{% trans 'Înregistrare' %}</button>
 		</div>
 	</div>
 </form>

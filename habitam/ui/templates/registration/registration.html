@@ -1,8 +1,9 @@
 {% extends 'left_base.html' %} 
+{% load i18n %}
 
 {% block inner_content %}
-<legend>Înregistrare</legend>
+<legend>{% trans 'Înregistrare' %}</legend>
 
-<p>Doriți un cont? Creați unul <a href="{% url 'user_register' %}">aici</a>.</p> 
+<p>{% trans 'Doriți un cont? Creați unul' %} <a href="{% url 'user_register' %}">{% trans 'aici' %}</a>.</p> 
 
 {% endblock %}

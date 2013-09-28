@@ -1,16 +1,17 @@
 {% extends 'building.html' %} 
 {% load ui_extras %}
+{% load i18n %}
 
 {% block building_body %}
 <table class="table table-hover table-condensed">
 	<thead>
 		<tr>
-			<th>Nume</th>
-			<th class="hidden-phone">Tip</th>
-			<th class="hidden-phone">Tip bani</th>			
-			<th class="hidden-phone">Colectare de la</th>
-			<th>De colectat</th>
-			<th>Balanță</th>
+			<th>{% trans 'Nume</th>
+			<th class="hidden-phone">{% trans 'Tip' %}</th>
+			<th class="hidden-phone">{% trans 'Tip bani' %}</th>			
+			<th class="hidden-phone">{% trans 'Colectare de la' %}</th>
+			<th>{% trans 'De colectat' %}</th>
+			<th>{% trans 'Balanță' %}</th>
 			{% if is_administrator %}
 			<th class="hidden-phone">&nbsp;</th>
 			{% endif %}
@@ -38,17 +39,17 @@
 				<td class="hidden-phone">
 					{% if not service.archived %}
 					<div class="btn-group">
-						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'new_fund_transfer' account_id=service.account.id %}')" title="Transferă bani într-un alt cont sau fond"><i class="icon-retweet"></i></button>
-						<button class="btn btn-mini btn-info" type="button" onclick="editDialog('{% url 'new_collection' entity_id=service.id %}')" title="Definește un nou obiectiv de colectare">Colectare</button>
+						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'new_fund_transfer' account_id=service.account.id %}')" title="{% trans 'Transferă bani într-un alt cont sau fond' %}"><i class="icon-retweet"></i></button>
+						<button class="btn btn-mini btn-info" type="button" onclick="editDialog('{% url 'new_collection' entity_id=service.id %}')" title="{% trans 'Definește un nou obiectiv de colectare' %}">{% trans 'Colectare' %}</button>
 					</div>
 					<div class="btn-group">
 						<a class="btn btn-mini btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">
-						Plată
+						{% trans 'Plată' %}
 						<span class="caret"></span>
 						</a>
 						<ul class="dropdown-menu">
-							<li><a href="javascript:editDialog('{% url 'new_service_payment' account_id=service.account.id %}')">Serviciu</a></li>
-							<li><a href="javascript:editDialog('{% url 'new_other_service_payment' account_id=service.account.id %}')">Terț</a></li>
+							<li><a href="javascript:editDialog('{% url 'new_service_payment' account_id=service.account.id %}')">{% trans 'Serviciu' %}</a></li>
+							<li><a href="javascript:editDialog('{% url 'new_other_service_payment' account_id=service.account.id %}')">{% trans 'Terț' %}</a></li>
 						</ul>
 					</div>
 					{% endif %}
@@ -65,9 +66,9 @@
 </table>
 <div class="container hidden-phone">
 	<div class="pull-right">
-		<a href="{% if show_all %}{% url 'collecting_fund_list' building.id %}{% else %}{% url 'all_collecting_fund_list' building.id %}{% endif %}" class="btn{% if show_all %} active{% endif %}">Toate fondurile</a>
+		<a href="{% if show_all %}{% url 'collecting_fund_list' building.id %}{% else %}{% url 'all_collecting_fund_list' building.id %}{% endif %}" class="btn{% if show_all %} active{% endif %}">{% trans 'Toate fondurile' %}</a>
 		{% if is_administrator %}
-		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_billable_collecting' building.id %}')">Fond nou</button>
+		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_billable_collecting' building.id %}')">{% trans 'Fond nou' %}</button>
 		{% endif %}
 	</div>
 </div>	

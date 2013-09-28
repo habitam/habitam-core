@@ -23,6 +23,7 @@ Created on July 6, 2013
 from decimal import Decimal
 from django import forms
 from django.forms.fields import DecimalField, BooleanField
+from django.utils.translation import ugettext as _
 from habitam.ui.forms.generic import NewDocPaymentForm, NewInvoice
 from habitam.ui.forms.helper.all_apartments import skip_apartments, \
     aggregate_apartments, drop_skip_checkboxes
@@ -62,14 +63,14 @@ class NewBuildingCharge(NewDocPaymentForm):
         
         if self.service.quota_type != 'noquota':
             self.fields['manual_costs'] = BooleanField(
-                                    label='Distribuie costurile manual',
+                                    label=_('Distribuie costurile manual'),
                                     required=False)
         
         if self.__manual_costs():
-            self.fields['amount'] = forms.DecimalField(label='Suma',
+            self.fields['amount'] = forms.DecimalField(label=_('Suma'),
                                                     widget=forms.HiddenInput())
         if self.service.quota_type == 'consumption':
-            self.fields['consumption'] = forms.DecimalField(label='Cantitate')
+            self.fields['consumption'] = forms.DecimalField(label=_('Cantitate'))
                                
         if self.__manual_costs() or self.service.quota_type == 'consumption':
             self.consumption_ids = []
@@ -81,13 +82,13 @@ class NewBuildingCharge(NewDocPaymentForm):
         for ap in aps:
             if self.__manual_costs():
                 self.fields['sum_ap_' + str(ap.pk)] = \
-                    DecimalField(label='Suma ' + str(ap))
+                    DecimalField(label=_('Suma ') + str(ap))
             if self.service.quota_type == 'consumption':
                 self.fields['consumption_undeclared_ap_' + str(ap.pk)] = \
-                    BooleanField(label='Consum nedeclarat',
+                    BooleanField(label=_('Consum nedeclarat'),
                                  required=False)
                 self.fields['consumption_ap_' + str(ap.pk)] = \
-                    DecimalField(label='Consum ' + str(ap),
+                    DecimalField(label=_('Consum') + ' ' + str(ap),
                                  required=_required(args, ap))
                 
                 self.consumption_ids.append(ap.pk)

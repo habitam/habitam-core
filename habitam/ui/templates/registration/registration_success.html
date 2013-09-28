@@ -1,11 +1,16 @@
 {% extends 'left_base.html' %} 
+{% load i18n %}
 
 {% block inner_content %}
-<legend>Înregistrare</legend>
+<legend>{% trans 'Înregistrare' %}</legend>
 
-<p>Vă rugăm așteptați un email de la noi și apoi urmați instrucțiuniile din
+<p>
+{% blocktrans %}
+Vă rugăm așteptați un email de la noi și apoi urmați instrucțiuniile din
 acel email. În cazul în care acesta nu ajunge în 5 minute, vă rugăm
 verificați folderul "Spam" sau luați legătura cu
-<a href="mailto:office@habitam.ro">noi</a>.</p> 
+<a href="mailto:office@habitam.ro">noi</a>.
+{% endblocktrans %}
+</p> 
 
 {% endblock %}

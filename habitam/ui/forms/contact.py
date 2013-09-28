@@ -23,6 +23,7 @@ from django import forms
 from django.core.mail.message import EmailMessage
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
+from django.utils.translation import ugettext as _
 from habitam.settings import CONTACT_EMAIL, SENDER
 import logging
 
@@ -31,9 +32,9 @@ logger = logging.getLogger(__name__)
 
 
 class ContactForm(forms.Form):
-    subject = forms.CharField(label='Subiect', max_length=100)
-    message = forms.CharField(label='Mesaj', widget=forms.Textarea)
-    cc_myself = forms.BooleanField(label='Trimite-mi o copie', required=False)
+    subject = forms.CharField(label=_('Subiect'), max_length=100)
+    message = forms.CharField(label=_('Mesaj'), widget=forms.Textarea)
+    cc_myself = forms.BooleanField(label=_('Trimite-mi o copie'), required=False)
     
     def __init__(self, user=None, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)

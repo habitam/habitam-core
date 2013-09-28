@@ -22,6 +22,7 @@ Created on Aug 3, 2013
 '''
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from django.utils.translation import ugettext as _
 from habitam.licensing.models import License, Administrator
 from habitam.settings import TRIAL_LICENSE
 import logging
@@ -33,7 +34,7 @@ logger = logging.getLogger(__name__)
 def register_trial(user):
     try:
         if user.administrator:
-            raise ValueError('Sunteți deja un administrator!')
+            raise ValueError(_(u'Sunteți deja un administrator!'))
     except Administrator.DoesNotExist:
         pass
     trial = {}

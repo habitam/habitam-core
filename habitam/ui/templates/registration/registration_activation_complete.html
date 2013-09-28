@@ -1,12 +1,17 @@
 {% extends 'left_base.html' %} 
+{% load i18n %}
 
 {% block inner_content %}
-<legend>Înregistrare</legend>
+<legend>{% trans 'Înregistrare' %}</legend>
 
-<p>Contul dumneavostră a fost activat. După ce intrați în aplicație, puteți 
+<p>
+{% blocktrans with days_valid=days_valid max_apartments=max_apartments %}
+Contul dumneavostră a fost activat. După ce intrați în aplicație, puteți 
 cere o licență de evaluare valabilă timp de {{ days_valid }} zile și pe care o
-puteți folosi pentru a administra {{ max_apartments }} apartamente.</p>
+puteți folosi pentru a administra {{ max_apartments }} apartamente.
+{% endblocktrans %}
+</p>
 
-<a class="btn" href="{% url 'login' %}">Access aplicație</a>
+<a class="btn" href="{% url 'login' %}">{% trans 'Access aplicație' %}</a>
 
 {% endblock %}

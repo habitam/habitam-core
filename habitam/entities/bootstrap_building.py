@@ -21,6 +21,7 @@ Created on Aug 12, 2013
 @author: Stefan Guna
 '''
 from datetime import date, datetime
+from django.utils.translation import ugettext as _
 from habitam.entities.models import ApartmentGroup, Person, Apartment, \
     AccountLink, CollectingFund
 from habitam.financial.models import Account
@@ -97,14 +98,14 @@ def bootstrap_building(user_license, name, staircases, apartments,
         building.save()
         
     f = CollectingFund.objects.create(billed=building, quota_type='equally',
-                        name='Fond reparații', money_type='cash',
+                        name=_(u'Fond reparații'), money_type='cash',
                         account_type='repairs')
     f.set_quota()
     f.account.type = 'repairs'
     f.account.save()
     
     f = CollectingFund.objects.create(billed=building, quota_type='noquota',
-                        name='Fond rulment', money_type='cash',
+                        name=_('Fond rulment'), money_type='cash',
                         account_type='rulment')
     f.account.type = 'rulment'
     f.account.save()

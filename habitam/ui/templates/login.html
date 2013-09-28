@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load ui_extras %}
+{% load i18n %}
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -54,7 +55,7 @@
 		<img class="logo" src="{% static 'ui/img/habitam-logo-header.png' %}">
 		{% if form.errors %}
 		<div class="alert alert-error">
-			Nu am putut verifica parola.
+			{% trans 'Nu am putut verifica parola.' %}
 		</div>
 		{% endif %}
 		
@@ -66,17 +67,17 @@
 			<input type="password" placeholder="Parola" name="{{ form.password.html_name }}">
 			<span class="add-on"><i class="icon-lock"></i></span>
 		</div>
-		<button class="btn btn-success auth-button" type="submit" style="margin-bottom: 10px;">Autentificare</button>
-		<a href="{% url 'password_reset' %}">Ați uitat parola?</a>
+		<button class="btn btn-success auth-button" type="submit" style="margin-bottom: 10px;">{% trans 'Autentificare' %}</button>
+		<a href="{% url 'password_reset' %}">{% trans 'Ați uitat parola?' %}</a>
 		<input type="hidden" name="next" value="{{ next }}" />
 		<hr/>
-		<p>sau folosiți contul dumneavostră</p>
+		<p>{% trans 'sau folosiți contul dumneavostră' %}</p>
 		<a class="btn btn-google-plus social" href="{% url 'socialauth_begin' 'google-oauth2' %}">Google</a>
 		<a class="btn btn-facebook social" href="{% url 'socialauth_begin' 'facebook' %}" style="float: right;">Facebook</i></a> 
 		<hr/>
 	</form>
 	<form action="{% url 'registration' %}" style="margin: 0;">
-		<button class="btn auth-button">Cont nou</button>
+		<button class="btn auth-button">{% trans 'Cont nou' %}</button>
 	</form>
 </div>
 

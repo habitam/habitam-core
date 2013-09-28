@@ -1,15 +1,16 @@
 {% extends 'left_base.html' %} 
+{% load i18n %}
 
 {% block inner_content %}
-<legend>Contact</legend>
+<legend>{% trans 'Contact' %}</legend>
 
-<p>Vă rugăm luați legătura cu noi prin intermediul formularului de mai jos dacă aveți întrebări sau sugestii.</p>
+<p>{% trans 'Vă rugăm luați legătura cu noi prin intermediul formularului de mai jos dacă aveți întrebări sau sugestii.' %}</p>
 
 <form class="form-horizontal" action="" method="post">
 {% include 'form.html' %}
 	<div class="control-group">
     	<div class="controls">
-			<button class="btn btn-primary" type="submit"><i class="icon-envelope icon-white"></i> Trimite</button>
+			<button class="btn btn-primary" type="submit"><i class="icon-envelope icon-white"></i> {% trans 'Trimite' %}</button>
 		</div>
 	</div>
 </form>

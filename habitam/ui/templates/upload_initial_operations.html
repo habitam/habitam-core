@@ -1,4 +1,6 @@
 {% load ui_extras %} 
+{% load i18n %} 
+
 <div id="editFormContainer">
 	<form id="editForm" class="form-horizontal" method="post"
 		action="{% url 'upload_initial_operations' building.id %}">
@@ -10,17 +12,20 @@
 		   	</div>
 		{% endif %}
 		
-		<p>Puteți să încărcați soldurile inițiale pentru apartamentele din
-		clădirea <em>{{ building.name }}</em> dintr-un fișier Excel. Urmați
-		acești trei pași:</p>
+		<p>
+		{% blocktrans with name=building.name%}
+		Puteți să încărcați soldurile inițiale pentru apartamentele din
+		clădirea <em>{{ name }}</em> dintr-un fișier Excel. Urmați acești trei
+		pași:
+		{% endblocktrans %}</p>
 		
 		<ol>
-			<li>Descărcați un șablon pentru fișierul Excel.<br>
-			<a class="btn btn-primary btn-mini" href="{% url 'initial_operations_template' building.id %}">Descarcă șablon</a>
-			<li>Completați soldul și data la care este valabil în celulele
-			colorate galben din fișierul descărcat.
-			<li>Salvați fișierul și apăsați butonul de mai jos pentru a îl urca
-			înapoi pe Habitam.
+			<li>{% trans 'Descărcați un șablon pentru fișierul Excel.' %}<br>
+			<a class="btn btn-primary btn-mini" href="{% url 'initial_operations_template' building.id %}">{% trans 'Descarcă șablon' %}</a>
+			<li>{% trans 'Completați soldul și data la care este valabil în celulele
+			colorate galben din fișierul descărcat.' %}
+			<li>{% trans 'Salvați fișierul și apăsați butonul de mai jos pentru a îl urca
+			înapoi pe Habitam.' %}
 		</ol>
 		{% csrf_token %}
 		{% for hidden in form.hidden_fields %}
@@ -39,7 +44,7 @@
 
 <script>
 $(document).ready(function() {
-	$("#editTitle").text("Solduri inițiale");
+	$("#editTitle").text("{% trans 'Solduri inițiale' %}");
 	
 	$('#editForm').ajaxForm({
 		target : '#editFormContainer',

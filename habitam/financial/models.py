@@ -25,6 +25,7 @@ from django.db import models
 from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
 from django.utils import timezone
+from django.utils.translation import ugettext as _
 from habitam.settings import EPS
 from random import choice
 import logging
@@ -82,17 +83,17 @@ class Operation(models.Model):
 
 class Account(models.Model):
     MONEY_TYPES = (
-        ('cash', 'bani lichizi'),
-        ('bank', 'bancă'),
-        ('3rd party', 'terță parte')
+        ('cash', _(u'bani lichizi')),
+        ('bank', _(u'bancă')),
+        ('3rd party', _(u'terță parte'))
     )
     TYPES = (
-        ('apart', 'apartment'),
-        ('std', 'standard'),
-        ('penalties', 'penalties'),
-        ('repairs', 'repairs'),
-        ('rulment', 'rulment'),
-        ('special', 'special'),
+        ('apart', _(u'apartment')),
+        ('std', _(u'standard')),
+        ('penalties', _(u'penalties')),
+        ('repairs', _(u'repairs')),
+        ('rulment', _(u'rulment')),
+        ('special', _(u'special')),
     )
     money_type = models.CharField(default='cash', max_length=10,
                                   choices=MONEY_TYPES)

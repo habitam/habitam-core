@@ -1,4 +1,6 @@
 {% load ui_extras %} 
+{% load i18n %}
+
 <div id="editFormContainer">
 	<form id="editForm" class="form-horizontal" method="post"
 		action="{% url 'trial_request' %}">
@@ -8,16 +10,19 @@
 		   	</div>
 		{% endif %}
 		
-		<p>Dacă doriți să încercați aplicația noastră, puteți cere o licență de
+		<p>
+		{% blocktrans with days_valid=days_valid max_apartments=max_apartment %}
+		Dacă doriți să încercați aplicația noastră, puteți cere o licență de
 		evaluare. Aceasta vă va permite ca timp de {{ days_valid }} zile să
 		administrați {{ max_apartments }} apartamente.</p>
+		{% endblocktrans %}
 		{% csrf_token %}
 	</form>
 </div>
 
 <script>
 $(document).ready(function() {
-	$("#editTitle").text("Licență evaluare");
+	$("#editTitle").text("{% trans 'Licență evaluare' %}");
 	
 	$('#editForm').ajaxForm({
 		target : '#editFormContainer',

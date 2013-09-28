@@ -1,4 +1,5 @@
 {% load gravatar %}
+{% load i18n %} 
 
 {% with license=user.administrator.license %}
 <div class="media" style="width: 380px;">
@@ -10,12 +11,12 @@
 		<table width="300px">
 			<tbody>
 				<tr>
-					<th>Valabilitate:</th>
+					<th>{% trans 'Valabilitate:' %}</th>
 					<td>{{ license.valid_until }}</td>
 				</tr>
 				<tr>
-					<th>Folosiți:</th>
-					<td>{{ license.apartment_count }} din {{ license.max_apartments }} apartamente</td>
+					<th>{% trans 'Folosiți:' %}</th>
+					<td>{{ license.apartment_count }} {% trans 'din' %} {{ license.max_apartments }} {% trans 'apartamente' %}</td>
 				</tr>
 				<tr>
 					<td colspan="2">
@@ -34,11 +35,11 @@
 </div>
 
 {% if user.has_usable_password %}
-<a class="btn" href="{% url 'password_change' %}"><i class="icon-lock"></i> Parola</a>
+<a class="btn" href="{% url 'password_change' %}"><i class="icon-lock"></i> {% trans 'Parola' %}</a>
 {% endif %}
-<a class="btn" href="{% url 'logout' %}"><i class="icon-off"></i> Deconectare</a>
+<a class="btn" href="{% url 'logout' %}"><i class="icon-off"></i> {% trans 'Deconectare' %}</a>
 {% if not license %}
-<a class="btn btn-info" href="javascript:editDialog('{% url 'trial_request' %}')"><i class="icon-glass icon-white"></i> Evaluare</a>
+<a class="btn btn-info" href="javascript:editDialog('{% url 'trial_request' %}')"><i class="icon-glass icon-white"></i> {% trans 'Evaluare' %}</a>
 {% endif %}
 {% endwith %}
 		

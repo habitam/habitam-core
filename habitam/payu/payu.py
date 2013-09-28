@@ -25,6 +25,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.sites.models import Site
 from django.db.models.query_utils import Q
 from django.utils import timezone
+from django.utils.translation import ugettext as _
 from habitam.licensing.models import License
 from habitam.payu.models import Order, ApartmentAmount, OrderComplete
 from habitam.settings import PAYU_TIMEOUT, PAYU_DEBUG, PAYU_TRANSACTION_CHARGE
@@ -49,7 +50,7 @@ def complete_order(order_id):
     account = order.building.payments_account()
     service = order.building.payments_service()
     for aa in ApartmentAmount.objects.filter(order=order):
-        description = u'Plată întreținere online %s' % aa.apartment.name
+        description = _(u'Plată întreținere online %s') % aa.apartment.name
         doc = aa.apartment.new_inbound_operation(description=description,
                     amount=aa.amount, receipt=None, dest_account=account)
         OrderComplete.objects.create(apartment_amount=aa,
@@ -57,9 +58,9 @@ def complete_order(order_id):
         amount = amount + aa.amount
     
     payu_tax = PAYU_TRANSACTION_CHARGE * amount
-    description = u'Comision tranzacție online'
+    description = _(u'Comision tranzacție online')
     service.new_inbound_operation(payu_tax, description=description)
-    description = u'Plată comision tranzacție online'
+    description = _(u'Plată comision tranzacție online')
     account.new_transfer(payu_tax, description=description,
                          dest_account=service.account)
     order.status = 'completed'
@@ -102,13 +103,13 @@ def __clean_pending(user):
 
 def payform(building, user):
     if pending_payments(building, user):
-        raise Exception(u'Nu mai pot fi efectuate plăți până când nu se proceseaza cele în derulare')
+        raise Exception(_(u'Nu mai pot fi efectuate plăți până când nu se proceseaza cele în derulare'))
     order, amount = __create_order(building, user)
     logger.info('Online payment order %d for building %s on behalf of %s worth %d' % (order.id, building, user, amount))
     l = License.for_building(building)
     
     if not l.payu_available() or building.payments_service() == None:
-        raise Exception(u'Nu a fost configurată plata pentru această clădire')
+        raise Exception(_(u'Nu a fost configurată plata pentru această clădire'))
     
     order = [
         ('MERCHANT', l.payu_merchant_id),

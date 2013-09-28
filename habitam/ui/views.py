@@ -29,6 +29,7 @@ from django.db.models.query_utils import Q
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.utils.decorators import decorator_from_middleware
+from django.utils.translation import ugettext as _
 from habitam.downloads.display_list import download_display_list
 from habitam.entities.accessor import entity_for_account, building_for_account
 from habitam.entities.bootstrap_building import bootstrap_building, \
@@ -111,7 +112,7 @@ def new_building(request):
                 return render(request, 'edit_dialog.html', data)
     else:
         form = NewBuildingForm(request.user) 
-    data = {'form': form, 'target': 'new_building', 'title': u'Clădire nouă'}
+    data = {'form': form, 'target': 'new_building', 'title': _(u'Clădire nouă')}
     return render(request, 'edit_dialog.html', data)
 
 

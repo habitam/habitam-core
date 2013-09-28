@@ -24,18 +24,19 @@ from django import forms
 from django.db.models.query_utils import Q
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
+from django.utils.translation import ugettext as _
 from habitam.entities.models import ApartmentGroup, Apartment, Person
 from habitam.financial.models import Account
 from habitam.ui.forms.generic import NewReceipt
 
 
 class EditApartmentForm(forms.ModelForm):
-    name = forms.CharField(label='Nume')
-    floor = forms.IntegerField(label='Etaj', required=False, min_value=1, max_value=50)
-    inhabitance = forms.IntegerField(label='Locatari', min_value=0, max_value=50)
-    area = forms.IntegerField(label='Suprafață', min_value=1, max_value=1000)
-    parent = forms.ModelChoiceField(label='Scara', queryset=ApartmentGroup.objects.all())
-    rooms = forms.IntegerField(label='Camere', min_value=1, max_value=20)
+    name = forms.CharField(label=_('Nume'))
+    floor = forms.IntegerField(label=_('Etaj'), required=False, min_value=1, max_value=50)
+    inhabitance = forms.IntegerField(label=_('Locatari'), min_value=0, max_value=50)
+    area = forms.IntegerField(label=_(u'Suprafață'), min_value=1, max_value=1000)
+    parent = forms.ModelChoiceField(label=_('Scara'), queryset=ApartmentGroup.objects.all())
+    rooms = forms.IntegerField(label=_('Camere'), min_value=1, max_value=20)
     
     def spinners(self):
         return ['floor', 'inhabitance', 'area', 'rooms']
@@ -59,7 +60,7 @@ class EditApartmentForm(forms.ModelForm):
         l = self.user.administrator.license
         a = l.max_apartments - l.apartment_count()
         if self.instance.id == None and a < 1:
-            raise forms.ValidationError('Prea multe apartamente')
+            raise forms.ValidationError(_('Prea multe apartamente'))
         return self.cleaned_data
     
     def add_form_error(self, error_message):
@@ -86,7 +87,7 @@ class EditPersonForm(forms.ModelForm):
         self._errors[NON_FIELD_ERRORS].append(error_message)
 
 class NewApartmentPayment(NewReceipt):
-    dest_account = forms.ModelChoiceField(label='Cont',
+    dest_account = forms.ModelChoiceField(label=_('Cont'),
                             queryset=Account.objects.all())
     
     def __init__(self, *args, **kwargs):        
@@ -105,5 +106,5 @@ class NewApartmentPayment(NewReceipt):
             self.fields['receipt_payer_address'].initial = building.buildingdetails.address
         except:
             pass
-        self.fields['description'].initial = u'Plată întreținere apartament ' + ap.name
+        self.fields['description'].initial = _(u'Plată întreținere apartament ') + ap.name
         

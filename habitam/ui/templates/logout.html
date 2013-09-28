@@ -1,6 +1,7 @@
-{% extends 'left_base.html' %} 
+{% extends 'left_base.html' %}
+{% load i18n %} 
 
 {% block inner_content %}
-<legend>La revedere</legend>
-<p>Pentru a vă autentifica, apăsați <a href="{% url 'login' %}">aici</a>.</p>
+<legend>{% trans 'La revedere' %}</legend>
+<p>{% trans 'Pentru a vă autentifica, apăsați' %} <a href="{% url 'login' %}">{% trans 'aici' %}</a>.</p>
 {% endblock %}

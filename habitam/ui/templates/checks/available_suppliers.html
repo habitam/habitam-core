@@ -1,13 +1,17 @@
+{% load i18n %}
+
 {% if not user.administrator.license.available_suppliers %}
 
 <div class="alert hidden-phone">
 <a class="close" data-dismiss="alert" href="#">&times;</a>
+{% blocktrans %}
 Nu ați adăugat nici un <strong>furnizor</strong>. Fără furnizori, nu se pot
 configura serviciile de care beneficiază clădirile. Puteți să selectați câțiva
 dintre cei predefiniți sau să definiți unul nou.
+{% endblocktrans %}
 <br>
-<a class="btn btn-warning btn-mini" href="javascript:editDialog('{% url 'select_std_suppliers' %}');">Furnizor predefiniți</a>
-<a class="btn btn-warning btn-mini" href="javascript:editDialog('{% url 'new_supplier' %}');">Furnizor nou</a>
+<a class="btn btn-warning btn-mini" href="javascript:editDialog('{% url 'select_std_suppliers' %}');">{% trans 'Furnizor predefiniți' %}</a>
+<a class="btn btn-warning btn-mini" href="javascript:editDialog('{% url 'new_supplier' %}');">{% trans 'Furnizor nou' %}</a>
 </div>
 
 {% endif %}

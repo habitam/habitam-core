@@ -21,7 +21,6 @@ Created on Aug 3, 2013
 '''
 from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
-from habitam.settings import TRIAL_LICENSE
 from habitam.ui.forms.trial_registration import HabitamRegistrationForm
 from habitam.ui.registration_views import TrialRegistrationView, \
     TrialActivationView, trial_request

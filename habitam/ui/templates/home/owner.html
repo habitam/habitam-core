@@ -1,4 +1,5 @@
 {% load ui_extras %}
+{% load i18n %}
 
 
 {% owner_apartments user.email as owned_apartments %}
@@ -8,7 +9,7 @@
 <div class="row-fluid">
 <div class="span6">
 <legend>
-apartamentele mele
+{% trans 'apartamentele mele' %}
 </legend>
 <table class="table table-condensed">
 	<tbody>
@@ -25,25 +26,25 @@ apartamentele mele
 			{% license_for_building building as building_license %}
 			{% if not building.payments_account or not building.payments_service or not building_license.payu_available %}
 				<span class="label label-info pull-right">
-				de plată {{ debt }}
+				{% trans 'de plată' %} {{ debt }}
 				</span>
 				<span class="label label-warning pull-right">
-				plată indisponibilă
+				{% trans 'plată indisponibilă' %}
 				</span>
 			{% elif pp %}
 				<span class="label label-info pull-right">
-				de plată {{ debt }}
+				{% trans 'de plată' %} {{ debt }}
 				</span>
 			{% elif debt > 0 %}
 				<form method="post" action="{% url 'submit_payment' building.id %}" style="margin: 0" class="pull-right"/>
 				{% csrf_token %}
 				<a class="btn btn-small btn-warning" href="#" onclick="$(this).closest('form').submit()">
-				Plătește online {{ debt }}
+				{% trans 'Plătește online' %} {{ debt }}
 				</a>
 				</form>
 			{% else %}
 				<span class="label label-success pull-right">
-				nimic de plată
+				{% trans 'nimic de plată' %}
 				</span>
 			{% endif %}
 		</td>
@@ -58,17 +59,21 @@ apartamentele mele
 {% if not license %}
 <div class="alert habitam-alert" id="owner-teaser">
 <a class="close habitam-alert-close" href="#">&times;</a>
+{% blocktrans %}
 Administrați o clădire și doriți să încercați aplicația noastră? Vă oferim
 gratuit o licență de evaluare, disponibilă imediat ce apăsați butonul de mai
 jos.
+{% endblocktrans %}
 <br>
-<a class="btn btn-warning btn-mini" href="javascript:editDialog('{% url 'trial_request' %}')">Începeți evaluarea</a>
+<a class="btn btn-warning btn-mini" href="javascript:editDialog('{% url 'trial_request' %}')">{% trans 'Începeți evaluarea' %}</a>
 </div>
 
 <div class="alert alert-info">
+{% blocktrans with email=user.email %}
 Nu dețineți nici un apartament administrat prin această aplicație. Vă rugăm să
 luați legătura cu administratorul dumnevoastră și să îi cereți să asocieze unui
-apartament adresa dumneavostră de email <strong>{{ user.email }}</strong>.
+apartament adresa dumneavostră de email <strong>{{ email }}</strong>.
+{% endblocktrans %}
 </div>
 {% endif %}
 

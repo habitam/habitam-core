@@ -26,6 +26,7 @@ from django.db.models.query_utils import Q
 from django.forms.fields import DecimalField
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
+from django.utils.translation import ugettext as _
 from habitam.entities.models import ApartmentGroup, Service, Supplier, \
     CollectingFund
 from habitam.financial.models import Quota
@@ -37,11 +38,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 class EditBillableForm(forms.ModelForm):
-    name = forms.CharField(label='Nume', max_length=100)
-    billed = forms.ModelChoiceField(label='Clienți', queryset=ApartmentGroup.objects.all())
-    quota_type = forms.ChoiceField(label='Distribuie costuri', choices=Service.QUOTA_TYPES)
+    name = forms.CharField(label=_('Nume'), max_length=100)
+    billed = forms.ModelChoiceField(label=_(u'Clienți'), queryset=ApartmentGroup.objects.all())
+    quota_type = forms.ChoiceField(label=_('Distribuie costuri'), choices=Service.QUOTA_TYPES)
     cmd = forms.CharField(initial='save', widget=forms.HiddenInput())
-    archived = forms.BooleanField(label='Arhivat', required=False)
+    archived = forms.BooleanField(label=_('Arhivat'), required=False)
         
     def __init__(self, *args, **kwargs):
         building = kwargs['building']
@@ -69,7 +70,7 @@ class EditBillableForm(forms.ModelForm):
         for ap in aps:
             q = Quota.objects.get(Q(src=service.account) & Q(dest=ap.account))
             self.fields['quota_ap_' + str(ap.pk)] = DecimalField(
-                        label='Cota ' + str(ap), decimal_places=3,
+                        label=_('Cota') + ' ' + str(ap), decimal_places=3,
                         max_digits=4, initial=q.ratio)
         
     def __init_manual_quotas__(self, args):
@@ -81,7 +82,7 @@ class EditBillableForm(forms.ModelForm):
         aps = ApartmentGroup.objects.get(pk=billed).apartments()
         for ap in aps:
             self.fields['quota_ap_' + str(ap.pk)] = DecimalField(
-                        label='Cota ' + str(ap), decimal_places=3, max_digits=4)
+                        label=_('Cota') + ' ' + str(ap), decimal_places=3, max_digits=4)
 
     def __validate_manual_quota__(self, cleaned_data):
         s = Decimal(0)
@@ -90,7 +91,7 @@ class EditBillableForm(forms.ModelForm):
                 continue
             s = s + v
         if s != Decimal(1):
-            raise forms.ValidationError('Quotas do not sum to 1')
+            raise forms.ValidationError(_(u'Suma cotelor trebuie să fie 1'))
     
     def clean(self):
         cleaned_data = super(EditBillableForm, self).clean()
@@ -120,8 +121,8 @@ class EditBillableForm(forms.ModelForm):
 
 
 class EditCollectingFundForm(EditBillableForm):
-    money_type = forms.ChoiceField(label='Tip bani', choices=MONEY_TYPES)
-    account_type = forms.ChoiceField(label='Tip', choices=TYPES)
+    money_type = forms.ChoiceField(label=_('Tip bani'), choices=MONEY_TYPES)
+    account_type = forms.ChoiceField(label=_('Tip'), choices=TYPES)
     
     class Meta:
         model = CollectingFund
@@ -129,7 +130,7 @@ class EditCollectingFundForm(EditBillableForm):
     
     @classmethod
     def new_title(cls):
-        return 'Fond nou'
+        return _('Fond nou')
     
     @classmethod
     def target(cls):
@@ -137,7 +138,7 @@ class EditCollectingFundForm(EditBillableForm):
     
     @classmethod
     def title(cls):
-        return 'Fond'
+        return _('Fond')
     
     def __init__(self, *args, **kwargs):
         super(EditCollectingFundForm, self).__init__(*args, **kwargs)
@@ -148,17 +149,17 @@ class EditCollectingFundForm(EditBillableForm):
             pass
     
 class EditServiceForm(EditBillableForm):
-    contact = forms.CharField(label='Nume contact', max_length=200, required=False)    
-    client_id = forms.CharField(label='ID client', max_length=50, required=False)
-    contract_date = forms.DateTimeField(label='Data contractului', required=False,
+    contact = forms.CharField(label=_('Nume contact'), max_length=200, required=False)    
+    client_id = forms.CharField(label=_('ID client'), max_length=50, required=False)
+    contract_date = forms.DateTimeField(label=_('Data contractului'), required=False,
                                         widget=BootstrapDateInput(input_format='yyyy-mm-dd')) 
-    contract_details = forms.CharField(label='Detalii contract', max_length=200, required=False)    
-    contract_id = forms.CharField(label='ID contract', max_length=50, required=False)    
-    email = forms.EmailField(label='Email', required=False)
-    invoice_date = forms.IntegerField(label=u'Ziua facturării', min_value=1, max_value=31, required=False)
-    supplier = forms.ModelChoiceField(label='Furnizor', queryset=Supplier.objects.all())
-    phone = forms.CharField(label='Telefon', max_length=20, required=False)    
-    support_phone = forms.CharField(label='Telefon suport', max_length=20, required=False)   
+    contract_details = forms.CharField(label=_('Detalii contract'), max_length=200, required=False)    
+    contract_id = forms.CharField(label=_('ID contract'), max_length=50, required=False)    
+    email = forms.EmailField(label=_('Email'), required=False)
+    invoice_date = forms.IntegerField(label=_(u'Ziua facturării'), min_value=1, max_value=31, required=False)
+    supplier = forms.ModelChoiceField(label=_('Furnizor'), queryset=Supplier.objects.all())
+    phone = forms.CharField(label=_('Telefon'), max_length=20, required=False)    
+    support_phone = forms.CharField(label=_('Telefon suport'), max_length=20, required=False)   
 
     class Meta:
         model = Service
@@ -188,7 +189,7 @@ class EditServiceForm(EditBillableForm):
     
     @classmethod
     def new_title(cls):
-        return 'Serviciu nou'
+        return _('Serviciu nou')
 
     @classmethod
     def target(cls):
@@ -196,4 +197,4 @@ class EditServiceForm(EditBillableForm):
     
     @classmethod
     def title(cls):
-        return 'Serviciul'
+        return _('Serviciul')

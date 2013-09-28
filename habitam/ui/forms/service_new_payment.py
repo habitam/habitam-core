@@ -22,6 +22,7 @@ Created on July 6, 2013
 '''
 from django import forms
 from django.db.models.query_utils import Q
+from django.utils.translation import ugettext as _
 from habitam.financial.models import Account
 from habitam.ui.forms.generic import NewReceipt, NewInvoice
 import logging
@@ -42,12 +43,12 @@ class BasicServicePayment(NewReceipt):
             self.fields['receipt_registration_id'].initial = building.buildingdetails.registration_id
         except:
             pass
-        self.fields['description'].initial = u'Plată serviciu'
+        self.fields['description'].initial = _(u'Plată serviciu')
         
 
 class NewOtherServicePayment(BasicServicePayment, NewInvoice):
-    supplier = forms.CharField(label='Furnizor')
-    service = forms.CharField(label='Serviciu', max_length=100)
+    supplier = forms.CharField(label=_('Furnizor'))
+    service = forms.CharField(label=_('Serviciu'), max_length=100)
     
     def __init__(self, *args, **kwargs):
         self.building = kwargs['building']
@@ -58,7 +59,7 @@ class NewOtherServicePayment(BasicServicePayment, NewInvoice):
         
         
 class NewServicePayment(BasicServicePayment):
-    dest_account = forms.ModelChoiceField(label='Serviciu',
+    dest_account = forms.ModelChoiceField(label=_('Serviciu'),
                             queryset=Account.objects.all())
     
     def __init__(self, *args, **kwargs):

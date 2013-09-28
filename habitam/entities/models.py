@@ -26,6 +26,7 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models.query_utils import Q
 from django.utils import timezone
+from django.utils.translation import ugettext as _
 from habitam.entities.base import Entity, SingleAccountEntity, FiscalEntity
 from habitam.entities.billable import Billable
 from habitam.entities.penalties import penalties, apartment_payments
@@ -84,9 +85,9 @@ class ApartmentGroup(Entity):
         
     def __unicode__(self):
         if self.type == 'building':
-            return 'Block ' + self.name
+            return _('Bloc') + ' ' + self.name
         if self.type == 'stair':
-            return 'Scara ' + self.name
+            return _('Scara') + ' ' + self.name
         return self.name
     
     
@@ -265,10 +266,10 @@ class ApartmentGroup(Entity):
             
     def view_fields(self):
         return {
-            'Adresa' : self.buildingdetails.address,
-            'Nr. înregistrare fiscală': self.buildingdetails.fiscal_id,
-            'Nr. registrul comerțului': self.buildingdetails.registration_id,
-            'Observații': self.buildingdetails.notes,
+            _(u'Adresa') : self.buildingdetails.address,
+            _(u'Nr. înregistrare fiscală'): self.buildingdetails.fiscal_id,
+            _(u'Nr. registrul comerțului'): self.buildingdetails.registration_id,
+            _(u'Observații'): self.buildingdetails.notes,
         }
 
 

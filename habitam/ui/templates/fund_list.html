@@ -1,14 +1,15 @@
 {% extends 'building.html' %} 
-{% load staticfiles %}  
+{% load staticfiles %}
+{% load i18n %}  
 
 {% block building_body %}
 <table class="table table-hover table-condensed">
 	<thead>
 		<tr>
-			<th>Nume</th>
-			<th class="hidden-phone">Tip</th>
-			<th class="hidden-phone">Tip bani</th>
-			<th>Balanță</th>
+			<th>{% trans 'Nume' %}</th>
+			<th class="hidden-phone">{% trans 'Tip' %}</th>
+			<th class="hidden-phone">{% trans 'Tip bani' %}</th>
+			<th>{% trans 'Balanță' %}</th>
 			{% if is_administrator %}
 			<th class="hidden-phone">&nbsp;</th>
 			{% endif %}
@@ -35,16 +36,16 @@
 				{% if is_administrator %}
 				<td class="hidden-phone">
 					<div class="btn-group">
-						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'new_fund_transfer' account_id=account.id %}')" title="Transferă bani într-un alt cont sau fond"><i class="icon-retweet"></i></button>
+						<button class="btn btn-mini" type="button" onclick="editDialog('{% url 'new_fund_transfer' account_id=account.id %}')" title="{% trans 'Transferă bani într-un alt cont sau fond' %}"><i class="icon-retweet"></i></button>
 					</div>	
 					<div class="btn-group">
 						<a class="btn btn-mini btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">
-						Plată
+						{% trans 'Plată' %}
 						<span class="caret"></span>
 						</a>
 						<ul class="dropdown-menu">
-							<li><a href="javascript:editDialog('{% url 'new_service_payment' account_id=account.id %}')">Serviciu</a></li>
-							<li><a href="javascript:editDialog('{% url 'new_other_service_payment' account_id=account.id %}')">Terț</a></li>
+							<li><a href="javascript:editDialog('{% url 'new_service_payment' account_id=account.id %}')">{% trans 'Serviciu' %}</a></li>
+							<li><a href="javascript:editDialog('{% url 'new_other_service_payment' account_id=account.id %}')">{% trans 'Terț' %}</a></li>
 						</ul>
 					</div>
 					<div class="btn-group">
@@ -59,7 +60,7 @@
 {% if is_administrator %}
 <div class="container hidden-phone">
 	<div class="pull-right">
-		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_fund' building.id %}')">Cont nou</button>
+		<button class="btn btn-info" type="button" onclick="editDialog('{% url 'new_fund' building.id %}')">{% trans 'Cont nou' %}</button>
 	</div>
 </div>	
 {% endif %}

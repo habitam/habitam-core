@@ -26,23 +26,24 @@ from habitam.entities.models import AccountLink
 from habitam.financial.models import Account
 from habitam.ui.forms.generic import NewDocPaymentForm
 from django.forms.util import ErrorDict
+from django.utils.translation import ugettext as _
 from django.forms.forms import NON_FIELD_ERRORS 
 
 
 MONEY_TYPES = (
-    ('cash', 'bani lichizi'),
-    ('bank', 'bancă')
+    ('cash', _('bani lichizi')),
+    ('bank', _(u'bancă'))
 )
 TYPES = (
-    ('std', 'standard'),
-    ('repairs', 'repairs'),
-    ('rulment', 'rulment'),
-    ('special', 'special'),
+    ('std', _('standard')),
+    ('repairs', _('repairs')),
+    ('rulment', _('rulment')),
+    ('special', _('special')),
 )
 
 class EditAccountForm(forms.ModelForm):
-    money_type = forms.ChoiceField(label='Tip bani', choices=MONEY_TYPES)
-    type = forms.ChoiceField(label='Tip', choices=TYPES)
+    money_type = forms.ChoiceField(label=_('Tip bani'), choices=MONEY_TYPES)
+    type = forms.ChoiceField(label=_('Tip'), choices=TYPES)
     
     class Meta:
         model = Account
@@ -81,7 +82,7 @@ class EditAccountForm(forms.ModelForm):
 
 
 class NewFundTransfer(NewDocPaymentForm):
-    dest_account = forms.ModelChoiceField(label='Destinație',
+    dest_account = forms.ModelChoiceField(label=_(u'Destinație'),
                             queryset=Account.objects.all())
     
     def __init__(self, *args, **kwargs):

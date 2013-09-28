@@ -23,6 +23,7 @@ Created on Apr 21, 2013
 from django import forms
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms.util import ErrorDict
+from django.utils.translation import ugettext as _
 from habitam.ui.widgets.bootstrap_date import BootstrapDateInput
 import datetime
 
@@ -44,10 +45,10 @@ RECEIPT_FIELDS = [
 ]
    
 class NewDocPaymentForm(forms.Form):
-    amount = forms.DecimalField(label='Suma')
-    date = forms.DateField(label='Data', initial=datetime.date.today,
+    amount = forms.DecimalField(label=_('Suma'))
+    date = forms.DateField(label=_('Data'), initial=datetime.date.today,
                         widget=BootstrapDateInput(input_format='yyyy-mm-dd'))
-    description = forms.CharField(label='Descriere')
+    description = forms.CharField(label=_('Descriere'))
     
     def __init__(self, *args, **kwargs):
         if 'entity' in kwargs.keys():
@@ -66,11 +67,11 @@ class NewDocPaymentForm(forms.Form):
 
 
 class NewInvoice(NewDocPaymentForm):
-    invoice_series = forms.CharField(label='Serie factură', max_length=30, required=False)
-    invoice_no = forms.CharField(label='Număr factură')
-    invoice_reference = forms.CharField(label='Referință factură', max_length=30, required=False)
-    invoice_fiscal_id = forms.CharField(label='Nr. înreg. fiscală furnizor', max_length=30, required=False)
-    invoice_registration_id = forms.CharField(label='Nr. reg. com. furnizor', max_length=30, required=False)
+    invoice_series = forms.CharField(label=_(u'Serie factură'), max_length=30, required=False)
+    invoice_no = forms.CharField(label=_(u'Număr factură'))
+    invoice_reference = forms.CharField(label=_(u'Referință factură'), max_length=30, required=False)
+    invoice_fiscal_id = forms.CharField(label=_(u'Nr. înreg. fiscală furnizor'), max_length=30, required=False)
+    invoice_registration_id = forms.CharField(label=_(u'Nr. reg. com. furnizor'), max_length=30, required=False)
 
     def clean(self):
         cleaned_data = super(NewInvoice, self).clean()
@@ -87,16 +88,16 @@ class NewInvoice(NewDocPaymentForm):
 
 
 class NewReceipt(NewDocPaymentForm):
-    receipt_no = forms.CharField(label='Număr chitanță')
-    receipt_fiscal_id = forms.CharField(label='Nr. înreg. fiscală plătitor', max_length=30, required=False)
-    receipt_registration_id = forms.CharField(label='Nr. reg. com. plătitor', max_length=30, required=False)
-    receipt_payer_name = forms.CharField(label='Plătit de', max_length=200, required=False)
-    receipt_payer_address = forms.CharField(label='Adresa plătitor', max_length=200, required=False)
+    receipt_no = forms.CharField(label=_(u'Număr chitanță'))
+    receipt_fiscal_id = forms.CharField(label=_(u'Nr. înreg. fiscală plătitor'), max_length=30, required=False)
+    receipt_registration_id = forms.CharField(label=_(u'Nr. reg. com. plătitor'), max_length=30, required=False)
+    receipt_payer_name = forms.CharField(label=_(u'Plătit de'), max_length=200, required=False)
+    receipt_payer_address = forms.CharField(label=_(u'Adresa plătitor'), max_length=200, required=False)
        
     def clean(self):
         cleaned_data = super(NewReceipt, self).clean()    
         if cleaned_data['amount'] <= 0:
-            raise forms.ValidationError(u'Te rog să introduci o sumă mai ca zero')   
+            raise forms.ValidationError(_(u'Te rog să introduci o sumă mai ca zero'))   
         
         receipt = {}
         for fn in RECEIPT_FIELDS:

@@ -1,8 +1,9 @@
 {% extends 'left_base.html' %} 
+{% load i18n %}
 
 {% block inner_content %}
-<legend>Licența a expirat</legend>
+<legend>{% trans 'Licența a expirat' %}</legend>
 
-<p>Licența dumneavostră a expirat. Vă rugăm contactați-ne pentru o eventuală prelungire.</p>
+<p>{% trans 'Licența dumneavostră a expirat. Vă rugăm contactați-ne pentru o eventuală prelungire.' %}</p>
 
 {% endblock %}

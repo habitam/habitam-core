@@ -21,6 +21,7 @@ Created on Apr 12, 2013
 @author: Stefan Guna
 '''
 from django.conf.urls import patterns, url
+from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
 from habitam.downloads import register, balance
 from habitam.entities.models import Apartment, ApartmentGroup, Service, Person, \
@@ -57,7 +58,7 @@ urlpatterns = patterns('habitam.ui.urls_user',
                        
     url(r'^buildings$', views.general_list,
         {'license_subtype': 'buildings', 'entity_cls' : ApartmentGroup,
-         'title': u'Clădiri disponibile', 'edit_name': 'edit_building',
+         'title': _(u'Clădiri disponibile'), 'edit_name': 'edit_building',
          'new_name': 'new_building', 'view_name': 'buildings',
          'entity_view_name': 'apartment_list'},
         name='buildings'),
@@ -74,7 +75,7 @@ urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^buildings/(?P<building_id>\d+)/apartments/new$',
         views.new_building_entity,
         {'form_cls': EditApartmentForm, 'target': 'new_apartment',
-         'title': 'Apartament nou'},
+         'title': _(u'Apartament nou')},
         name='new_apartment'),
                        
     url(r'^buildings/(?P<building_id>\d+)/initial_operations_template$',
@@ -88,18 +89,18 @@ urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^buildings/(?P<building_id>\d+)/initial_operations$',
         views.new_building_entity,
         {'form_cls': InitialOperations, 'target': 'initial_operations',
-         'title': u'Solduri inițiale', 'commit_directly': True},
+         'title': _(u'Solduri inițiale'), 'commit_directly': True},
         'initial_operations'),
 
     url(r'^buildings/(?P<building_id>\d+)/staircases/new$',
         views.new_building_entity,
         {'form_cls': EditStaircaseForm, 'target': 'new_staircase',
-         'title': u'Scară nouă', 'save_kwargs': {'type': 'stair'}},
+         'title': _(u'Scară nouă'), 'save_kwargs': {'type': 'stair'}},
         name='new_staircase'),
 
     url(r'^staircases/(?P<entity_id>\d+)/edit$', views.edit_entity,
        {'entity_cls': ApartmentGroup, 'form_cls': EditStaircaseForm,
-        'target': 'edit_staircase', 'title': 'Scara'}, name='edit_staircase'),
+        'target': 'edit_staircase', 'title': _(u'Scara')}, name='edit_staircase'),
     
     url(r'^buildings/(?P<building_id>\d+)/accounts/(?P<account_id>\d+)/operations/(?P<month>\d{4}-\d{2})?$',
         views.operation_list, name='operation_list'),
@@ -122,7 +123,7 @@ urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^buildings/(?P<building_id>\d+)/funds/new$',
         views.new_building_entity,
         {'form_cls': EditAccountForm, 'target': 'new_fund',
-         'title': 'Cont nou', 'commit_directly': True},
+         'title': _(u'Cont nou'), 'commit_directly': True},
         name='new_fund'),
     
     
@@ -166,7 +167,7 @@ urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^collecting_funds/(?P<entity_id>\d+)/collection/new$',
         views.new_inbound_operation,
         {'entity_cls': CollectingFund, 'form_cls': NewBuildingCharge,
-         'target': 'new_collection', 'title': 'Colectare pentru'},
+         'target': 'new_collection', 'title': _(u'Colectare pentru')},
         name='new_collection'),
 
     url(r'^services/(?P<entity_id>\d+)/edit$',
@@ -176,18 +177,18 @@ urlpatterns = patterns('habitam.ui.urls_user',
     url(r'^services/(?P<entity_id>\d+)/invoices/new$',
         views.new_inbound_operation,
         {'entity_cls': Service, 'form_cls': NewServiceInvoice,
-         'target': 'new_invoice', 'title': u'Factură pentru'},
+         'target': 'new_invoice', 'title': _(u'Factură pentru')},
         name='new_invoice'),
     
     url(r'^apartments/(?P<entity_id>\d+)/edit$', views.edit_entity,
         {'entity_cls': Apartment, 'form_cls': EditApartmentForm,
-         'target': 'edit_apartment', 'title': 'Apartamentul'},
+         'target': 'edit_apartment', 'title': _(u'Apartamentul')},
         name='edit_apartment'),
     
     url(r'^apartments/(?P<entity_id>\d+)/payments/new$',
         views.new_inbound_operation,
         {'entity_cls': Apartment, 'form_cls': NewApartmentPayment,
-         'target': 'new_payment', 'title': u'Încasare de la'},
+         'target': 'new_payment', 'title': _(u'Încasare de la')},
         name='new_payment'),
     
     url(r'^accounts/(?P<entity_id>\d+)/edit$',

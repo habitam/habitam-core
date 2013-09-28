@@ -23,6 +23,7 @@ Created on Aug 11, 2013
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.utils.decorators import decorator_from_middleware
+from django.utils.translation import ugettext as _
 from habitam.entities.bootstrap_suppliers import create_suppliers
 from habitam.entities.models import Supplier
 from habitam.ui.forms.supplier import SelectSuppliersForm
@@ -53,5 +54,5 @@ def select_std_suppliers(request):
     else:
         form = SelectSuppliersForm(existing_suppliers)
         
-    data = {'form': form, 'target': 'select_std_suppliers', 'title': 'Furnizori predefiniți'}
+    data = {'form': form, 'target': 'select_std_suppliers', 'title': _(u'Furnizori predefiniți')}
     return render(request, 'edit_dialog.html', data)
